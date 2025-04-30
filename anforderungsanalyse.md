@@ -8,8 +8,11 @@ MealMate / FoodSense / PocketChef / ChefPal / Mealo
 <img src="logo+writingNoBg.png" width="300" alt="Mealo" />
 
 
-* Autoren (Vor- und Nachnamen der beteiligten Studenten)
-* Link zum Source Code Repository
+Danny Meihöfer - 1323212
+
+Bjarne Zaremba - 1320828
+
+[Link zum Source Code Repository](https://github.com/Mealo-Hsbi/Mealo)
 
 # Inhaltsverzeichnis
 
@@ -186,10 +189,10 @@ Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *M
 Die Anwendung wird primär als mobile App (Android und eventuell IOS) entwickelt.
 
 **Programmiersprachen / Frameworks**:  
-Es werden moderne App-Technologien verwendet (z. B. JavaScript/TypeScript, React/React Native).
+Es werden moderne App-Technologien verwendet (z. B. JavaScript/TypeScript, Dart, Flutter).
 
 **Backend**:  
-RESTful API oder GraphQL mit Node.js/Python als mögliche Backend-Technologien.
+RESTful API oder GraphQL mit Node.js als mögliche Backend-Technologien.
 
 **Datenhaltung**:  
 Nutzung einer Cloud-Datenbank (z. B. Firebase, Supabase, Google Cloud) für Nutzerkonten, Zutaten und Rezepte.
@@ -491,7 +494,7 @@ verbinden, so dass erkennbar ist, ob Sie alle Use Cases getestet haben.
 # 4 Projektorganisation [ ](#inhaltsverzeichnis)
 ## 4.1 Annahmen [ ](#inhaltsverzeichnis)
 #### Verwendete Technologien  
-- **Frontend Mobile:** React Native (JavaScript/TypeScript) für Android und eventuell iOS  
+- **Frontend Mobile:** Flutter (Dart) für Android und eventuell iOS  
 - **Backend:** Node.js oder Python mit RESTful API  
 - **Cloud-Datenhaltung & Authentifizierung:** Firebase (Firestore, Auth) / Google Cloud
 - **Externe Schnittstellen:**  
@@ -523,7 +526,7 @@ Da das Projekt im Rahmen einer studentischen Lehrveranstaltung von zwei Personen
 
 | **Softwarebaustein**                 | **Verantwortlich(e)** |
 |-------------------------------------|------------------------|
-| Mobile App (React Native)           | Gemeinsam              |
+| Mobile App (Flutter)                | Gemeinsam              |
 | Backend (API & Datenhaltung)        | Person B               |
 | Bilderkennung & Zutatenscan         | Person A               |
 | Externe Schnittstellen & API-Anbindung | Gemeinsam           |
