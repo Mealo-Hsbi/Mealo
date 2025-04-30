@@ -1,0 +1,523 @@
+
+MealMate / FoodSense / PocketChef / ChefPal / Mealo
+
+
+# Anforderungs- und Entwurfsspezifikation ("Pflichtenheft")
+# 0 Titelseite
+
+<img src="logo+writingNoBg.png" width="300" alt="Mealo" />
+
+
+* Autoren (Vor- und Nachnamen der beteiligten Studenten)
+* Link zum Source Code Repository
+
+# Inhaltsverzeichnis
+
+- [1 Einführung](#1-Einführung)
+  - [1.1 Beschreibung](#11-beschreibung)
+- [2 Anforderungen](#2-anforderungen)
+  - [2.1 Stakeholder](#21-stakeholder)
+  - [2.2 Funktionale Anforderungen](#22-funktionale-anforderungen)
+  - [2.3 Nicht-funktionale Anforderungen](#23-nicht-funktionale-anforderungen)
+    - [2.3.1 Rahmenbedingungen](#231-rahmenbedingungen)
+    - [2.3.2 Betriebsbedingungen](#232-betriebsbedingungen)
+    - [2.3.3 Qualitätsmerkmale](#233-qualitätsmerkmale)
+  - [2.4 Graphische Benutzerschnittstelle](#24-graphische-benutzerschnittstelle)
+  - [2.5 Anforderungen im Detail](#25-anforderungen-im-detail)
+- [3 Technische Beschreibung](#3-technische-beschreibung)
+  - [3.1 Systemübersicht](#31-systemübersicht)
+  - [3.2 Softwarearchitektur](#32-softwarearchitektur)
+    - [3.2.1 Technologieauswahl](#321-technologieauswahl)
+  - [3.3 Schnittstellen](#33-schnittstellen)
+    - [3.3.1 Ereignisse](#331-ereignisse)
+  - [3.4 Datenmodell](#34-datenmodell)
+  - [3.5 Abläufe](#35-abläufe)
+  - [3.6 Entwurf](#36-entwurf)
+  - [3.7 Fehlerbehandlung](#37-fehlerbehandlung)
+  - [3.8 Validierung](#38-validierung)
+- [4 Projektorganisation](#4-projektorganisation)
+  - [4.1 Annahmen](#41-annahmen)
+  - [4.2 Verantwortlichkeiten](#42-verantwortlichkeiten)
+  - [4.3 Grober Projektplan](#43-grober-projektplan)
+- [5 Anhänge](#5-anhänge)
+  - [5.1 Glossar](#51-glossar)
+  - [5.2 Referenzen](#52-referenzen)
+  - [5.3 Index](#53-index)
+
+
+# 1 Einführung [ ](#inhaltsverzeichnis)
+
+
+## 1.1 Beschreibung [ ](#inhaltsverzeichnis)
+
+**Mealo** ist dein smarter Küchenbegleiter – eine mobile App, die dich nicht nur bei der Rezeptsuche unterstützt, sondern dich wie ein virtueller Koch an der Seite durch deinen kulinarischen Alltag führt.  
+
+Im Zentrum steht eine intelligente Zutatenerkennung: Du kannst vorhandene Lebensmittel einfach einscannen – per Kamera, Barcode oder manueller Eingabe – und bekommst sofort passende Rezeptvorschläge, die deine Vorräte optimal nutzen. Doch Mealo kann weit mehr als das.
+
+Die App bietet eine Vielzahl nützlicher Funktionen:  
+- **Individuelle Filteroptionen** nach Zeitaufwand, Ernährungsform (z. B. vegan, glutenfrei), Schwierigkeitsgrad oder vorhandenen Küchengeräten  
+- **Gericht-Erkennung**: Fotografiere ein fertiges Essen, um die wahrscheinlichen Zutaten zu identifizieren – ideal wenn ein leckeres Gericht nachgekocht werden soll!
+- **Kalorien- und Nährwertübersicht** für jedes Rezept – für alle, die bewusst kochen oder sportliche Ziele verfolgen  
+- **Einkaufslistenfunktion** für fehlende Zutaten, direkt aus dem Rezept heraus generierbar  
+- **Food-Waste-Vermeidung** durch clevere Resteverwertung und Fokus auf vorhandene Lebensmittel  
+- **Intelligente Wochenplanung**: Auf Basis deiner Ziele, Vorlieben und Vorräte erstellt Mealo automatisch einen wöchentlichen Essensplan – samt Rezepte, Einkaufsliste und Kalorienübersicht
+- **Geführtes Kochen**: Schritt-für-Schritt-Anleitungen, bei denen der Nutzer von der App durch den gesamten Kochprozess begleitet wird, inklusive Timer und Sprachsteuerung für eine freihändige Bedienung
+- **Community & Inspiration: Nutzer können eigene Rezepte posten, die anderer entdecken und bewerten - für noch mehr kulinarische Vielfalt.
+
+Und noch mehr.
+
+Mealo richtet sich an alle, die gesünder, effizienter oder kreativer kochen möchten – vom Studierenden mit leerem Kühlschrank bis hin zum Fitness-Fan mit Meal-Prep-Plan. Die App ersetzt kein Kochbuch, sondern bietet das Wissen eines erfahrenen Kochs – in digitaler, interaktiver Form.  
+
+Ob spontane Idee oder gezielte Planung: Mealo bringt Intelligenz, Inspiration und Nachhaltigkeit auf den Teller.
+
+Ein Koch in deiner Hosentasche.
+
+---
+
+# 2 Anforderungen [ ](#inhaltsverzeichnis)
+
+In diesem Abschnitt werden die funktionalen und nicht-funktionalen Anforderungen an das System Mealo systematisch erfasst. Ziel ist es, die Erwartungen und Bedürfnisse aller Beteiligten – insbesondere der Endnutzer – zu verstehen und in konkrete Anforderungen zu übersetzen. Die Anforderungen bilden die Grundlage für die spätere Systemarchitektur, die Umsetzung sowie für Tests und Abnahmen. Dabei wird sowohl auf die Stakeholder eingegangen als auch auf die konkreten Funktionen und Qualitätsmerkmale, die die Anwendung erfüllen soll.
+
+Klar, hier ist die überarbeitete Tabelle ohne "Product Owner" und mit dem korrekten Namen deines Professors:
+
+---
+
+## 2.1 Stakeholder [ ](#inhaltsverzeichnis)
+
+| Funktion / Relevanz | Name | Kontakt / Verfügbarkeit | Wissen | Interessen / Ziele |
+|---|---|---|---|---|
+| Full-Stack Entwickler | Danny Meihöfer | danny.meihoefer@hsbi.de |  Technische Umsetzung und Organisation | Entwicklung einer funktionalen und kreativen App, Praxiserfahrung sammeln |
+| Full-Stack Entwickler | Bjarne Zaremba | bjarne.zaremba@hsbi.de | Technische Umsetzung und Organisation  | Technisch saubere Umsetzung, praxisnahe Anwendung entwickeln |
+| Endnutzer (Zielgruppe), Einfluss auf Nutzerakzeptanz | Breite Nutzerschaft (z. B. Studierende, Berufstätige, Kochinteressierte) | indirekt über Umfragen, Feedback und Tests erreichbar | Kennt Alltagsprobleme rund ums Kochen, Einkaufen und Planen | Vereinfachung des Kochalltags, smarte Vorschläge, Zeit- und Ressourcenersparnis |
+| Projektbetreuer (Dozent) | Prof. Dr. Jörg Brunsmann | über Hochschul-Mail erreichbar | Betreuung des Projekts im Rahmen der Lehrveranstaltung, methodische Unterstützung | Didaktisch strukturierter Projektverlauf, Zielerreichung und Dokumentation |
+
+---
+
+## 2.2 Funktionale Anforderungen [ ](#inhaltsverzeichnis)
+* ggfs. Use-Case Diagramme
+* Strukturierung der Diagramme in funktionale Gruppen
+* Definition der Akteure
+* Akteure sowie andere Begriffe der implementierten Fachdomäne definieren
+* Begriffe konsistent in der Spezifikation verwenden
+* Begriffe im Glossar am Ende des Dokuments darstellen
+
+Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *Mealo*. Sie ergeben sich aus der Zielsetzung der App und den geplanten Features. Die Anforderungen sind in thematische Gruppen unterteilt, um eine bessere Übersichtlichkeit zu gewährleisten.
+
+### Akteure
+- **Nutzer**: Verwender der App, gibt Zutaten ein, erhält Rezepte, erstellt Pläne etc.
+- **System**: Die App selbst, die Benutzerinteraktionen verarbeitet, Vorschläge berechnet, Daten speichert und darstellt.
+
+---
+
+### 1. Zutatenverwaltung
+- **FA-1.1**: Der Nutzer kann Zutaten manuell eingeben.
+- **FA-1.2**: Über ein Foto-Upload können mehrere Lebensmittel gleichzeitig automatisch erkannt und übernommen werden.
+- **FA-1.3**: Der Nutzer kann Zutaten aus einer Liste löschen oder bearbeiten.
+- **FA-1.4**: Die App speichert eingegebene Zutaten lokal und/oder in der Cloud.
+- **FA-1.5**: Die App kann den Barcode von Lebensmitteln scannen und die entsprechenden Zutaten automatisch hinzufügen.
+- **FA-1.6**: Die App kann sich die Zutaten merken und speichert:
+  - Name
+  - Menge
+  - Haltbarkeitsdatum
+  - Kategorie (z. B. Obst, Gemüse, Fleisch, etc.)
+  - Häufigkeit der Nutzung
+- **FA-1.7**: Die App kann für bestimmte Zutaten prüfen, ob diese in nahegelegenen Supermärkten verfügbar sind (z. B. über eine Drittanbieter-Schnittstelle, wenn verfügbar).
+- **FA-1.8**: Die App kann aktuelle Supermarktangebote durchsuchen und relevante Produkte basierend auf dem aktuellen Vorrat und dem Rezeptbedarf herausfiltern. Dabei werden nahliegende Supermärkte, Rabattaktionen und eventuell beworbene Produkte (Product Placements) berücksichtigt.
+
+---
+
+### 2. Rezeptvorschläge
+- **FA-2.1**: Die App schlägt dem Nutzer Rezepte vor, basierend auf den vorhandenen Zutaten.
+- **FA-2.2**: Rezepte werden nach verschiedenen Kriterien filterbar sein (z. B. vegan, kalorienarm, schnell, Resteverwertung, Equipment).
+- **FA-2.3**: Die App zeigt eine Bewertung und geschätzte Zubereitungszeit an.
+- **FA-2.4**: Die App zeigt die fehlenden Zutaten bei einem Rezept an, das nicht vollständig passt und gibt einem die Möglichkeit, diese zur Einkaufsliste hinzuzufügen.
+- **FA-2.5**: Der Nutzer kann Rezepte als Favoriten speichern.
+
+---
+
+### 3. Wochenplanung & Einkauf
+- **FA-3.1**: Der Nutzer kann Rezepte zu einem Wochenplan hinzufügen.
+- **FA-3.2**: Basierend auf dem Wochenplan kann die App automatisch eine Einkaufsliste generieren.
+- **FA-3.3**: Die Einkaufsliste kann manuell bearbeitet werden.
+- **FA-3.4**: Die App kann Zutaten aus der Einkaufsliste nach dem Einkauf dem Vorrat hinzufügen.
+- **FA-3.5**: Die App kann automatisch Rezepte für die Woche vorschlagen, basierend auf den Vorräten und Vorlieben des Nutzers.
+
+---
+
+### 4. Benutzerkonto & Datenhaltung
+- **FA-4.1**: Der Nutzer kann ein Benutzerkonto erstellen und sich einloggen.
+- **FA-4.2**: Die App speichert Nutzerdaten, Einstellungen und Historien benutzerbezogen.
+- **FA-4.3**: Die App bietet die Möglichkeit, das Konto zu löschen und alle Daten zu entfernen.
+
+---
+
+### 5. Geführtes Kochen
+
+- **FA-5.1**: Die App führt den Nutzer Schritt für Schritt durch das Rezept, wobei jeder Schritt klar hervorgehoben und nach Bedarf detailliert angezeigt wird.
+- **FA-5.2**: Für Prozesse, die eine bestimmte Zeit erfordern (z. B. Kochen, Backen), kann der Nutzer direkt einen Timer starten, der im Hintergrund weiterläuft.
+- **FA-5.3**: Die App bietet Sprachsteuerung, sodass der Nutzer Befehle wie “Weiter”, “Zurück”, “Starte Timer” oder “Wie lange noch?” geben kann, ohne die Hände zu benutzen.
+- **FA-5.4**: Ein akustisches oder visuelles Feedback erfolgt, wenn ein Timer abgelaufen ist, um den Nutzer zu informieren.
+- **FA-5.5**: Der geführte Modus kann optional aktiviert werden, indem der Nutzer gefragt wird, ob er die Funktion für das jeweilige Rezept nutzen möchte.
+- **FA-5.6**: Die App erlaubt das gleichzeitige Starten und Verwalten von mehreren Timern für verschiedene Prozesse, wenn dies im Rezept erforderlich ist.
+
+---
+
+### 6. Community & Rezept-Sharing
+- **FA-6.1**: Nutzer können eigene Rezepte anlegen und veröffentlichen.
+- **FA-6.2**: Nutzer können Rezepte von anderen entdecken, speichern oder bewerten.
+- **FA-6.3**: Rezepte könnenm it Bildern, Zutaten, Nährweten und Zubereitungsschritten versehen werden.
+
+### 7. Erweiterte Funktionen
+
+- **FA-7.1**: Die App kann eine Kalorienübersicht basierend auf gewählten Rezepten anzeigen.
+- **FA-7.2**: Die App kann Rezepte auf Basis von Fitness-Zielen (z. B. Muskelaufbau, Diät) filtern.
+- **FA-7.3**: Die App merkt sich Nutzerpräferenzen und passt Vorschläge personalisiert an.
+- **FA-7.4**: Die App kann Makroskopische Daten (z. B. Eiweiß, Kohlenhydrate, Fette) für Rezepte anzeigen und die des Nutzers trackbar machen.
+- **FA-7.5**: Sprachsteuerung für die Eingabe von Zutaten und navigation durch Rezepte.
+
+---
+
+## 2.3 Nicht-funktionale Anforderungen [ ](#inhaltsverzeichnis)
+
+### 2.3.1 Rahmenbedingungen [ ](#inhaltsverzeichnis)
+
+**Zielplattformen**:  
+Die Anwendung wird primär als mobile App (Android und eventuell IOS) entwickelt.
+
+**Programmiersprachen / Frameworks**:  
+Es werden moderne App-Technologien verwendet (z. B. JavaScript/TypeScript, React/React Native).
+
+**Backend**:  
+RESTful API oder GraphQL mit Node.js/Python als mögliche Backend-Technologien.
+
+**Datenhaltung**:  
+Nutzung einer Cloud-Datenbank (z. B. Firebase, Supabase, Google Cloud) für Nutzerkonten, Zutaten und Rezepte.
+
+**Schnittstellen / APIs**:  
+Externe APIs:
+  - Spoonacular, Edamam oder ähnliche für Rezeptdaten und Nährwertinformationen.
+  - Google Vision API oder OpenCV für die Bildverarbeitung und Zutatenerkennung.
+
+**Gerätevoraussetzungen**:  
+Mindestvoraussetzung ist ein Smartphone mit Kamera und Internetzugang.
+
+**Sprachunterstützung**:  
+Primär Englisch, mittelfristig mehrsprachige Erweiterung geplant.
+
+---
+
+### 2.3.2 Betriebsbedingungen [ ](#inhaltsverzeichnis)
+
+**Betriebsumgebung**:  
+- **Server**: Cloud-Hosting-Dienste (z. B. AWS, Google Cloud).
+- **Betriebssysteme**: Android 8.0+ für mobile Anwendungen (Eventuell IOS 12.0+). 
+
+**Zugänglichkeit**:  
+- **Internetverbindung**: Eine stabile Internetverbindung wird benötigt, insbesondere für API-Abfragen und Datenaktualisierungen.  
+- **Offline-Modus**: Teilweise Nutzung offline möglich (z. B. auf Basis von lokal gespeicherten Daten).
+
+---
+
+### 2.3.3 Qualitätsmerkmale [ ](#inhaltsverzeichnis)
+
+| Qualitätsmerkmal       | Sehr gut | Gut | Normal | Nicht relevant |
+|------------------------|----------|-----|--------|----------------|
+| **Zuverlässigkeit**    |          |     |        |                |
+| Fehlertoleranz         | X        |     |        |                |
+| Wiederherstellbarkeit  | X        |     |        |                |
+| Ordnungsmäßigkeit      |          |     | X      |                |
+| Richtigkeit            |          | X   |        |                |
+| Konformität            |          |     | X      |                |
+| **Benutzerfreundlichkeit** |      |     |        |                |
+| Installierbarkeit      |          |     | X      |                |
+| Verständlichkeit       | X        |     |        |                |
+| Erlernbarkeit          |          | X   |        |                |
+| Bedienbarkeit          | X        |     |        |                |
+| **Performance**        |          |     |        |                |
+| Zeitverhalten          |          |     | X      |                |
+| Effizienz              |          |     |        | X              |
+| **Sicherheit**         |          |     |        |                |
+| Analysierbarkeit       | X        |     |        |                |
+| Modifizierbarkeit      |          |     | X      |                |
+| Stabilität             | X        |     |        |                |
+| Prüfbarkeit            | X        |     |        |                |
+
+---
+
+## 2.4 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
+* GUI-Mockups passend zu User Stories
+* Screens mit Überschrift kennzeichnen, die im Inhaltsverzeichnis zu sehen ist
+* Unter den Screens darstellen (bzw. verlinken), welche User Stories mit dem Screen
+abgehandelt werden
+* Modellierung der Navigation zwischen den Screens der GUI-Mockups als Zustandsdiagramm
+* Für verschiedene Rollen können unterschiedliche Zustandsdiagramme angefertigt werden.
+* Mockups für unterschiedliche Akteure
+* Mockups für unterschiedliche Frontends (Mobil, Web, Desktop)
+Perfekt – jetzt wird’s konkret! Lass uns anfangen, **User Stories** zu eurer App zu formulieren. Wir machen das schön gruppiert nach den funktionalen Blöcken (z. B. Zutatenverwaltung, Rezeptsuche, etc.), mit **Akzeptanzkriterien** und optional Priorität.
+
+Ich nehme den ausführlicheren Stil („In meiner Rolle als...“) mit Priorität, weil das bei der Planung oft hilfreicher ist.
+
+---
+
+## 🧾 **2.5 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
+
+### 📦 Zutatenverwaltung
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                 | **so dass**                                       | **Erfüllt, wenn**                                                | **Priorität** |
+|----------------|--------------------------|--------------------------------------------------|--------------------------------------------------|------------------------------------------------------------------|---------------|
+| Zutaten manuell | Nutzer                  | Zutaten manuell eingeben können                 | ich meine Vorräte auch ohne Scanner verwalten kann | ich neue Zutaten mit Name, Menge und Kategorie speichern kann     | Must          |
+| Zutaten bearbeiten | Nutzer               | bestehende Zutaten bearbeiten oder löschen können | ich meine Vorräte aktuell halten kann             | ich Zutaten in der Liste auswählen, ändern oder entfernen kann    | Must          |
+| Zutat erkennen | Nutzer                  | Zutaten per Bild oder Barcode hinzufügen können  | ich weniger tippen muss und schneller bin         | Zutaten über Kamera erkannt oder per Barcode ergänzt werden       | Must          |
+
+---
+
+### 🍽️ Rezeptvorschläge & Suche [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                           | **so dass**                                      | **Erfüllt, wenn**                                                       | **Priorität** |
+|----------------|--------------------------|------------------------------------------------------------|--------------------------------------------------|-------------------------------------------------------------------------|---------------|
+| Rezepte finden | Nutzer                  | Rezepte zu meinen vorhandenen Zutaten vorgeschlagen bekommen | ich gezielt mit Resten kochen kann               | passende Rezepte angezeigt werden, basierend auf gespeicherten Zutaten | Must          |
+| Rezept filtern | Nutzer                  | Rezepte nach Aufwand, Ernährungsform, etc. filtern können  | ich schneller passende Gerichte finde            | Filtereinstellungen angepasst und korrekt angewendet werden             | Should        |
+| Gericht erkennen | Nutzer                | ein Gericht fotografieren können                           | ich herausfinden kann, was drin ist               | Hauptzutaten anhand des Fotos vorgeschlagen werden                     | Could         |
+
+---
+
+### 📆 Planung & Einkauf [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                         | **so dass**                                        | **Erfüllt, wenn**                                                  | **Priorität** |
+|----------------|--------------------------|----------------------------------------------------------|---------------------------------------------------|--------------------------------------------------------------------|---------------|
+| Einkaufsliste  | Nutzer                  | fehlende Zutaten in eine Einkaufsliste übernehmen können | ich beim Einkaufen nichts vergesse                | Zutaten aus Rezepten automatisch in einer Liste ergänzt werden     | Should        |
+| Wochenplan     | Nutzer                  | einen Wochenplan basierend auf Vorlieben erstellen lassen | ich die Woche besser vorbereiten kann             | automatisch generierte Tagespläne mit Rezepten angezeigt werden    | Could         |
+
+---
+
+### 👨‍🍳 Kochassistenz & Anleitung [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                                        | **so dass**                                        | **Erfüllt, wenn**                                                    | **Priorität** |
+|----------------|--------------------------|------------------------------------------------------------------------|---------------------------------------------------|----------------------------------------------------------------------|---------------|
+| Schrittweise kochen | Nutzer             | Schritt-für-Schritt durch Rezepte geführt werden                       | ich nicht den Überblick verliere                  | nur der aktuelle Schritt sichtbar ist und ggf. mit Timer ergänzt wird | Must          |
+| Timer + Sprachsteuerung | Nutzer         | Timer direkt im Rezept starten und mit Sprache steuern können          | ich beim Kochen nicht mein Handy anfassen muss    | Timer per Klick oder Sprachbefehl gestartet/gestoppt werden können    | Could         |
+
+---
+
+### 🔐 Nutzerkonto & Authentifizierung [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                | **so dass**                                    | **Erfüllt, wenn**                                                  | **Priorität** |
+|----------------|--------------------------|-----------------------------------------------|------------------------------------------------|--------------------------------------------------------------------|---------------|
+| Anmeldung      | Nutzer                  | mich registrieren und anmelden können         | meine Daten personalisiert gespeichert werden  | Registrierung via E-Mail oder Google/Firebase funktioniert         | Must          |
+| Cloud-Sync     | Nutzer                  | meine Zutaten und Favoriten in der Cloud sichern | ich bei Gerätewechsel nichts verliere         | Nach Anmeldung sind Daten automatisch synchronisiert                | Must          |
+
+---
+
+### 🏳️ Mehrsprachigkeit [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                  | **so dass**                                    | **Erfüllt, wenn**                                                  | **Priorität** |
+|----------------|--------------------------|--------------------------------------------------|------------------------------------------------|--------------------------------------------------------------------|---------------|
+| Sprache wählen | Nutzer                  | zwischen Sprachen (z. B. Englisch/Deutsch) wechseln können | ich die App in meiner bevorzugten Sprache nutzen kann | UI-Texte passen sich je nach Spracheinstellung an                   | Could         |
+
+---
+
+### 🌐 Offline-Funktionalität [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                     | **so dass**                                    | **Erfüllt, wenn**                                                  | **Priorität** |
+|----------------|--------------------------|----------------------------------------------------|------------------------------------------------|--------------------------------------------------------------------|---------------|
+| Offline-Zutaten | Nutzer                 | meine gespeicherten Zutaten auch offline einsehen können | ich z. B. im Supermarkt Zugriff darauf habe   | Die Zutatenliste ist lokal verfügbar, auch ohne Internetverbindung  | Should         |
+
+---
+
+### ⭐ Favoriten & Verlauf [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                               | **so dass**                                     | **Erfüllt, wenn**                                                  | **Priorität** |
+|----------------|--------------------------|----------------------------------------------|-------------------------------------------------|--------------------------------------------------------------------|---------------|
+| Rezepte merken | Nutzer                  | Rezepte zu meinen Favoriten hinzufügen können | ich Lieblingsrezepte schnell wieder finde      | Favorisierte Rezepte erscheinen in einem separaten Bereich         | Should         |
+| Rezeptverlauf  | Nutzer                  | kürzlich aufgerufene Rezepte wiederfinden können | ich nicht erneut suchen muss                   | Die letzten X geöffneten Rezepte werden automatisch gespeichert     | Could          |
+
+---
+
+### 🧮 Nährwertinfos & Kalorien [ ](#inhaltsverzeichnis)
+
+| **Name**       | **In meiner Rolle als** | **möchte ich**                                         | **so dass**                                   | **Erfüllt, wenn**                                                  | **Priorität** |
+|----------------|--------------------------|----------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------------|---------------|
+| Nährwertübersicht | Nutzer               | die Kalorien und Nährwerte eines Rezepts sehen können   | ich bewusst essen und planen kann             | kcal, Fett, Protein, Kohlenhydrate etc. werden pro Portion angezeigt | Should         |
+
+---
+
+# 3 Technische Beschreibung [ ](#inhaltsverzeichnis)
+## 3.1 Systemübersicht [ ](#inhaltsverzeichnis)
+* Systemarchitekturdiagramm ("Box-And-Arrow" Diagramm)
+* Kommunikationsprotokolle, Datenformate
+Das Diagramm in Kapitel "Systemübersicht" ist statisch und nicht dynamisch und stellt
+daher keine Abläufe dar. Abläufe werden im Kapitel "Abläufe" dargestellt. Im Kapitel
+"Systemübersicht" soll genau ein Diagramm dargstellt werden. Das "Box-and-Arrow"-Diagramm
+soll als Systemarchitekturdiagramm eine abstrakte Übersicht über das Softwaresystem
+geben. Dazu stellt es die Rechnerknoten und deren Kommunikationsbeziehungen (Protokoll
+(z.B. HTTP), Datenformat (z.B. JSON)) dar. Also Rechtecke und gerichtete Pfeile. Ähnlich
+einem UML-Deployment-Diagramm, aber noch abstrakter, denn es zeigt nicht die Verteilung
+der Softwarebausteine auf die Rechnerknoten. So erlangt der Leser einen schnellen und
+guten Überblick über das Softwaresystem.
+
+## 3.2 Softwarearchitektur [ ](#inhaltsverzeichnis)
+* Darstellung von Softwarebausteinen (Module, Schichten, Komponenten)
+Hier stellen Sie die Verteilung der Softwarebausteine auf die Rechnerknoten dar. Das ist
+die Softwarearchitektur. Zum Beispiel Javascript-Software auf dem Client und JavaSoftware auf dem Server. In der Regel wird die Software dabei sowohl auf dem Client als
+auch auf dem Server in Schichten dargestellt.
+* Server
+* Web-Schicht
+* Logik-Schicht
+* Persistenz-Schicht
+* Client
+* View-Schicht
+* Logik-Schicht
+* Kommunikation-Schicht
+Die Abhängigkeit ist bei diesen Schichten immer unidirektional von "oben" nach "unten".
+Die Softwarearchitektur aus Kapitel "Softwarearchitektur" ist demnach detaillierter als
+die Systemübersicht aus dem Kapitel "Systemübersicht". Die Schichten können entweder als
+Ganzes als ein Softwarebaustein angesehen werden. In der Regel werden die Schichten aber
+noch weiter detailliert und in Softwarebausteine aufgeteilt.
+
+### 3.2.1 Technologieauswahl [ ](#inhaltsverzeichnis)
+Beschreiben Sie hier, welche Frameworks / Technologien / Bibliotheken / Datenformate /
+Protokolle benutzt werden.
+
+## 3.3 Schnittstellen [ ](#inhaltsverzeichnis)
+* Auflistung der nach außen sichtbaren Schnittstelle der Softwarebausteine
+* Beschreiben Sie die Schnittstellen (API) für Bestandteile des verteilten
+Softwaresystems, insbesondere die REST-API des Servers.
+* Als Format für die API-Beschreibung kann die OpenAPI-Spezifikation
+(https://editor.swagger.io/) verwendet werden.
+Hier sollen sämtliche Schnittstellen definiert werden:
+* die externen Schnittstellen nach außen. Über welche Schnittstelle kann z.B. der Client
+den Server erreichen?
+* die internen Schnittstellen der unter 3.2 definierten Softwarebausteine
+Es ist sinnvoll, wenn die API von denjenigen definiert werden, die die Anforderungen an
+die API kennen: in einem Client-Server-System haben die Client-Entwickler Anforderungen
+an die Backend-Entwickler, so dass in diesem Fall die Client-Entwickler die API
+definieren sollten, die dann vom Backend-Entwickler implementiert werden.
+
+## 3.3.1 Ereignisse [ ](#inhaltsverzeichnis)
+* In Event-gesteuerten Systemen: Definition der Ereignisse und deren Attribute
+
+## 3.4 Datenmodell [ ](#inhaltsverzeichnis)
+* Konzeptionelles Analyseklassendiagramm (logische Darstellung der Konzepte der
+Anwendungsdomäne)
+* Modellierung des physikalischen Datenmodells
+* RDBMS: ER-Diagramm bzw. Dokumentenorientiert: JSON-Schema
+
+## 3.5 Abläufe [ ](#inhaltsverzeichnis)
+* Aktivitätsdiagramme für relevante Use Cases
+* Aktivitätsdiagramm für den Ablauf sämtlicher Use Cases
+* Aktivitätsdiagramm mit Swimlanes sind in der Regel hilfreich
+für die Darstellung der Interaktion von Akteuren der Use Cases / User Stories
+* Abläufe der Kommunikation von Rechnerknoten (z.B. Client/Server)
+in einem Sequenz- oder Aktivitätsdiagramm darstellen
+* Modellieren Sie des weiteren die Diagramme, die für das (eigene) Verständnis des
+Softwaresystems hilfreich sind.
+
+## 3.6 Entwurf [ ](#inhaltsverzeichnis)
+* Detaillierte UML-Diagramme für relevante Softwarebausteine
+
+## 3.7 Fehlerbehandlung [ ](#inhaltsverzeichnis)
+* Mögliche Fehler / Exceptions auflisten
+* Fehlercodes / IDs sind hilfreich
+* Nicht nur Fehler technischer Art ("Datenbankserver nicht erreichbar") definieren,
+sondern auch im Hinblick auf
+Kapitel 3.8 sind fachliche Fehler wie "Kunde nicht gefunden". "Nachricht wurde bereits
+gelöscht" o.ä.
+
+## 3.8 Validierung [ ](#inhaltsverzeichnis)
+* Relevante (Integrations)-Testfälle, die aus den Use Cases abgeleitet werden können
+* Testfälle für
+* Datenmodell
+* API
+* User Interface
+* Fokussieren Sie mehr auf Integrationstestfälle als auf Unittests
+* Es bietet sich an, die IDs der Use Cases / User Stories mit den Testfällen zu
+verbinden, so dass erkennbar ist, ob Sie alle Use Cases getestet haben.
+# 4 Projektorganisation [ ](#inhaltsverzeichnis)
+## 4.1 Annahmen [ ](#inhaltsverzeichnis)
+#### Verwendete Technologien  
+- **Frontend Mobile:** React Native (JavaScript/TypeScript) für Android und eventuell iOS  
+- **Backend:** Node.js oder Python mit RESTful API  
+- **Cloud-Datenhaltung & Authentifizierung:** Firebase (Firestore, Auth) / Google Cloud
+- **Externe Schnittstellen:**  
+  - Spoonacular oder Edamam (Rezeptdaten und Nährwertinformationen)  
+  - Google Vision API oder Alternativen für Bilderkennung  
+
+#### Aufteilung in Repositories  
+- Es ist ein **Monorepo-Ansatz** geplant, in dem sowohl Mobile-App, als auch das Backend gemeinsam verwaltet werden.  
+- Gemeinsame Logik (z. B. Schnittstellen, Models) wird in geteilten Modulen organisiert.
+
+#### Betriebssysteme & Entwicklungsumgebung  
+- **Entwicklungsumgebungen:** VS Code, Android Studio, ggf. Xcode  
+- **Zielplattformen:**  
+  - Android (ab Version 8.0)  
+  - iOS (ab Version 15.0) (optional) 
+
+#### Einschränkungen und Einflussfaktoren  
+- Für einige Kernfunktionen (z. B. Bildverarbeitung, Rezeptsuche) ist eine Internetverbindung erforderlich  
+- Die Bildverarbeitung kann durch Faktoren wie Lichtverhältnisse oder Kameraqualität beeinflusst werden  
+- Kostenfreie APIs (z. B. Spoonacular) haben ggf. Nutzungsbeschränkungen oder Limitierungen im Funktionsumfang  
+- Offline-Betrieb ist eingeschränkt möglich – z. B. gespeicherte Rezepte, aber keine neuen Vorschläge basierend auf Fotos  
+
+---
+
+## 4.2 Verantwortlichkeiten [ ](#inhaltsverzeichnis)
+
+### Zuordnung zu Softwarebausteinen  
+Da das Projekt im Rahmen einer studentischen Lehrveranstaltung von zwei Personen realisiert wird, erfolgt die Entwicklung arbeitsteilig, jedoch mit enger Abstimmung. Einzelne Softwarekomponenten werden primär einer Person zugewiesen, wobei beide Teammitglieder die Gesamtarchitektur verstehen und sich bei Bedarf gegenseitig unterstützen.
+
+| **Softwarebaustein**                 | **Verantwortlich(e)** |
+|-------------------------------------|------------------------|
+| Mobile App (React Native)           | Gemeinsam              |
+| Backend (API & Datenhaltung)        | Person B               |
+| Bilderkennung & Zutatenscan         | Person A               |
+| Externe Schnittstellen & API-Anbindung | Gemeinsam           |
+| Authentifizierung & Datenmodell     | Person B               |
+
+*Die konkrete Personenzuordnung (Person A/B) wird im Projektverlauf festgelegt und im Repository dokumentiert.*
+
+---
+
+### Rollenverteilung
+
+| **Name**     | **Rolle(n)**                                                                 |
+|--------------|------------------------------------------------------------------------------|
+| Person A     | Frontend-Entwickler (Mobile), Bilderkennung, Tester                          |
+| Person B     | Frontend-Entwickler (Mobile), Backend-Entwickler, DevOps, Datenmodel, Tester                |
+
+---
+
+#### Rollenbeschreibung (angepasst für das Projekt)
+
+- **Frontend-Entwickler:** Entwickelt und gestaltet Benutzeroberflächen (Mobile).  
+- **Backend-Entwickler:** Implementiert die Serverlogik, Datenhaltung und Anbindung an externe APIs.  
+- **DevOps:** Verantwortlich für das Repository-Setup, Continuous Integration / Deployment und ggf. Hosting.  
+- **Tester:** Führt manuelle Tests durch, stellt die Qualität sicher und dokumentiert Auffälligkeiten.
+
+---
+
+## 4.3 Grober Projektplan [ ](#inhaltsverzeichnis)
+
+Im Folgenden sind zentrale Meilensteine für das Projekt "Mealo" definiert. Die genauen Termine (KW/Datum) werden entsprechend des Semesterverlaufs angepasst.
+
+### Meilensteine
+
+| **KW / Datum** | **Meilenstein**                     | **Inhalt / Ziel**                                                                 |
+|----------------|-------------------------------------|-----------------------------------------------------------------------------------|
+| KW XX (TT.MM)  | Projektstart & Themenfreigabe       | Thema geklärt, Team gebildet, Projektidee abgestimmt                            |
+| KW XX (TT.MM)  | Pflichtenheft finalisiert           | Vollständig ausgefülltes Pflichtenheft inkl. Systemübersicht und Anforderungen   |
+| KW XX (TT.MM)  | Projektstruktur aufgesetzt          | Repositories angelegt, Grundstruktur für Frontend, Backend und Dokumentation     |
+| KW XX (TT.MM)  | MVP: Zutaten erfassen & Rezepte anzeigen | Erste funktionale End-to-End-Demo (Scan, API-Anfrage, Rezeptausgabe)          |
+| KW XX (TT.MM)  | App-Navigation & Favoriten          | Navigation durch Rezepte + Favoritenfunktion                                     |
+| KW XX (TT.MM)  | Kochmodus & Timer                   | Umsetzung des schrittweisen Kochmodus inkl. Timer (ohne Sprachsteuerung)         |
+| KW XX (TT.MM)  | Tests & Qualitätssicherung          | Manuelle Tests, Debugging, Review                                                |
+| KW XX (TT.MM)  | Präsentation & Demo                 | Abschlusspräsentation, Live-Demo der App                                         |
+
+---
+
+# 5 Anhänge [ ](#inhaltsverzeichnis)
+## 5.1 Glossar
+* Definitionen, Abkürzungen, Begriffe
+## 5.2 Referenzen
+* Handbücher, Gesetze
+* z.B. Datenschutzgrundverordnung
+## 5.3 Index
