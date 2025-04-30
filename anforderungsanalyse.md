@@ -22,8 +22,9 @@ MealMate / FoodSense / PocketChef / ChefPal / Mealo
     - [2.3.1 Rahmenbedingungen](#231-rahmenbedingungen)
     - [2.3.2 Betriebsbedingungen](#232-betriebsbedingungen)
     - [2.3.3 Qualitätsmerkmale](#233-qualitätsmerkmale)
-  - [2.4 Graphische Benutzerschnittstelle](#24-graphische-benutzerschnittstelle)
-  - [2.5 Anforderungen im Detail](#25-anforderungen-im-detail)
+  - [2.4 Benutzergruppen & Personas](#24-benutzergruppen--personas)
+  - [2.5 Graphische Benutzerschnittstelle](#24-graphische-benutzerschnittstelle)
+  - [2.6 Anforderungen im Detail](#25-anforderungen-im-detail)
 - [3 Technische Beschreibung](#3-technische-beschreibung)
   - [3.1 Systemübersicht](#31-systemübersicht)
   - [3.2 Softwarearchitektur](#32-softwarearchitektur)
@@ -62,7 +63,7 @@ Die App bietet eine Vielzahl nützlicher Funktionen:
 - **Food-Waste-Vermeidung** durch clevere Resteverwertung und Fokus auf vorhandene Lebensmittel  
 - **Intelligente Wochenplanung**: Auf Basis deiner Ziele, Vorlieben und Vorräte erstellt Mealo automatisch einen wöchentlichen Essensplan – samt Rezepte, Einkaufsliste und Kalorienübersicht
 - **Geführtes Kochen**: Schritt-für-Schritt-Anleitungen, bei denen der Nutzer von der App durch den gesamten Kochprozess begleitet wird, inklusive Timer und Sprachsteuerung für eine freihändige Bedienung
-- **Community & Inspiration: Nutzer können eigene Rezepte posten, die anderer entdecken und bewerten - für noch mehr kulinarische Vielfalt.
+- **Community & Inspiration**: Nutzer können eigene Rezepte posten, die anderer entdecken und bewerten - für noch mehr kulinarische Vielfalt.
 
 Und noch mehr.
 
@@ -244,7 +245,62 @@ Primär Englisch, mittelfristig mehrsprachige Erweiterung geplant.
 
 ---
 
-## 2.4 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
+## 2.4 Benutzergruppen & Personas [ ](#inhaltsverzeichnis)
+
+Die Benutzergruppe von Mealo ist heterogen, aber vereint durch ein gemeinsames Ziel: einfacher, effizienter und bewusster kochen. Die App richtet sich primär an Privatpersonen, die regelmäßig oder gelegentlich kochen und ihren Alltag durch digitale Unterstützung vereinfachen wollen. Dabei spielen Aspekte wie Resteverwertung, Zeitmanagement, Ernährungskontrolle und Inspiration eine zentrale Rolle.
+
+Um die verschiedenen Bedürfnisse und Nutzungsszenarien besser zu verstehen und darauf abgestimmte Funktionalitäten sowie Monetarisierungsstrategien zu entwickeln, wurden exemplarisch drei Personas definiert:
+
+---
+
+### 👩‍🎓 Persona 1: Lisa – Die ressourcenbewusste Studentin
+
+- **Alter:** 23 Jahre  
+- **Lebenssituation:** Lebt in einer WG, studiert BWL  
+- **Technikaffinität:** Hoch – nutzt regelmäßig Apps für Alltag & Studium  
+- **Kochverhalten:** Improvisiert oft mit dem, was im Kühlschrank ist  
+- **Ziele:** Günstig kochen, Lebensmittel nicht verschwenden, Zeit sparen  
+- **Nutzung von Mealo:**  
+  - Zutaten-Scan zur Resteverwertung  
+  - Rezepte nach Aufwand & Verfügbarkeit filtern  
+  - einfache Einkaufsliste für spontane Einkäufe  
+- **Zahlungsbereitschaft:** Gering – nutzt vor allem Free-Version
+
+---
+
+### 👨‍💻 Persona 2: Tom – Der berufstätige Planer
+
+- **Alter:** 34 Jahre  
+- **Lebenssituation:** Lebt allein, arbeitet im IT-Support  
+- **Technikaffinität:** Sehr hoch – organisiert viel digital  
+- **Kochverhalten:** Möchte bewusst und geplant kochen  
+- **Ziele:** Wochenplanung, Zeit sparen, gesund essen  
+- **Nutzung von Mealo:**  
+  - Wochenplaner und Einkaufsliste  
+  - Kalorienangaben & Rezeptfilter nach Diät  
+  - Favoritenverwaltung für wiederkehrende Gerichte  
+- **Zahlungsbereitschaft:** Mittel bis hoch – nutzt Premium regelmäßig
+
+---
+
+### 🏋️‍♀️ Persona 3: Sophie – Die sportlich Ambitionierte
+
+- **Alter:** 28 Jahre  
+- **Lebenssituation:** Lebt mit Partner, macht aktiv CrossFit  
+- **Technikaffinität:** Hoch – nutzt Fitness-Apps & Trackingsysteme  
+- **Kochverhalten:** Plant gezielt nach Makros, macht Meal Prep  
+- **Ziele:** Muskelaufbau, ausgewogene Ernährung, Tracking  
+- **Nutzung von Mealo:**  
+  - Rezepte nach Kalorien & Makros filtern  
+  - Kombination mit Wochenplanung & Einkauf  
+  - Nutzung der Community zur Rezept-Inspiration  
+- **Zahlungsbereitschaft:** Hoch – nutzt Premium-Funktionen intensiv
+
+---
+
+Diese Personas helfen dabei, Funktionen gezielt zu priorisieren und die App auf reale Nutzungsbedürfnisse abzustimmen. Sie dienen außerdem als Grundlage für die Wirtschaftlichkeitsbetrachtung des geplanten Freemium-Modells.
+
+## 2.5 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
 * GUI-Mockups passend zu User Stories
 * Screens mit Überschrift kennzeichnen, die im Inhaltsverzeichnis zu sehen ist
 * Unter den Screens darstellen (bzw. verlinken), welche User Stories mit dem Screen
@@ -259,7 +315,7 @@ Ich nehme den ausführlicheren Stil („In meiner Rolle als...“) mit Prioritä
 
 ---
 
-## 🧾 **2.5 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
+## 🧾 **2.6 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
 
 ### 📦 Zutatenverwaltung
 
