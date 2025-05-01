@@ -346,58 +346,94 @@ Ich nehme den ausführlicheren Stil („In meiner Rolle als...“) mit Prioritä
 
 # 3 Technische Beschreibung [ ](#inhaltsverzeichnis)
 ## 3.1 Systemübersicht [ ](#inhaltsverzeichnis)
-* Systemarchitekturdiagramm ("Box-And-Arrow" Diagramm)
-* Kommunikationsprotokolle, Datenformate
-Das Diagramm in Kapitel "Systemübersicht" ist statisch und nicht dynamisch und stellt
-daher keine Abläufe dar. Abläufe werden im Kapitel "Abläufe" dargestellt. Im Kapitel
-"Systemübersicht" soll genau ein Diagramm dargstellt werden. Das "Box-and-Arrow"-Diagramm
-soll als Systemarchitekturdiagramm eine abstrakte Übersicht über das Softwaresystem
-geben. Dazu stellt es die Rechnerknoten und deren Kommunikationsbeziehungen (Protokoll
-(z.B. HTTP), Datenformat (z.B. JSON)) dar. Also Rechtecke und gerichtete Pfeile. Ähnlich
-einem UML-Deployment-Diagramm, aber noch abstrakter, denn es zeigt nicht die Verteilung
-der Softwarebausteine auf die Rechnerknoten. So erlangt der Leser einen schnellen und
-guten Überblick über das Softwaresystem.
+
+<img src="systemarchitecture.png" alt="Mealo" />
+
 
 ## 3.2 Softwarearchitektur [ ](#inhaltsverzeichnis)
-* Darstellung von Softwarebausteinen (Module, Schichten, Komponenten)
-Hier stellen Sie die Verteilung der Softwarebausteine auf die Rechnerknoten dar. Das ist
-die Softwarearchitektur. Zum Beispiel Javascript-Software auf dem Client und JavaSoftware auf dem Server. In der Regel wird die Software dabei sowohl auf dem Client als
-auch auf dem Server in Schichten dargestellt.
-* Server
-* Web-Schicht
-* Logik-Schicht
-* Persistenz-Schicht
-* Client
-* View-Schicht
-* Logik-Schicht
-* Kommunikation-Schicht
-Die Abhängigkeit ist bei diesen Schichten immer unidirektional von "oben" nach "unten".
-Die Softwarearchitektur aus Kapitel "Softwarearchitektur" ist demnach detaillierter als
-die Systemübersicht aus dem Kapitel "Systemübersicht". Die Schichten können entweder als
-Ganzes als ein Softwarebaustein angesehen werden. In der Regel werden die Schichten aber
-noch weiter detailliert und in Softwarebausteine aufgeteilt.
+
+Die Softwarearchitektur von MealMate folgt dem klassischen **Client-Server-Modell**. Die Anwendung besteht aus zwei Hauptkomponenten: einer **mobilen App** (Client), entwickelt mit Flutter, und einem **Backend-Server**, der über eine REST-API mit der App kommuniziert. Zusätzlich werden externe Dienste wie Spoonacular, Google ML Kit oder Google Cloud Vision API angebunden.
+
+### Client
+
+Die mobile App ist in **Flutter (Dart)** entwickelt und in die folgenden Schichten unterteilt:
+
+- **View-Schicht**: Präsentiert die Benutzeroberfläche. Hier befinden sich Widgets und Layouts zur Anzeige und Interaktion mit Zutaten, Rezepten und weiteren Funktionen.
+- **Logik-Schicht**: Beinhaltet Geschäftslogik wie das Verarbeiten von Nutzeraktionen, das Vorverarbeiten von Daten für die Anzeige, das Erkennen von Zutaten durch Bilderkennung und das Auslösen von API-Anfragen.
+- **Kommunikations-Schicht**: Verwaltet die REST-Kommunikation mit dem Backend (z. B. über `http`-Bibliothek) und ggf. direkte Anbindung von Bilderkennungs-APIs.
+
+Für die Bilderkennung von Zutaten evaluieren wir aktuell die Nutzung von **Google ML Kit** (on-device) und **Google Cloud Vision API** (cloud-basiert). In der ersten Projektphase sollen beide Technologien ausprobiert und auf ihre Eignung hinsichtlich Genauigkeit, Performance und Aufwand geprüft werden.
+
+### Server
+
+Das Backend ist als Webserver mit einer REST-Schnittstelle aufgebaut (z. B. mit Node.js oder Python/Flask – Technologie noch offen). Es gliedert sich in:
+
+- **Web-Schicht**: Nimmt HTTP-Anfragen entgegen, verarbeitet sie und gibt HTTP-Antworten zurück. Sie stellt die Schnittstelle zur mobilen App dar.
+- **Logik-Schicht**: Enthält die zentrale Anwendungslogik des Servers. Dazu gehören z. B. die Verarbeitung von Rezeptanfragen, Filtern von Supermarktangeboten oder KI-basierte Rezeptvorschläge.
+- **Persistenz-Schicht**: Verwaltet die Datenbankzugriffe (z. B. MongoDB oder PostgreSQL). Hier werden Nutzerprofile, Zutatenlisten, Rezeptdaten und Bewertungen gespeichert.
+
+### Externe Dienste
+
+Zusätzlich werden folgende externe APIs verwendet:
+
+- **Google ML Kit oder Google Cloud Vision API**: zur Bilderkennung von Zutaten (je nach Evaluierung entweder direkt vom Client oder über das Backend angesprochen). 
+- **Spoonacular API** (über das Backend): zur Abfrage und Anreicherung von Rezeptdaten.
+- **Supermarkt-API** (optional, über Backend): zum Abgleichen von verfügbaren Zutaten in der Nähe.
+
+Die Kommunikation zwischen den Komponenten erfolgt standardisiert über **HTTP mit JSON** als Datenformat. Die Abhängigkeiten der Schichten verlaufen einheitlich von oben nach unten, wodurch eine klare Trennung von Darstellung, Logik und Persistenz sichergestellt wird.
+
 
 ### 3.2.1 Technologieauswahl [ ](#inhaltsverzeichnis)
-Beschreiben Sie hier, welche Frameworks / Technologien / Bibliotheken / Datenformate /
-Protokolle benutzt werden.
+
+In der folgenden Tabelle sind die Technologien und Frameworks aufgeführt, die für die Entwicklung der App verwendet werden. Diese Auswahl basiert auf den Anforderungen der Anwendung, wie der plattformübergreifenden Entwicklung, der Nutzung von Cloud-Diensten für Hosting und Datenmanagement sowie der Integration von Technologien für die Bilderkennung. Jede Technologie wurde sorgfältig ausgewählt, um die gewünschten Funktionalitäten effizient umzusetzen. Es werden nur wichtige und "besondere" Technologien aufgelistet.
+
+| **Technologie**               | **Beschreibung**                                                                                       |
+|-------------------------------|--------------------------------------------------------------------------------------------------------|
+| **Flutter**                    | Framework für plattformübergreifende App-Entwicklung (Android und iOS) mit einer einheitlichen Codebasis.|
+| **Dart**                       | Programmiersprache für die Entwicklung mit Flutter, bietet hohe Performance und Flexibilität.            |
+| **Google Cloud**               | Hosting- und Cloud-Plattform für das Backend und die Datenbank (Firebase als Teil von Google Cloud).     |
+| **Google ML Kit**              | On-device Bilderkennung für die Erkennung von Zutaten in Bildern.                                       |
+| **Google Cloud Vision API**    | Cloud-basierte Lösung für die Bilderkennung von Zutaten aus Fotos.                                      |
+| **REST API**                   | Kommunikation zwischen Frontend und Backend über RESTful API-Endpunkte.                                |
+| **http (Dart)**                | Bibliothek zur Durchführung von HTTP-Anfragen im Frontend zur Kommunikation mit der API.               |
+| **JSON**                       | Datenformat für die Kommunikation zwischen Client und Server.                                          |
+| **Provider**                   | State-Management-Lösung für Flutter, um den Zustand der App zu verwalten.                               |
+| **Flutter Image Picker**       | Bibliothek zum Auswählen und Hochladen von Bildern aus der Galerie oder mit der Kamera.                |
 
 ## 3.3 Schnittstellen [ ](#inhaltsverzeichnis)
-* Auflistung der nach außen sichtbaren Schnittstelle der Softwarebausteine
-* Beschreiben Sie die Schnittstellen (API) für Bestandteile des verteilten
-Softwaresystems, insbesondere die REST-API des Servers.
-* Als Format für die API-Beschreibung kann die OpenAPI-Spezifikation
-(https://editor.swagger.io/) verwendet werden.
-Hier sollen sämtliche Schnittstellen definiert werden:
-* die externen Schnittstellen nach außen. Über welche Schnittstelle kann z.B. der Client
-den Server erreichen?
-* die internen Schnittstellen der unter 3.2 definierten Softwarebausteine
-Es ist sinnvoll, wenn die API von denjenigen definiert werden, die die Anforderungen an
-die API kennen: in einem Client-Server-System haben die Client-Entwickler Anforderungen
-an die Backend-Entwickler, so dass in diesem Fall die Client-Entwickler die API
-definieren sollten, die dann vom Backend-Entwickler implementiert werden.
 
-## 3.3.1 Ereignisse [ ](#inhaltsverzeichnis)
-* In Event-gesteuerten Systemen: Definition der Ereignisse und deren Attribute
+Im Folgenden werden die verschiedenen Schnittstellen des Softwaresystems beschrieben. Dies umfasst sowohl die externen Schnittstellen, die die Kommunikation zwischen Client und Server ermöglichen, als auch die internen Schnittstellen zwischen den einzelnen Komponenten des Systems.
+
+#### 3.3.1 Externe Schnittstellen
+
+Die wichtigsten externen Schnittstellen bestehen zwischen dem Client (App) und dem Server (Backend). Diese Kommunikation erfolgt in der Regel über eine REST-API, die es dem Client ermöglicht, Anfragen zu stellen und Antworten vom Server zu erhalten. Im Backend wird diese API von einem Web-Server wie Flask oder Node.js bedient, der die Anfragen verarbeitet und entsprechende Antworten liefert.
+
+**Client-Server-API:**
+
+- **Verbindung:** HTTPS (über REST)
+- **Datenformat:** JSON
+- **Authentifizierung:** OAuth 2.0 / JWT (JSON Web Tokens)
+- **Wichtige Endpunkte:**
+  - `POST /users/login`: Authentifizierung eines Nutzers
+  - `GET /ingredients`: Abruf der gespeicherten Zutaten des Nutzers
+  - `POST /ingredients`: Hinzufügen neuer Zutaten
+  - `GET /recipes`: Abruf von Rezepten basierend auf den Zutaten
+  - `POST /recipes`: Erstellen eines neuen Rezepts
+  - `POST /image-recognition`: Hochladen von Bildern zur Zutaten- oder Rezept-Erkennung (Verwendung von Google Vision API oder ML Kit)
+
+#### 3.3.2 Interne Schnittstellen
+
+Intern wird die Kommunikation zwischen den Backend-Komponenten über REST-APIs oder interne Funktionsaufrufe abgewickelt. Hier sind die wichtigsten internen Schnittstellen:
+
+- **Backend zu Google Vision API oder ML Kit:**
+  - Die Bilderkennung wird entweder über Google Cloud Vision API oder das Firebase ML Kit erfolgen, abhängig von der endgültigen Entscheidung bezüglich der besten Lösung. Hierbei handelt es sich um eine externe API, die vom Backend aufgerufen wird, um die Bilder zu analysieren und Zutaten zu erkennen.
+  
+- **Backend zu Datenbank:**
+  - Das Backend kommuniziert mit einer Datenbank zur Speicherung und Abfrage von Zutaten und Rezepten. Diese Schnittstelle ist über interne API-Endpunkte oder direkt über Datenbankaufrufe realisiert.
+
+Die genaue Beschreibung der API erfolgt mit Hilfe von Swagger. Das ist ein Tool, das es ermöglicht, die API-Dokumentation automatisch zu generieren und zu visualisieren. Es ist wichtig, dass die API-Dokumentation klar und verständlich ist, damit andere Entwickler die Schnittstellen leicht nutzen können.
+
+---
 
 ## 3.4 Datenmodell [ ](#inhaltsverzeichnis)
 * Konzeptionelles Analyseklassendiagramm (logische Darstellung der Konzepte der
@@ -427,14 +463,58 @@ Kapitel 3.8 sind fachliche Fehler wie "Kunde nicht gefunden". "Nachricht wurde b
 gelöscht" o.ä.
 
 ## 3.8 Validierung [ ](#inhaltsverzeichnis)
-* Relevante (Integrations)-Testfälle, die aus den Use Cases abgeleitet werden können
-* Testfälle für
-* Datenmodell
-* API
-* User Interface
-* Fokussieren Sie mehr auf Integrationstestfälle als auf Unittests
-* Es bietet sich an, die IDs der Use Cases / User Stories mit den Testfällen zu
-verbinden, so dass erkennbar ist, ob Sie alle Use Cases getestet haben.
+
+Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte Validierung sichergestellt. Dabei liegt der Fokus auf Integrationstests, die die Zusammenarbeit mehrerer Komponenten prüfen, um die wesentlichen Use Cases vollständig abzudecken. Die Testfälle orientieren sich an den zuvor spezifizierten User Stories und Use Cases und sind so definiert, dass sie die wichtigsten Abläufe im System verlässlich absichern.
+
+### 3.8.1 Integrations-Testfälle basierend auf Use Cases
+
+| Use Case ID | Beschreibung | Testfall | Erwartetes Ergebnis |
+|-------------|--------------|----------|----------------------|
+| UC-01 | Nutzer meldet sich an | Der Nutzer sendet gültige Login-Daten über die App an die API | Ein gültiger JWT-Token wird vom Server zurückgegeben |
+| UC-02 | Zutaten manuell hinzufügen | Der Nutzer fügt eine Zutat über das Formular hinzu | Die Zutat erscheint in der Zutatenliste des Nutzers |
+| UC-03 | Zutaten über Bild erkennen | Der Nutzer lädt ein Foto hoch | Die erkannten Zutaten erscheinen in der Zutatenliste |
+| UC-04 | Rezeptvorschläge generieren | Der Nutzer klickt auf „Rezeptvorschläge anzeigen“ | Eine Liste passender Rezepte wird angezeigt |
+| UC-05 | Nutzer meldet sich ab | Der Nutzer führt eine Abmeldung durch | Die Session wird beendet, der Nutzer wird zur Login-Seite weitergeleitet |
+
+### 3.8.2 Datenmodell-Tests
+
+- **Testfall:** Persistenz einer neuen Zutat  
+  **Ablauf:** Eine neue Zutat wird gespeichert und anschließend abgerufen  
+  **Erwartung:** Die abgerufene Zutat entspricht den gespeicherten Daten
+
+- **Testfall:** Löschung eines Nutzers  
+  **Ablauf:** Ein Nutzer wird gelöscht, danach wird versucht, auf seine Daten zuzugreifen  
+  **Erwartung:** Der Zugriff ist nicht mehr möglich, es erfolgt eine Fehlermeldung
+
+### 3.8.3 API-Tests
+
+- **Testfall:** Zugriff auf geschützte Endpunkte ohne Authentifizierung  
+  **Ablauf:** Ein nicht authentifizierter Request wird an `/ingredients` gesendet  
+  **Erwartung:** Der Server antwortet mit HTTP 401 (Unauthorized)
+
+- **Testfall:** Erfolgreiches Abrufen von Rezeptvorschlägen  
+  **Ablauf:** Ein gültiger GET-Request an `/recipes` mit gespeicherten Zutaten  
+  **Erwartung:** Der Server gibt eine Liste von Rezepten im JSON-Format zurück
+
+### 3.8.4 User Interface Tests
+
+- **Testfall:** Responsives Verhalten der Zutatenliste  
+  **Ablauf:** Die App wird auf verschiedenen Bildschirmgrößen geöffnet  
+  **Erwartung:** Die Darstellung bleibt benutzerfreundlich und übersichtlich
+
+- **Testfall:** Bild-Upload-Flow  
+  **Ablauf:** Der Nutzer lädt ein Bild hoch und wartet auf die Verarbeitung  
+  **Erwartung:** Eine Ladeanzeige erscheint, gefolgt von erkannten Zutaten
+
+### 3.8.5 Testabdeckung der Use Cases
+
+Alle hier aufgeführten Testfälle sind eindeutig den definierten Use Cases zugeordnet. Auf diese Weise wird sichergestellt, dass alle Kernfunktionen des Systems während der Entwicklung und im laufenden Betrieb kontinuierlich überprüft werden können.
+
+Da sich das System im Verlauf des Projekts weiterentwickelt, ist auch die Testdokumentation als lebendiges Dokument zu verstehen. Weitere Testfälle, insbesondere für neue Features oder geänderte Anforderungen, werden kontinuierlich ergänzt. Eine automatisierte Teststrategie (z. B. über Postman, Flutter Integration Tests und CI/CD-Pipelines) wird angestrebt, um die langfristige Qualität des Systems sicherzustellen.
+
+--- 
+
+
 # 4 Projektorganisation [ ](#inhaltsverzeichnis)
 ## 4.1 Annahmen [ ](#inhaltsverzeichnis)
 #### Verwendete Technologien  
