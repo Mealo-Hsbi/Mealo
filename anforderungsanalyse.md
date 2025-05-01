@@ -34,12 +34,18 @@ Bjarne Zaremba - 1320828
   - [3.2 Softwarearchitektur](#32-softwarearchitektur)
     - [3.2.1 Technologieauswahl](#321-technologieauswahl)
   - [3.3 Schnittstellen](#33-schnittstellen)
-    - [3.3.1 Ereignisse](#331-ereignisse)
+    - [3.3.1 Externe Schnittstellen](#331-externe-schnittstellen)
+    - [3.3.2 Interne Schnittstellen](#332-interne-schnittstellen)
   - [3.4 Datenmodell](#34-datenmodell)
   - [3.5 Abläufe](#35-abläufe)
   - [3.6 Entwurf](#36-entwurf)
   - [3.7 Fehlerbehandlung](#37-fehlerbehandlung)
   - [3.8 Validierung](#38-validierung)
+    - [3.8.1 Integrations-Testfälle](#381-integrations-testfälle)
+    - [3.8.2 Datenmodell-Tests](#382-datenmodell-tests)
+    - [3.8.3 API-Tests](#383-api-tests)
+    - [3.8.4 User Interface-Tests](#384-user-interface-tests)
+    - [3.8.5 Testabdeckung der Use Cases](#385-testabdeckung-der-use-cases)
 - [4 Projektorganisation](#4-projektorganisation)
   - [4.1 Annahmen](#41-annahmen)
   - [4.2 Verantwortlichkeiten](#42-verantwortlichkeiten)
@@ -585,7 +591,7 @@ gelöscht" o.ä.
 
 Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte Validierung sichergestellt. Dabei liegt der Fokus auf Integrationstests, die die Zusammenarbeit mehrerer Komponenten prüfen, um die wesentlichen Use Cases vollständig abzudecken. Die Testfälle orientieren sich an den zuvor spezifizierten User Stories und Use Cases und sind so definiert, dass sie die wichtigsten Abläufe im System verlässlich absichern.
 
-### 3.8.1 Integrations-Testfälle basierend auf Use Cases
+### 3.8.1 Integrations-Testfälle
 
 | Use Case ID | Beschreibung | Testfall | Erwartetes Ergebnis |
 |-------------|--------------|----------|----------------------|
@@ -615,7 +621,7 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
   **Ablauf:** Ein gültiger GET-Request an `/recipes` mit gespeicherten Zutaten  
   **Erwartung:** Der Server gibt eine Liste von Rezepten im JSON-Format zurück
 
-### 3.8.4 User Interface Tests
+### 3.8.4 User-Interface-Tests
 
 - **Testfall:** Responsives Verhalten der Zutatenliste  
   **Ablauf:** Die App wird auf verschiedenen Bildschirmgrößen geöffnet  
