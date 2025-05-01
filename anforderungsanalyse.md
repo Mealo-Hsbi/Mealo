@@ -25,8 +25,10 @@ Bjarne Zaremba - 1320828
     - [2.3.1 Rahmenbedingungen](#231-rahmenbedingungen)
     - [2.3.2 Betriebsbedingungen](#232-betriebsbedingungen)
     - [2.3.3 Qualitätsmerkmale](#233-qualitätsmerkmale)
-  - [2.4 Graphische Benutzerschnittstelle](#24-graphische-benutzerschnittstelle)
-  - [2.5 Anforderungen im Detail](#25-anforderungen-im-detail)
+  - [2.4 Benutzergruppen & Personas](#24-benutzergruppen--personas)
+  - [2.5 Wirtschaftlichkeitsbetrachtung](#25-wirtschaftlichkeitsbetrachtung)
+  - [2.6 Graphische Benutzerschnittstelle](#24-graphische-benutzerschnittstelle)
+  - [2.7 Anforderungen im Detail](#25-anforderungen-im-detail)
 - [3 Technische Beschreibung](#3-technische-beschreibung)
   - [3.1 Systemübersicht](#31-systemübersicht)
   - [3.2 Softwarearchitektur](#32-softwarearchitektur)
@@ -65,7 +67,7 @@ Die App bietet eine Vielzahl nützlicher Funktionen:
 - **Food-Waste-Vermeidung** durch clevere Resteverwertung und Fokus auf vorhandene Lebensmittel  
 - **Intelligente Wochenplanung**: Auf Basis deiner Ziele, Vorlieben und Vorräte erstellt Mealo automatisch einen wöchentlichen Essensplan – samt Rezepte, Einkaufsliste und Kalorienübersicht
 - **Geführtes Kochen**: Schritt-für-Schritt-Anleitungen, bei denen der Nutzer von der App durch den gesamten Kochprozess begleitet wird, inklusive Timer und Sprachsteuerung für eine freihändige Bedienung
-- **Community & Inspiration: Nutzer können eigene Rezepte posten, die anderer entdecken und bewerten - für noch mehr kulinarische Vielfalt.
+- **Community & Inspiration**: Nutzer können eigene Rezepte posten, die anderer entdecken und bewerten - für noch mehr kulinarische Vielfalt.
 
 Und noch mehr.
 
@@ -247,7 +249,124 @@ Primär Englisch, mittelfristig mehrsprachige Erweiterung geplant.
 
 ---
 
-## 2.4 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
+## 2.4 Benutzergruppen & Personas [ ](#inhaltsverzeichnis)
+
+Die Benutzergruppe von Mealo ist heterogen, aber vereint durch ein gemeinsames Ziel: einfacher, effizienter und bewusster kochen. Die App richtet sich primär an Privatpersonen, die regelmäßig oder gelegentlich kochen und ihren Alltag durch digitale Unterstützung vereinfachen wollen. Dabei spielen Aspekte wie Resteverwertung, Zeitmanagement, Ernährungskontrolle und Inspiration eine zentrale Rolle.
+
+Um die verschiedenen Bedürfnisse und Nutzungsszenarien besser zu verstehen und darauf abgestimmte Funktionalitäten sowie Monetarisierungsstrategien zu entwickeln, wurden exemplarisch drei Personas definiert:
+
+---
+
+### 👩‍🎓 Persona 1: Lisa – Die ressourcenbewusste Studentin
+
+- **Alter:** 23 Jahre  
+- **Lebenssituation:** Lebt in einer WG, studiert BWL  
+- **Technikaffinität:** Hoch – nutzt regelmäßig Apps für Alltag & Studium  
+- **Kochverhalten:** Improvisiert oft mit dem, was im Kühlschrank ist  
+- **Ziele:** Günstig kochen, Lebensmittel nicht verschwenden, Zeit sparen  
+- **Nutzung von Mealo:**  
+  - Zutaten-Scan zur Resteverwertung  
+  - Rezepte nach Aufwand & Verfügbarkeit filtern  
+  - einfache Einkaufsliste für spontane Einkäufe  
+- **Zahlungsbereitschaft:** Gering – nutzt vor allem Free-Version
+
+---
+
+### 👨‍💻 Persona 2: Tom – Der berufstätige Planer
+
+- **Alter:** 34 Jahre  
+- **Lebenssituation:** Lebt allein, arbeitet im IT-Support  
+- **Technikaffinität:** Sehr hoch – organisiert viel digital  
+- **Kochverhalten:** Möchte bewusst und geplant kochen  
+- **Ziele:** Wochenplanung, Zeit sparen, gesund essen  
+- **Nutzung von Mealo:**  
+  - Wochenplaner und Einkaufsliste  
+  - Kalorienangaben & Rezeptfilter nach Diät  
+  - Favoritenverwaltung für wiederkehrende Gerichte  
+- **Zahlungsbereitschaft:** Mittel bis hoch – nutzt Premium regelmäßig
+
+---
+
+### 🏋️‍♀️ Persona 3: Sophie – Die sportlich Ambitionierte
+
+- **Alter:** 28 Jahre  
+- **Lebenssituation:** Lebt mit Partner, macht aktiv CrossFit  
+- **Technikaffinität:** Hoch – nutzt Fitness-Apps & Trackingsysteme  
+- **Kochverhalten:** Plant gezielt nach Makros, macht Meal Prep  
+- **Ziele:** Muskelaufbau, ausgewogene Ernährung, Tracking  
+- **Nutzung von Mealo:**  
+  - Rezepte nach Kalorien & Makros filtern  
+  - Kombination mit Wochenplanung & Einkauf  
+  - Nutzung der Community zur Rezept-Inspiration  
+- **Zahlungsbereitschaft:** Hoch – nutzt Premium-Funktionen intensiv
+
+---
+
+Diese Personas helfen dabei, Funktionen gezielt zu priorisieren und die App auf reale Nutzungsbedürfnisse abzustimmen. Sie dienen außerdem als Grundlage für die Wirtschaftlichkeitsbetrachtung des geplanten Freemium-Modells.
+
+## 2.5 Wirtschaftlichkeitsbetrachtung [ ](#inhaltsverzeichnis)
+
+Die App *Mealo* wird im Rahmen eines **Freemium-Modells** betrieben. Ziel dieser Betrachtung ist es, den monatlichen Mindestumsatz zu berechnen, um die laufenden Infrastrukturkosten zu decken (Break-even).
+
+---
+
+### 2.5.1 Monetarisierungsstrategie
+
+**Modell:**  
+- **Free-Version (0 €)**: Basisfunktionen (Zutaten-Scan, einfache Rezeptsuche)  
+- **Premium-Version (3,99 €/Monat)**:  
+  - Wochenplan & Einkaufsliste  
+  - Rezeptfilter nach Diät, Zeit, Aufwand  
+  - Makro-Tracking & Kalorienübersicht  
+  - Community-Features (Upload, Bewertung)  
+  - Werbefreiheit
+
+**Zahlungsbereitschaft basiert auf Personas (siehe Kapitel 2.4):**
+- Lisa (Free)
+- Tom (Premium-Nutzer)
+- Sophie (intensiver Premium-Nutzer)
+
+---
+
+### 2.5.2 Infrastrukturkosten (realistische Schätzung mit Cloud-Preisen)
+
+| Kategorie                        | Dienst                       | Preisstruktur                         | Geschätzt/Monat |
+|----------------------------------|-------------------------------|----------------------------------------|-----------------|
+| **Server/Backend**               | c4-standard-2 (Google Cloud) | 0,114 $/h → ~82,30 $/Monat             | ~77 €           |
+| **Bilderkennung**                | Vision API (Label Detection) | 1.000 kostenlos, dann 1,50 $/1.000     | **10.000 Bilder** = 13,50 € |
+| **Datenbank (PostgreSQL)**       | Cloud SQL (Shared Instance)  | ca. 10–15 GB + 2 vCPUs                 | ~35 €/Monat     |
+| **Storage & Netzwerk**           | Cloud Storage + Traffic      | geschätzt                              | ~5–10 €         |
+| **Gesamtkosten geschätzt**       |                               |                                        | **~140 € / Monat** |
+
+---
+
+### 2.5.3 Break-even-Berechnung
+
+| Parameter                      | Wert                          |
+|--------------------------------|-------------------------------|
+| **Monatlicher Premiumpreis**  | 3,99 €                        |
+| **Fixkosten (gesamt)**        | ~140 €                        |
+| **Erwartete Premium-Quote**   | 5 %                           |
+| **Benötigte zahlende Nutzer** | 140 € / 3,99 € ≈ **36 Nutzer** |
+| **Aktive Nutzer gesamt**      | 36 / 0,05 = **720 MAU**       |
+
+---
+
+### 2.5.4 Monetarisierungspotenzial (Skalierung)
+
+- **In-App-Käufe:** Themenpakete (z. B. „Low Carb“, „Meal Prep für 2 Personen“)
+- **Product Placement:** Platzierte Markenprodukte bei Zutatenvorschlägen
+- **Partnerangebote:** Integration von Supermarkt- oder Lieferdiensten
+- **Premium+ Pakete:** Offline-Modus, Exportfunktionen, mehr Community-Rechte
+
+---
+
+### Fazit
+
+Mealo lässt sich mit einer aktiven Nutzerbasis von etwa **720 monatlich aktiven Nutzern** wirtschaftlich betreiben. Die technische Infrastruktur (inkl. PostgreSQL-Datenbank und Google Vision API) verursacht zwar reale Kosten, bleibt aber im Rahmen eines schlanken MVP. Mit gezielten Premium-Features, klarem Mehrwert und Community-Einbindung ist eine schrittweise Monetarisierung realistisch.
+
+
+## 2.6 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
 * GUI-Mockups passend zu User Stories
 * Screens mit Überschrift kennzeichnen, die im Inhaltsverzeichnis zu sehen ist
 * Unter den Screens darstellen (bzw. verlinken), welche User Stories mit dem Screen
@@ -262,7 +381,7 @@ Ich nehme den ausführlicheren Stil („In meiner Rolle als...“) mit Prioritä
 
 ---
 
-## 🧾 **2.5 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
+## 🧾 **2.7 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
 
 ### 📦 Zutatenverwaltung
 
