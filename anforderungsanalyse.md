@@ -89,8 +89,6 @@ Ein Koch in deiner Hosentasche.
 
 In diesem Abschnitt werden die funktionalen und nicht-funktionalen Anforderungen an das System Mealo systematisch erfasst. Ziel ist es, die Erwartungen und Bedürfnisse aller Beteiligten – insbesondere der Endnutzer – zu verstehen und in konkrete Anforderungen zu übersetzen. Die Anforderungen bilden die Grundlage für die spätere Systemarchitektur, die Umsetzung sowie für Tests und Abnahmen. Dabei wird sowohl auf die Stakeholder eingegangen als auch auf die konkreten Funktionen und Qualitätsmerkmale, die die Anwendung erfüllen soll.
 
-Klar, hier ist die überarbeitete Tabelle ohne "Product Owner" und mit dem korrekten Namen deines Professors:
-
 ---
 
 ## 2.1 Stakeholder [ ](#inhaltsverzeichnis)
