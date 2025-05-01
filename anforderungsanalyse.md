@@ -1,7 +1,3 @@
-
-MealMate / FoodSense / PocketChef / ChefPal / Mealo
-
-
 # Anforderungs- und Entwurfsspezifikation ("Pflichtenheft")
 # 0 Titelseite
 
@@ -36,18 +32,12 @@ Bjarne Zaremba - 1320828
   - [3.3 Schnittstellen](#33-schnittstellen)
     - [3.3.1 Ereignisse](#331-ereignisse)
   - [3.4 Datenmodell](#34-datenmodell)
-  - [3.5 Abläufe](#35-abläufe)
-  - [3.6 Entwurf](#36-entwurf)
-  - [3.7 Fehlerbehandlung](#37-fehlerbehandlung)
-  - [3.8 Validierung](#38-validierung)
+  - [3.5 Fehlerbehandlung](#37-fehlerbehandlung)
+  - [3.6 Validierung](#38-validierung)
 - [4 Projektorganisation](#4-projektorganisation)
   - [4.1 Annahmen](#41-annahmen)
   - [4.2 Verantwortlichkeiten](#42-verantwortlichkeiten)
   - [4.3 Grober Projektplan](#43-grober-projektplan)
-- [5 Anhänge](#5-anhänge)
-  - [5.1 Glossar](#51-glossar)
-  - [5.2 Referenzen](#52-referenzen)
-  - [5.3 Index](#53-index)
 
 
 # 1 Einführung [ ](#inhaltsverzeichnis)
@@ -83,8 +73,6 @@ Ein Koch in deiner Hosentasche.
 
 In diesem Abschnitt werden die funktionalen und nicht-funktionalen Anforderungen an das System Mealo systematisch erfasst. Ziel ist es, die Erwartungen und Bedürfnisse aller Beteiligten – insbesondere der Endnutzer – zu verstehen und in konkrete Anforderungen zu übersetzen. Die Anforderungen bilden die Grundlage für die spätere Systemarchitektur, die Umsetzung sowie für Tests und Abnahmen. Dabei wird sowohl auf die Stakeholder eingegangen als auch auf die konkreten Funktionen und Qualitätsmerkmale, die die Anwendung erfüllen soll.
 
-Klar, hier ist die überarbeitete Tabelle ohne "Product Owner" und mit dem korrekten Namen deines Professors:
-
 ---
 
 ## 2.1 Stakeholder [ ](#inhaltsverzeichnis)
@@ -92,19 +80,13 @@ Klar, hier ist die überarbeitete Tabelle ohne "Product Owner" und mit dem korre
 | Funktion / Relevanz | Name | Kontakt / Verfügbarkeit | Wissen | Interessen / Ziele |
 |---|---|---|---|---|
 | Full-Stack Entwickler | Danny Meihöfer | danny.meihoefer@hsbi.de |  Technische Umsetzung und Organisation | Entwicklung einer funktionalen und kreativen App, Praxiserfahrung sammeln |
-| Full-Stack Entwickler | Bjarne Zaremba | bjarne.zaremba@hsbi.de | Technische Umsetzung und Organisation  | Technisch saubere Umsetzung, praxisnahe Anwendung entwickeln |
+| Full-Stack Entwickler | Bjarne Zaremba | bjarne_linus.zaremba@hsbi.de | Technische Umsetzung und Organisation  | Technisch saubere Umsetzung, praxisnahe Anwendung entwickeln |
 | Endnutzer (Zielgruppe), Einfluss auf Nutzerakzeptanz | Breite Nutzerschaft (z. B. Studierende, Berufstätige, Kochinteressierte) | indirekt über Umfragen, Feedback und Tests erreichbar | Kennt Alltagsprobleme rund ums Kochen, Einkaufen und Planen | Vereinfachung des Kochalltags, smarte Vorschläge, Zeit- und Ressourcenersparnis |
 | Projektbetreuer (Dozent) | Prof. Dr. Jörg Brunsmann | über Hochschul-Mail erreichbar | Betreuung des Projekts im Rahmen der Lehrveranstaltung, methodische Unterstützung | Didaktisch strukturierter Projektverlauf, Zielerreichung und Dokumentation |
 
 ---
 
 ## 2.2 Funktionale Anforderungen [ ](#inhaltsverzeichnis)
-* ggfs. Use-Case Diagramme
-* Strukturierung der Diagramme in funktionale Gruppen
-* Definition der Akteure
-* Akteure sowie andere Begriffe der implementierten Fachdomäne definieren
-* Begriffe konsistent in der Spezifikation verwenden
-* Begriffe im Glossar am Ende des Dokuments darstellen
 
 Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *Mealo*. Sie ergeben sich aus der Zielsetzung der App und den geplanten Features. Die Anforderungen sind in thematische Gruppen unterteilt, um eine bessere Übersichtlichkeit zu gewährleisten.
 
@@ -367,19 +349,8 @@ Mealo lässt sich mit einer aktiven Nutzerbasis von etwa **720 monatlich aktiven
 
 
 ## 2.6 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
-* GUI-Mockups passend zu User Stories
-* Screens mit Überschrift kennzeichnen, die im Inhaltsverzeichnis zu sehen ist
-* Unter den Screens darstellen (bzw. verlinken), welche User Stories mit dem Screen
-abgehandelt werden
-* Modellierung der Navigation zwischen den Screens der GUI-Mockups als Zustandsdiagramm
-* Für verschiedene Rollen können unterschiedliche Zustandsdiagramme angefertigt werden.
-* Mockups für unterschiedliche Akteure
-* Mockups für unterschiedliche Frontends (Mobil, Web, Desktop)
-Perfekt – jetzt wird’s konkret! Lass uns anfangen, **User Stories** zu eurer App zu formulieren. Wir machen das schön gruppiert nach den funktionalen Blöcken (z. B. Zutatenverwaltung, Rezeptsuche, etc.), mit **Akzeptanzkriterien** und optional Priorität.
 
-Ich nehme den ausführlicheren Stil („In meiner Rolle als...“) mit Priorität, weil das bei der Planung oft hilfreicher ist.
-
----
+Die grafische Benutzeroberfläche (GUI) von Mealo wird intuitiv und benutzerfreundlich gestaltet. Sie soll den Nutzer durch klare Strukturen und ansprechendes Design unterstützen. Die App wird in einem modernen, minimalistischen Stil gehalten, um Ablenkungen zu vermeiden und den Fokus auf die Inhalte zu legen.
 
 ## 🧾 **2.7 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
 
@@ -555,37 +526,86 @@ Die genaue Beschreibung der API erfolgt mit Hilfe von Swagger. Das ist ein Tool,
 ---
 
 ## 3.4 Datenmodell [ ](#inhaltsverzeichnis)
-* Konzeptionelles Analyseklassendiagramm (logische Darstellung der Konzepte der
-Anwendungsdomäne)
-* Modellierung des physikalischen Datenmodells
-* RDBMS: ER-Diagramm bzw. Dokumentenorientiert: JSON-Schema
+Das Datenmodell von *Mealo* bildet die zentrale Datenstruktur des Systems ab. Es orientiert sich an den Hauptobjekten der Anwendung: Nutzer:innen, Zutaten, Rezepte und deren Verknüpfungen. Die Datenhaltung erfolgt relational in einer PostgreSQL-Datenbank.
 
-## 3.5 Abläufe [ ](#inhaltsverzeichnis)
-* Aktivitätsdiagramme für relevante Use Cases
-* Aktivitätsdiagramm für den Ablauf sämtlicher Use Cases
-* Aktivitätsdiagramm mit Swimlanes sind in der Regel hilfreich
-für die Darstellung der Interaktion von Akteuren der Use Cases / User Stories
-* Abläufe der Kommunikation von Rechnerknoten (z.B. Client/Server)
-in einem Sequenz- oder Aktivitätsdiagramm darstellen
-* Modellieren Sie des weiteren die Diagramme, die für das (eigene) Verständnis des
-Softwaresystems hilfreich sind.
+### 📌 Beschreibung der Tabellen
 
-## 3.6 Entwurf [ ](#inhaltsverzeichnis)
-* Detaillierte UML-Diagramme für relevante Softwarebausteine
+| Tabelle             | Beschreibung |
+|---------------------|--------------|
+| `user`              | Beinhaltet grundlegende Informationen zur Authentifizierung und Registrierung. |
+| `ingredient`        | Stammdaten zu Zutaten, inklusive Makronährwerten (Kalorien, Protein, Kohlenhydrate, Fett). |
+| `inventory`         | Beinhaltet die vom Nutzer aktuell verfügbaren Zutaten, inklusive Mengenangabe und Haltbarkeitsdatum. |
+| `recipe`            | Speichert veröffentlichte oder vorgeschlagene Rezepte inklusive Beschreibung, Zubereitung und Autor. |
+| `recipe_ingredient` | Verknüpfungstabelle zwischen Rezepten und Zutaten mit Mengenangabe. |
+| `favorite`          | Verwaltet vom Nutzer gespeicherte Lieblingsrezepte. |
 
-## 3.7 Fehlerbehandlung [ ](#inhaltsverzeichnis)
-* Mögliche Fehler / Exceptions auflisten
-* Fehlercodes / IDs sind hilfreich
-* Nicht nur Fehler technischer Art ("Datenbankserver nicht erreichbar") definieren,
-sondern auch im Hinblick auf
-Kapitel 3.8 sind fachliche Fehler wie "Kunde nicht gefunden". "Nachricht wurde bereits
-gelöscht" o.ä.
+### 🧬 Erweiterung: Makronährwerte
 
-## 3.8 Validierung [ ](#inhaltsverzeichnis)
+Um die Nährwert- und Fitness-Funktionen zu unterstützen, enthält jede `ingredient`-Einheit neben dem Kalorienwert auch Angaben zu:
+
+- `protein_gram` (Gramm Eiweiß)
+- `carbs_gram` (Gramm Kohlenhydrate)
+- `fat_gram` (Gramm Fett)
+
+Diese Werte ermöglichen es, die Gesamtwerte eines Rezepts zu berechnen und passende Gerichte basierend auf Nährwertzielen zu filtern.
+
+---
+
+### 📊 ER-Diagramm
+
+Das folgende ER-Diagramm visualisiert die Struktur und Beziehungen der wichtigsten Tabellen im System:
+
+![ER-Diagramm Mealo](er-diagramm.png)
+
+
+## 3.5 Fehlerbehandlung [ ](#inhaltsverzeichnis)
+Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachliche Fehlerfälle. Ziel ist es, eine robuste und benutzerfreundliche App bereitzustellen, die bei Problemen verständliche Rückmeldungen gibt und kritische Systemzustände vermeidet.
+
+### 🔧 Technische Fehler
+
+- **Netzwerkfehler:**  
+  Bei fehlender Internetverbindung oder Timeouts werden Benutzer:innen visuell informiert und zur Wiederholung der Aktion aufgefordert.
+
+- **API-Fehler / Backend nicht erreichbar:**  
+  HTTP-Statuscodes werden interpretiert und benutzerfreundlich dargestellt (z. B. 500 = „Serverfehler“, 401 = „Anmeldung erforderlich“).
+
+- **Datenbankfehler:**  
+  Transaktionen werden serverseitig abgesichert, um Inkonsistenzen zu vermeiden.
+
+### 📌 Fachliche Fehler
+
+- **Ungültige Eingaben:**  
+  Validierungen erfolgen sowohl client- als auch serverseitig (z. B. leere Felder, ungültige Formate).
+
+- **Nicht vorhandene Objekte:**  
+  Beim Zugriff auf nicht existierende Zutaten, Rezepte oder Nutzer:innen wird ein Fehler angezeigt (z. B. „Rezept nicht gefunden“, 404).
+
+- **Duplikate:**  
+  Doppelte Favoriten oder Zutaten im Inventar werden serverseitig verhindert.
+
+### 🔁 Fehlercodes & Logging
+
+- Alle Fehler erhalten standardisierte Fehlercodes (z. B. `ERR-INGR-404`), um die Diagnose im Frontend und Logfiles zu erleichtern.
+- Im Backend erfolgt strukturiertes Logging aller Fehlerereignisse zur späteren Analyse.
+
+### 🧾 Beispielhafte Fehlercodes
+
+| Fehlercode       | Beschreibung                                | Kategorie        | HTTP-Code |
+|------------------|---------------------------------------------|------------------|-----------|
+| `ERR-AUTH-401`   | Ungültiger Login oder fehlender Token       | Authentifizierung | 401       |
+| `ERR-INGR-404`   | Angegebene Zutat nicht gefunden             | Fachlich          | 404       |
+| `ERR-RECIPE-400` | Ungültige Rezeptdaten (z. B. fehlender Titel) | Validierung       | 400       |
+| `ERR-SERVER-500` | Interner Serverfehler                       | Technisch         | 500       |
+| `ERR-UPLOAD-413` | Bild zu groß oder fehlerhaft                | Upload/Client     | 413       |
+| `ERR-DB-409`     | Konflikt beim Speichern (z. B. Duplikat)    | Datenbank         | 409       |
+
+
+
+## 3.6 Validierung [ ](#inhaltsverzeichnis)
 
 Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte Validierung sichergestellt. Dabei liegt der Fokus auf Integrationstests, die die Zusammenarbeit mehrerer Komponenten prüfen, um die wesentlichen Use Cases vollständig abzudecken. Die Testfälle orientieren sich an den zuvor spezifizierten User Stories und Use Cases und sind so definiert, dass sie die wichtigsten Abläufe im System verlässlich absichern.
 
-### 3.8.1 Integrations-Testfälle basierend auf Use Cases
+### 3.6.1 Integrations-Testfälle basierend auf Use Cases
 
 | Use Case ID | Beschreibung | Testfall | Erwartetes Ergebnis |
 |-------------|--------------|----------|----------------------|
@@ -595,7 +615,7 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
 | UC-04 | Rezeptvorschläge generieren | Der Nutzer klickt auf „Rezeptvorschläge anzeigen“ | Eine Liste passender Rezepte wird angezeigt |
 | UC-05 | Nutzer meldet sich ab | Der Nutzer führt eine Abmeldung durch | Die Session wird beendet, der Nutzer wird zur Login-Seite weitergeleitet |
 
-### 3.8.2 Datenmodell-Tests
+### 3.6.2 Datenmodell-Tests
 
 - **Testfall:** Persistenz einer neuen Zutat  
   **Ablauf:** Eine neue Zutat wird gespeichert und anschließend abgerufen  
@@ -605,7 +625,7 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
   **Ablauf:** Ein Nutzer wird gelöscht, danach wird versucht, auf seine Daten zuzugreifen  
   **Erwartung:** Der Zugriff ist nicht mehr möglich, es erfolgt eine Fehlermeldung
 
-### 3.8.3 API-Tests
+### 3.6.3 API-Tests
 
 - **Testfall:** Zugriff auf geschützte Endpunkte ohne Authentifizierung  
   **Ablauf:** Ein nicht authentifizierter Request wird an `/ingredients` gesendet  
@@ -615,7 +635,7 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
   **Ablauf:** Ein gültiger GET-Request an `/recipes` mit gespeicherten Zutaten  
   **Erwartung:** Der Server gibt eine Liste von Rezepten im JSON-Format zurück
 
-### 3.8.4 User Interface Tests
+### 3.6.4 User Interface Tests
 
 - **Testfall:** Responsives Verhalten der Zutatenliste  
   **Ablauf:** Die App wird auf verschiedenen Bildschirmgrößen geöffnet  
@@ -625,7 +645,7 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
   **Ablauf:** Der Nutzer lädt ein Bild hoch und wartet auf die Verarbeitung  
   **Erwartung:** Eine Ladeanzeige erscheint, gefolgt von erkannten Zutaten
 
-### 3.8.5 Testabdeckung der Use Cases
+### 3.6.5 Testabdeckung der Use Cases
 
 Alle hier aufgeführten Testfälle sind eindeutig den definierten Use Cases zugeordnet. Auf diese Weise wird sichergestellt, dass alle Kernfunktionen des Systems während der Entwicklung und im laufenden Betrieb kontinuierlich überprüft werden können.
 
@@ -675,7 +695,9 @@ Da das Projekt im Rahmen einer studentischen Lehrveranstaltung von zwei Personen
 | Externe Schnittstellen & API-Anbindung | Gemeinsam           |
 | Authentifizierung & Datenmodell     | Person B               |
 
-*Die konkrete Personenzuordnung (Person A/B) wird im Projektverlauf festgelegt und im Repository dokumentiert.*
+**Zuordnung**
+- Person A: Danny Meihöfer
+- Person B: Bjarne Zaremba
 
 ---
 
@@ -688,7 +710,7 @@ Da das Projekt im Rahmen einer studentischen Lehrveranstaltung von zwei Personen
 
 ---
 
-#### Rollenbeschreibung (angepasst für das Projekt)
+#### Rollenbeschreibung
 
 - **Frontend-Entwickler:** Entwickelt und gestaltet Benutzeroberflächen (Mobile).  
 - **Backend-Entwickler:** Implementiert die Serverlogik, Datenhaltung und Anbindung an externe APIs.  
@@ -703,23 +725,15 @@ Im Folgenden sind zentrale Meilensteine für das Projekt "Mealo" definiert. Die 
 
 ### Meilensteine
 
-| **KW / Datum** | **Meilenstein**                     | **Inhalt / Ziel**                                                                 |
+| **Datum** | **Meilenstein**                     | **Inhalt / Ziel**                                                                 |
 |----------------|-------------------------------------|-----------------------------------------------------------------------------------|
-| KW XX (TT.MM)  | Projektstart & Themenfreigabe       | Thema geklärt, Team gebildet, Projektidee abgestimmt                            |
-| KW XX (TT.MM)  | Pflichtenheft finalisiert           | Vollständig ausgefülltes Pflichtenheft inkl. Systemübersicht und Anforderungen   |
-| KW XX (TT.MM)  | Projektstruktur aufgesetzt          | Repositories angelegt, Grundstruktur für Frontend, Backend und Dokumentation     |
-| KW XX (TT.MM)  | MVP: Zutaten erfassen & Rezepte anzeigen | Erste funktionale End-to-End-Demo (Scan, API-Anfrage, Rezeptausgabe)          |
-| KW XX (TT.MM)  | App-Navigation & Favoriten          | Navigation durch Rezepte + Favoritenfunktion                                     |
-| KW XX (TT.MM)  | Kochmodus & Timer                   | Umsetzung des schrittweisen Kochmodus inkl. Timer (ohne Sprachsteuerung)         |
-| KW XX (TT.MM)  | Tests & Qualitätssicherung          | Manuelle Tests, Debugging, Review                                                |
-| KW XX (TT.MM)  | Präsentation & Demo                 | Abschlusspräsentation, Live-Demo der App                                         |
+| 10.04.2025  | Projektstart & Themenfreigabe       | Thema geklärt, Team gebildet, Projektidee abgestimmt                            |
+| 01.05.2025  | Pflichtenheft finalisiert           | Vollständig ausgefülltes Pflichtenheft inkl. Systemübersicht und Anforderungen   |
+| 08.05.2025  | Projektstruktur aufgesetzt          | Repositories angelegt, Grundstruktur für Frontend, Backend und Dokumentation     |
+| 22.05.2025  | MVP: Zutaten erfassen & Rezepte anzeigen | Erste funktionale End-to-End-Demo (Scan, API-Anfrage, Rezeptausgabe)          |
+| 05.06.2025  | App-Navigation & Favoriten          | Navigation durch Rezepte + Favoritenfunktion                                     |
+| 19.06.2025  | Kochmodus & Timer                   | Umsetzung des schrittweisen Kochmodus inkl. Timer (ohne Sprachsteuerung)         |
+| 26.06.2025  | Tests & Qualitätssicherung          | Manuelle Tests, Debugging, Review                                                |
+| 03.07.2025  | Präsentation & Demo                 | Abschlusspräsentation, Live-Demo der App                                         |
 
 ---
-
-# 5 Anhänge [ ](#inhaltsverzeichnis)
-## 5.1 Glossar
-* Definitionen, Abkürzungen, Begriffe
-## 5.2 Referenzen
-* Handbücher, Gesetze
-* z.B. Datenschutzgrundverordnung
-## 5.3 Index
