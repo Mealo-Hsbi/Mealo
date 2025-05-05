@@ -1,4 +1,4 @@
-const https = require('https');
+
 const fs = require('fs');
 const app = require('./app');
 
@@ -9,6 +9,6 @@ const options = {
   cert: fs.readFileSync('./certs/cert.pem'),
 };
 
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`HTTPS-Server läuft auf https://localhost:${PORT}`);
-});
+app.listen(process.env.PORT || 8080, '0.0.0.0', () => {
+    console.log(`Server läuft auf Port ${process.env.PORT || 8080}`);
+  });
