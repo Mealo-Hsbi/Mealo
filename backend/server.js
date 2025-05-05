@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const app = require('./app');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const options = {
   key: fs.readFileSync('./certs/key.pem'),
