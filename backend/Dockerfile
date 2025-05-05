@@ -1,5 +1,5 @@
 # Node.js Base
-FROM node:18-lts
+FROM node:18
 
 # Arbeitsverzeichnis setzen
 WORKDIR /app
