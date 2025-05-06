@@ -611,7 +611,7 @@ Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachl
 
 Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte Validierung sichergestellt. Dabei liegt der Fokus auf Integrationstests, die die Zusammenarbeit mehrerer Komponenten prüfen, um die wesentlichen Use Cases vollständig abzudecken. Die Testfälle orientieren sich an den zuvor spezifizierten User Stories und Use Cases und sind so definiert, dass sie die wichtigsten Abläufe im System verlässlich absichern.
 
-### 3.6.1 Integrations-Testfälle
+### 3.8.1 Integrations-Testfälle
 
 | Use Case ID | Beschreibung | Testfall | Erwartetes Ergebnis |
 |-------------|--------------|----------|----------------------|

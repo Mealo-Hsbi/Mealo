@@ -117,3 +117,24 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# Node.js / Express
+node_modules/
+.env
+dist/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# Build / Temp / CI
+*.tgz
+.cache/
+.tmp/
+*.tmp
+
+# Docker
+docker-compose.override.yml
+.docker/
