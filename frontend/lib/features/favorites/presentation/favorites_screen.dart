@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/favorites/presentation/detail_screen.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -6,8 +7,17 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Favoriten')),
-      body: const Center(child: Text('Hier sind Ihre Favoriten')),
+      appBar: AppBar(title: const Text('Favorites')),
+      body: Center(
+        child: ElevatedButton(
+          child: const Text('Go to Detail'),
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const DetailScreen(title: 'Home Detail'),
+            ));
+          },
+        ),
+      ),
     );
   }
 }
