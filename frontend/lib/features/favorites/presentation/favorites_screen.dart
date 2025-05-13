@@ -13,7 +13,7 @@ class FavoritesScreen extends StatelessWidget {
           child: const Text('Go to Detail'),
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => const DetailScreen(title: 'Home Detail'),
+              builder: (_) => const DetailScreen(),
             ));
           },
         ),
