@@ -90,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           children: selectedIngredients
                               .map(
                                 (ingredient) => _buildSpotifyStyleChip(
-                                  ingredient.name,
+                                  ingredient,
                                   selected: true,
                                   onTap: () => toggleIngredient(ingredient),
                                   theme: theme,
@@ -110,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           children: filteredIngredientSuggestions
                               .map(
                                 (ingredient) => _buildSpotifyStyleChip(
-                                  ingredient.name,
+                                  ingredient,
                                   selected: false,
                                   onTap: () => toggleIngredient(ingredient),
                                   theme: theme,
@@ -142,33 +142,65 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildSpotifyStyleChip(
-    String label, {
-    required bool selected,
-    required VoidCallback onTap,
-    required ThemeData theme,
-  }) {
-    final backgroundColor = selected
-        ? theme.primaryColor
-        : Colors.grey[700];
-    final textColor = selected ? Colors.black : Colors.white;
+Widget _buildSpotifyStyleChip(
+  Ingredient ingredient, {
+  required bool selected,
+  required VoidCallback onTap,
+  required ThemeData theme,
+}) {
+  final backgroundColor = selected ? theme.primaryColor : Colors.grey[700];
+  final textColor = selected ? Colors.black : Colors.white;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: textColor,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
       ),
-    );
+      child: FutureBuilder(
+        future: _canLoadImage(ingredient.imageUrl),
+        builder: (context, snapshot) {
+          final canShowImage = snapshot.connectionState == ConnectionState.done && snapshot.data == true;
+
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (canShowImage)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Image.asset(
+                    ingredient.imageUrl!,
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              Text(
+                ingredient.name,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    ),
+  );
+}
+
+Future<bool> _canLoadImage(String? path) async {
+  if (path == null) return false;
+  try {
+    await rootBundle.load(path);
+    return true;
+  } catch (_) {
+    return false;
   }
+}
+
+
 }
