@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/common/data/ingredients.dart';
 import 'package:frontend/common/models/ingredient.dart';
-import 'package:frontend/common/utils/string_similarity_helper.dart'; // neu
+import 'package:frontend/common/utils/string_similarity_helper.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -51,7 +51,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Suchfeld oben
                     Container(
                       color: Colors.grey[200],
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -78,7 +77,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
 
-                    // Ausgewählte Zutaten
                     if (selectedIngredients.isNotEmpty)
                       Container(
                         color: Colors.grey[200],
@@ -89,7 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           runSpacing: 4,
                           children: selectedIngredients
                               .map(
-                                (ingredient) => _buildSpotifyStyleChip(
+                                (ingredient) => _buildIngredientChip(
                                   ingredient,
                                   selected: true,
                                   onTap: () => toggleIngredient(ingredient),
@@ -100,7 +98,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
 
-                    // Vorschläge für Zutaten
                     if (filteredIngredientSuggestions.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -109,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           runSpacing: 4,
                           children: filteredIngredientSuggestions
                               .map(
-                                (ingredient) => _buildSpotifyStyleChip(
+                                (ingredient) => _buildIngredientChip(
                                   ingredient,
                                   selected: false,
                                   onTap: () => toggleIngredient(ingredient),
@@ -120,7 +117,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
 
-                    // Ergebnisbereich
                     Expanded(
                       child: query.isEmpty
                           ? const Center(child: Text('Bitte etwas eingeben...'))
@@ -142,65 +138,71 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-Widget _buildSpotifyStyleChip(
-  Ingredient ingredient, {
-  required bool selected,
-  required VoidCallback onTap,
-  required ThemeData theme,
-}) {
-  final backgroundColor = selected ? theme.primaryColor : Colors.grey[700];
-  final textColor = selected ? Colors.black : Colors.white;
+  Widget _buildIngredientChip(
+    Ingredient ingredient, {
+    required bool selected,
+    required VoidCallback onTap,
+    required ThemeData theme,
+  }) {
+    final backgroundColor = selected ? theme.primaryColor : Colors.grey[800];
+    final textColor = selected ? Colors.black : Colors.white;
 
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: FutureBuilder(
-        future: _canLoadImage(ingredient.imageUrl),
+    return GestureDetector(
+      onTap: onTap,
+      child: FutureBuilder<bool>(
+        future: selected ? Future.value(false) : _canLoadImage(ingredient.imageUrl),
         builder: (context, snapshot) {
-          final canShowImage = snapshot.connectionState == ConnectionState.done && snapshot.data == true;
+          final showImage = !selected && snapshot.data == true;
 
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (canShowImage)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Image.asset(
-                    ingredient.imageUrl!,
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.contain,
+          return Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: showImage ? 16 : 12,
+              vertical: showImage ? 12 : 8,
+            ),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(showImage ? 24 : 20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showImage)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: SizedBox(
+    width: 20,
+    height: 20,
+    child: Transform.scale(
+      scale: 1.2, // etwas größer
+      child: Image.asset(
+        ingredient.imageUrl!,
+        fit: BoxFit.contain,
+      ),
+    ),
+                    ),
+                  ),
+                Text(
+                  ingredient.name,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              Text(
-                ingredient.name,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: textColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
-    ),
-  );
-}
-
-Future<bool> _canLoadImage(String? path) async {
-  if (path == null) return false;
-  try {
-    await rootBundle.load(path);
-    return true;
-  } catch (_) {
-    return false;
+    );
   }
-}
 
-
+  Future<bool> _canLoadImage(String? path) async {
+    if (path == null) return false;
+    try {
+      await rootBundle.load(path);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 }
