@@ -37,6 +37,17 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _updateFilteredSuggestions() {
+    filteredIngredientSuggestions = filterBySimilarity<Ingredient>(
+      allIngredients.where((i) => !selectedIngredients.contains(i)).toList(),
+      (i) => i.name,
+      query,
+      threshold: 0.3,
+    );
+
+    _updateCacheForIngredients([...selectedIngredients, ...filteredIngredientSuggestions]);
+  }
+
   void toggleIngredient(Ingredient ingredient) {
     setState(() {
       if (selectedIngredients.contains(ingredient)) {
@@ -45,20 +56,20 @@ class _SearchScreenState extends State<SearchScreen> {
         selectedIngredients.add(ingredient);
       }
     });
+
+    _searchController.clear();
+
+    filteredIngredientSuggestions = [];    
   }
 
   void _onSearchChanged(String value) {
     setState(() {
       query = value;
 
-      filteredIngredientSuggestions = filterBySimilarity<Ingredient>(
-        allIngredients.where((i) => !selectedIngredients.contains(i)).toList(),
-        (i) => i.name,
-        value,
-        threshold: 0.3,
-      );
-
-      _updateCacheForIngredients([...selectedIngredients, ...filteredIngredientSuggestions]);
+      _updateFilteredSuggestions();
+      if (query.isEmpty) {
+        filteredIngredientSuggestions = [];
+      }
     });
   }
 
@@ -126,18 +137,24 @@ class _SearchScreenState extends State<SearchScreen> {
                         color: Colors.grey[200],
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: selectedIngredients.map((ingredient) {
-                            return IngredientChip(
-                              ingredient: ingredient,
-                              selected: true,
-                              onTap: () => toggleIngredient(ingredient),
-                              theme: theme,
-                              showImage: _imageAvailabilityCache[ingredient.imageUrl ?? ''] ?? false,
-                            );
-                          }).toList(),
+                        // Scrollbare Zeile statt Wrap:
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (final ingredient in selectedIngredients)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: IngredientChip(
+                                    ingredient: ingredient,
+                                    selected: true,
+                                    onTap: () => toggleIngredient(ingredient),
+                                    theme: theme,
+                                    showImage: _imageAvailabilityCache[ingredient.imageUrl ?? ''] ?? false,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
 
