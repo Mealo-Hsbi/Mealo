@@ -14,6 +14,10 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   String query = '';
   List<Ingredient> selectedIngredients = [];
+  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+  final Map<String, bool> _imageAvailabilityCache = {};
+
 
   void toggleIngredient(Ingredient ingredient) {
     setState(() {
@@ -23,6 +27,21 @@ class _SearchScreenState extends State<SearchScreen> {
         selectedIngredients.add(ingredient);
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,6 +80,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
+                          controller: _searchController,
+                          focusNode: _focusNode,
                           decoration: const InputDecoration(
                             hintText: 'Search for recipes or ingredients...',
                             prefixIcon: Icon(Icons.search),
@@ -146,55 +167,65 @@ class _SearchScreenState extends State<SearchScreen> {
   }) {
     final backgroundColor = selected ? theme.primaryColor : Colors.grey[800];
     final textColor = selected ? Colors.black : Colors.white;
+    const double imageSize = 24;
+    const double chipHeight = 40;
+
+    final imageUrl = ingredient.imageUrl;
+    final cacheKey = imageUrl ?? 'no_image';
+
+    bool? canShowImage = _imageAvailabilityCache[cacheKey];
+
+    // Wenn noch nicht im Cache -> prüfen und speichern
+    if (canShowImage == null && imageUrl != null) {
+      _canLoadImage(imageUrl).then((result) {
+        setState(() {
+          _imageAvailabilityCache[cacheKey] = result;
+        });
+      });
+      canShowImage = false; // vorerst nicht anzeigen
+    }
 
     return GestureDetector(
       onTap: onTap,
-      child: FutureBuilder<bool>(
-        future: selected ? Future.value(false) : _canLoadImage(ingredient.imageUrl),
-        builder: (context, snapshot) {
-          final showImage = !selected && snapshot.data == true;
-
-          return Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: showImage ? 16 : 12,
-              vertical: showImage ? 12 : 8,
-            ),
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(showImage ? 24 : 20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (showImage)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: SizedBox(
-    width: 20,
-    height: 20,
-    child: Transform.scale(
-      scale: 1.2, // etwas größer
-      child: Image.asset(
-        ingredient.imageUrl!,
-        fit: BoxFit.contain,
-      ),
-    ),
-                    ),
-                  ),
-                Text(
-                  ingredient.name,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        height: chipHeight,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // if (!selected && canShowImage == true)
+            if (canShowImage == true)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: SizedBox(
+                  width: imageSize,
+                  height: imageSize,
+                  child: Image.asset(
+                    imageUrl!,
+                    fit: BoxFit.contain,
                   ),
                 ),
-              ],
+              ),
+            Text(
+              ingredient.name,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
+
+
+
+
 
   Future<bool> _canLoadImage(String? path) async {
     if (path == null) return false;
