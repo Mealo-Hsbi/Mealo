@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/common/data/ingredients.dart';
+import 'package:frontend/common/models/ingredient.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -10,19 +12,37 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   String query = '';
-  String searchMode = 'Recipes'; // oder 'Ingredients'
+  List<Ingredient> selectedIngredients = [];
+
+  void toggleIngredient(Ingredient ingredient) {
+    setState(() {
+      if (selectedIngredients.contains(ingredient)) {
+        selectedIngredients.remove(ingredient);
+      } else {
+        selectedIngredients.add(ingredient);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final filteredIngredientSuggestions = query.isEmpty
+        ? []
+        : allIngredients
+            .where((ingredient) =>
+                ingredient.name.toLowerCase().contains(query.toLowerCase()) &&
+                !selectedIngredients.contains(ingredient))
+            .toList();
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark, // dunkle Icons auf hellem Hintergrund
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         body: Column(
           children: [
-            // Nur Statusbar-Hintergrund
             Container(
               height: MediaQuery.of(context).padding.top,
-              color: Colors.grey[200], // Heller Hintergrund für Statusleiste
+              color: Colors.grey[200],
             ),
             Expanded(
               child: SafeArea(
@@ -30,7 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Suchfeld jetzt ganz oben
+                    // Suchfeld oben
                     Container(
                       color: Colors.grey[200],
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -42,85 +62,110 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         child: TextField(
                           decoration: const InputDecoration(
-                            hintText: 'Search for recipes or Ingredients...',
+                            hintText: 'Search for recipes or ingredients...',
                             prefixIcon: Icon(Icons.search),
                             border: InputBorder.none,
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 12),
                           ),
                           onChanged: (value) {
-                            setState(() => query = value);
+                            setState(() {
+                              query = value;
+                            });
                           },
                         ),
                       ),
                     ),
 
-                    // Suchmodus-Umschalter direkt darunter
-                    Container(
-                      color: Colors.grey[200], // Einheitlicher hellgrauer Hintergrund wie beim Suchfeld
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      child: Container(
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => setState(() => searchMode = 'Recipes'),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: searchMode == 'Recipes' ? Colors.white : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Recipes',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: searchMode == 'Recipes' ? Colors.black : Colors.grey[700],
-                                    ),
-                                  ),
+                    // Ausgewählte Zutaten
+                    if (selectedIngredients.isNotEmpty)
+                      Container(
+                        color: Colors.grey[200],
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: selectedIngredients
+                              .map(
+                                (ingredient) => _buildSpotifyStyleChip(
+                                  ingredient.name,
+                                  selected: true,
+                                  onTap: () => toggleIngredient(ingredient),
+                                  theme: theme,
                                 ),
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => setState(() => searchMode = 'Ingredients'),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: searchMode == 'Ingredients' ? Colors.white : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Ingredients',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: searchMode == 'Ingredients' ? Colors.black : Colors.grey[700],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                              )
+                              .toList(),
                         ),
                       ),
-                    ),
 
-                    // Ergebnisbereich nimmt den Rest
+                    // Vorschläge für Zutaten
+                    if (filteredIngredientSuggestions.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: filteredIngredientSuggestions
+                              .map(
+                                (ingredient) => _buildSpotifyStyleChip(
+                                  ingredient.name,
+                                  selected: false,
+                                  onTap: () => toggleIngredient(ingredient),
+                                  theme: theme,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+
+                    // Ergebnisbereich
                     Expanded(
                       child: query.isEmpty
                           ? const Center(child: Text('Bitte etwas eingeben...'))
-                          : Center(child: Text('Suche nach "$query" in $searchMode')),
+                          : Center(
+                              child: Text(
+                                'Suche nach "$query"\n'
+                                'Filter: ${selectedIngredients.map((i) => i.name).join(', ')}',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                     ),
                   ],
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpotifyStyleChip(
+    String label, {
+    required bool selected,
+    required VoidCallback onTap,
+    required ThemeData theme,
+  }) {
+    final backgroundColor = selected
+        ? theme.primaryColor
+        : Colors.grey[700];
+    final textColor = selected ? Colors.black : Colors.white;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
