@@ -15,30 +15,79 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-  value: SystemUiOverlayStyle.dark, // dunkle Icons auf hellem Hintergrund
-  child: Scaffold(
-    body: Column(
-      children: [
-        // Nur Statusbar-Hintergrund
-        Container(
-          height: MediaQuery.of(context).padding.top,
-          color: Colors.grey[200], // Heller Hintergrund für Statusleiste
-        ),
-        // Restlicher Content unverändert
-        Expanded(
-          child: SafeArea(
-            top: false, // Wir haben oben manuell Platz geschaffen
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Suchfeld-Bereich wie vorher
-                Container(
-                  color: Colors.grey[200],
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
+      value: SystemUiOverlayStyle.dark, // dunkle Icons auf hellem Hintergrund
+      child: Scaffold(
+        body: Column(
+          children: [
+            // Nur Statusbar-Hintergrund
+            Container(
+              height: MediaQuery.of(context).padding.top,
+              color: Colors.grey[200], // Heller Hintergrund für Statusleiste
+            ),
+            // Restlicher Content unverändert
+            Expanded(
+              child: SafeArea(
+                top: false, // Wir haben oben manuell Platz geschaffen
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Zuerst der Suchmodus-Umschalter nach oben
+                    Container(
+                      margin: const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 12),
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => searchMode = 'Recipes'),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: searchMode == 'Recipes' ? Colors.white : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Recipes',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: searchMode == 'Recipes' ? Colors.black : Colors.grey[700],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => searchMode = 'Ingredients'),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: searchMode == 'Ingredients' ? Colors.white : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Ingredients',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: searchMode == 'Ingredients' ? Colors.black : Colors.grey[700],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Suchfeld jetzt ganz unten
+                    Container(
+                      color: Colors.grey[200],
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -46,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         child: TextField(
                           decoration: const InputDecoration(
-                            hintText: 'Suche nach Recipesn oder Ingredients...',
+                            hintText: 'Search for recipes or Ingredients...',
                             prefixIcon: Icon(Icons.search),
                             border: InputBorder.none,
                           ),
@@ -55,73 +104,21 @@ class _SearchScreenState extends State<SearchScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Container(
-                        margin: const EdgeInsets.only(top: 8),
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => setState(() => searchMode = 'Recipes'),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: searchMode == 'Recipes' ? Colors.white : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Recipes',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: searchMode == 'Recipes' ? Colors.black : Colors.grey[700],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => setState(() => searchMode = 'Ingredients'),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: searchMode == 'Ingredients' ? Colors.white : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Ingredients',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: searchMode == 'Ingredients' ? Colors.black : Colors.grey[700],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: query.isEmpty
-                      ? const Center(child: Text('Bitte etwas eingeben...'))
-                      : Center(child: Text('Suche nach "$query" in $searchMode')),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-);
+                    ),
 
+                    // Ergebnisbereich nimmt den Rest
+                    Expanded(
+                      child: query.isEmpty
+                          ? const Center(child: Text('Bitte etwas eingeben...'))
+                          : Center(child: Text('Suche nach "$query" in $searchMode')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
