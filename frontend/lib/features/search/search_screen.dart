@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/common/data/ingredients.dart';
 import 'package:frontend/common/models/ingredient.dart';
+import 'package:frontend/common/utils/string_similarity_helper.dart'; // neu
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -27,13 +28,13 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final filteredIngredientSuggestions = query.isEmpty
-        ? []
-        : allIngredients
-            .where((ingredient) =>
-                ingredient.name.toLowerCase().contains(query.toLowerCase()) &&
-                !selectedIngredients.contains(ingredient))
-            .toList();
+
+    final filteredIngredientSuggestions = filterBySimilarity<Ingredient>(
+      allIngredients.where((i) => !selectedIngredients.contains(i)).toList(),
+      (i) => i.name,
+      query,
+      threshold: 0.3,
+    );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
