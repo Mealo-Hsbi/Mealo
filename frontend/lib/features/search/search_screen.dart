@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:frontend/common/data/ingredients.dart';
 import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/utils/string_similarity_helper.dart';
+import 'package:frontend/common/widgets/ingredient_chip.dart';
+import 'package:frontend/common/utils/image_availability_cache.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -17,7 +19,23 @@ class _SearchScreenState extends State<SearchScreen> {
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
   final Map<String, bool> _imageAvailabilityCache = {};
+  List<Ingredient> filteredIngredientSuggestions = [];
 
+  void _updateCacheForIngredients(List<Ingredient> ingredients) {
+    for (final ingredient in ingredients) {
+      final imageUrl = ingredient.imageUrl;
+      if (imageUrl != null && !_imageAvailabilityCache.containsKey(imageUrl)) {
+        _canLoadImage(imageUrl).then((result) {
+          if (mounted) {
+            setState(() {
+              _imageAvailabilityCache[imageUrl] = result;
+            });
+          }
+        });
+        _imageAvailabilityCache[imageUrl] = false; // vorerst nicht anzeigen
+      }
+    }
+  }
 
   void toggleIngredient(Ingredient ingredient) {
     setState(() {
@@ -28,6 +46,22 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     });
   }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      query = value;
+
+      filteredIngredientSuggestions = filterBySimilarity<Ingredient>(
+        allIngredients.where((i) => !selectedIngredients.contains(i)).toList(),
+        (i) => i.name,
+        value,
+        threshold: 0.3,
+      );
+
+      _updateCacheForIngredients([...selectedIngredients, ...filteredIngredientSuggestions]);
+    });
+  }
+
 
   @override
   void initState() {
@@ -47,13 +81,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    final filteredIngredientSuggestions = filterBySimilarity<Ingredient>(
-      allIngredients.where((i) => !selectedIngredients.contains(i)).toList(),
-      (i) => i.name,
-      query,
-      threshold: 0.3,
-    );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
@@ -89,11 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 12),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              query = value;
-                            });
-                          },
+                          onChanged: _onSearchChanged,
                         ),
                       ),
                     ),
@@ -106,16 +129,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 4,
-                          children: selectedIngredients
-                              .map(
-                                (ingredient) => _buildIngredientChip(
-                                  ingredient,
-                                  selected: true,
-                                  onTap: () => toggleIngredient(ingredient),
-                                  theme: theme,
-                                ),
-                              )
-                              .toList(),
+                          children: selectedIngredients.map((ingredient) {
+                            return IngredientChip(
+                              ingredient: ingredient,
+                              selected: true,
+                              onTap: () => toggleIngredient(ingredient),
+                              theme: theme,
+                              showImage: _imageAvailabilityCache[ingredient.imageUrl ?? ''] ?? false,
+                            );
+                          }).toList(),
                         ),
                       ),
 
@@ -125,16 +147,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 4,
-                          children: filteredIngredientSuggestions
-                              .map(
-                                (ingredient) => _buildIngredientChip(
-                                  ingredient,
-                                  selected: false,
-                                  onTap: () => toggleIngredient(ingredient),
-                                  theme: theme,
-                                ),
-                              )
-                              .toList(),
+                          children: filteredIngredientSuggestions.map((ingredient) {
+                            return IngredientChip(
+                              ingredient: ingredient,
+                              selected: false,
+                              onTap: () => toggleIngredient(ingredient),
+                              theme: theme,
+                              showImage: _imageAvailabilityCache[ingredient.imageUrl ?? ''] ?? false,
+                            );
+                          }).toList(),
                         ),
                       ),
 
@@ -158,74 +179,6 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
-
-  Widget _buildIngredientChip(
-    Ingredient ingredient, {
-    required bool selected,
-    required VoidCallback onTap,
-    required ThemeData theme,
-  }) {
-    final backgroundColor = selected ? theme.primaryColor : Colors.grey[800];
-    final textColor = selected ? Colors.black : Colors.white;
-    const double imageSize = 24;
-    const double chipHeight = 40;
-
-    final imageUrl = ingredient.imageUrl;
-    final cacheKey = imageUrl ?? 'no_image';
-
-    bool? canShowImage = _imageAvailabilityCache[cacheKey];
-
-    // Wenn noch nicht im Cache -> prüfen und speichern
-    if (canShowImage == null && imageUrl != null) {
-      _canLoadImage(imageUrl).then((result) {
-        setState(() {
-          _imageAvailabilityCache[cacheKey] = result;
-        });
-      });
-      canShowImage = false; // vorerst nicht anzeigen
-    }
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        height: chipHeight,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // if (!selected && canShowImage == true)
-            if (canShowImage == true)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: SizedBox(
-                  width: imageSize,
-                  height: imageSize,
-                  child: Image.asset(
-                    imageUrl!,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            Text(
-              ingredient.name,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: textColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-
-
 
   Future<bool> _canLoadImage(String? path) async {
     if (path == null) return false;
