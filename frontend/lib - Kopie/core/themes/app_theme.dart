@@ -16,7 +16,6 @@ class AppTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
-    scaffoldBackgroundColor: Colors.white, // Interessante Hintergrundfarbe (nochmal drüber nachdenken)
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white, // Hintergrundfarbe der Leiste
       selectedItemColor: Colors.green, // Farbe des ausgewählten Items
@@ -26,10 +25,6 @@ class AppTheme {
       showSelectedLabels: true, // Labels für ausgewählte Items anzeigen
       showUnselectedLabels: false, // Labels für nicht ausgewählte Items ausblenden
       type: BottomNavigationBarType.fixed, // Oder BottomNavigationBarType.shifting für animierte Farbe
-    ),
-    progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: Colors.green,
-      circularTrackColor: Colors.grey.shade300,
     ),
   );
 }

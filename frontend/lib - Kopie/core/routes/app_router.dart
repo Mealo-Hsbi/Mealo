@@ -63,14 +63,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
         _currentIndex = index;
         _tabHistory.add(index);
       });
-    // } else if (index == 0) {  // 0 is the home tab TODO: maybe implement this function for all tabs and maybe use smth. like enums for the indexes
-    //   _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-    //   _tabStacks[index]?.clear();
-    // }
-
-    } else {
-      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-      _tabStacks[index]?.clear();
     }
   }
 
