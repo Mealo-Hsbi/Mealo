@@ -2,24 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
-  Future<void> _signOut(BuildContext ctx) async {
+  Future<void> _signOut(BuildContext context) async {
+    // 1) Firebase-Session beenden
     await FirebaseAuth.instance.signOut();
-    // nach dem SignOut wird AuthGate automatisch den Login-Flow zeigen
+    // 2) Zur Login-Seite springen und alle bisherigen Routen entfernen
+    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+      '/login',
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => _signOut(context),
             tooltip: 'Abmelden',
+            onPressed: () => _signOut(context),
           ),
         ],
       ),
@@ -33,7 +39,10 @@ class ProfileScreen extends StatelessWidget {
                 backgroundImage: NetworkImage(user!.photoURL!),
               ),
             const SizedBox(height: 16),
-            Text(user?.displayName ?? user?.email ?? 'Unbekannt'),
+            Text(
+              user?.displayName ?? user?.email ?? 'Unbekannt',
+              style: const TextStyle(fontSize: 18),
+            ),
           ],
         ),
       ),

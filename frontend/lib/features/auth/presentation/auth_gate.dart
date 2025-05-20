@@ -1,37 +1,29 @@
-// lib/features/auth/presentation/auth_gate.dart
-
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/data/auth_repository.dart';
 import 'package:frontend/features/auth/domain/user_model.dart';
 import 'package:frontend/features/auth/presentation/login_screen.dart';
-import 'package:frontend/features/auth/presentation/register_screen.dart';
-import 'package:frontend/core/routes/app_router.dart'; // oder direkt AppNavigationShell importieren
+import 'package:frontend/core/routes/navigation_tabs.dart';
+import 'package:frontend/core/routes/app_router.dart';
 
 class AuthGate extends StatelessWidget {
-  final _repo = AuthRepository();
+  const AuthGate({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     return StreamBuilder<UserModel?>(
-      stream: _repo.user,
-      builder: (ctx, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
+      stream: AuthRepository().user,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        if (snap.hasData) {
-          // eingeloggt → Home-Route pushen, ersetzt Login
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(ctx).pushReplacementNamed('/home');
-          });
-          return const SizedBox.shrink();
+        if (snapshot.hasData) {
+          // Eingeloggt → direkt zur Hauptnavigation
+          return const AppNavigationShell();
         } else {
-          // nicht eingeloggt → Login-Route (ersetzt ggf. AuthGate)
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(ctx).pushReplacementNamed('/login');
-          });
-          return const SizedBox.shrink();
+          // Nicht eingeloggt → Login-Screen
+          return const LoginScreen();
         }
       },
     );

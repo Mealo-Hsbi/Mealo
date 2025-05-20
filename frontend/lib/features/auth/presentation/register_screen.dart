@@ -27,7 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _passCtrl.text.trim(),
       );
       // direkt Onboarding starten
-      Navigator.of(context).pushReplacementNamed('/onboarding');
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       setState(() {
         _error = e.toString();

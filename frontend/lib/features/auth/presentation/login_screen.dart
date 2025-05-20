@@ -13,14 +13,48 @@ class _LoginScreenState extends State<LoginScreen> {
   final _repo = AuthRepository();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+
+  bool _loadingEmail = false;
   bool _loadingGoogle = false;
+  String? _error;
+
+  Future<void> _loginWithEmail() async {
+    setState(() {
+      _loadingEmail = true;
+      _error = null;
+    });
+    try {
+      await _repo.signIn(
+        email: _emailCtrl.text.trim(),
+        password: _passCtrl.text.trim(),
+      );
+      // AuthGate springt dann automatisch auf /home
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loadingEmail = false;
+      });
+    }
+  }
 
   Future<void> _loginWithGoogle() async {
-    setState(() => _loadingGoogle = true);
+    setState(() {
+      _loadingGoogle = true;
+      _error = null;
+    });
     try {
       await _repo.signInWithGoogle();
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
     } finally {
-      setState(() => _loadingGoogle = false);
+      setState(() {
+        _loadingGoogle = false;
+      });
     }
   }
 
@@ -43,6 +77,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 12),
+
+              if (_error != null) ...[
+                Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 8),
+              ],
 
               const Text(
                 "Welcome back, you've been missed!",
@@ -105,21 +148,25 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Email/Password Login
-                  },
+                  onPressed: _loadingEmail ? null : _loginWithEmail,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.lightTheme.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  child: _loadingEmail
+                      ? const CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Text(
+                          'Sign In',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                 ),
               ),
+
               const Spacer(flex: 1),
 
               Row(
@@ -129,7 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       'Or continue with',
-                      style: TextStyle(color: Colors.black54, fontSize: 14),
+                      style:
+                          TextStyle(color: Colors.black54, fontSize: 14),
                     ),
                   ),
                   Expanded(child: Divider(color: Colors.black26)),
@@ -140,7 +188,8 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 48,
                 child: ElevatedButton.icon(
-                  onPressed: _loadingGoogle ? null : _loginWithGoogle,
+                  onPressed:
+                      _loadingGoogle ? null : _loginWithGoogle,
                   icon: _loadingGoogle
                       ? const SizedBox(
                           width: 20,
@@ -157,7 +206,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                   label: const Text(
                     'Sign in with Google',
-                    style: TextStyle(fontSize: 15, color: Colors.black87),
+                    style:
+                        TextStyle(fontSize: 15, color: Colors.black87),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -169,6 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+
               const Spacer(flex: 3),
 
               Center(
@@ -179,12 +230,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: RichText(
                     text: TextSpan(
                       text: 'Not a member? ',
-                      style: const TextStyle(color: Colors.black54),
+                      style:
+                          const TextStyle(color: Colors.black54),
                       children: [
                         TextSpan(
                           text: 'Register now',
                           style: TextStyle(
-                            color: AppTheme.lightTheme.primaryColor,
+                            color: AppTheme
+                                .lightTheme.primaryColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
