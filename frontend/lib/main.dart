@@ -4,18 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/core/themes/app_theme.dart';
 import 'package:frontend/core/routes/app_router.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:frontend/core/config/app_config.dart';
-import 'package:frontend/core/config/environment.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/services.dart';
-
-
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  AppConfig.init(Environment.dev);
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -29,14 +20,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final router = AppRouter();
+
     return MaterialApp(
       title: 'Mealo',
-      debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      debugShowCheckedModeBanner: false,
 
-      // entfernen wir home:, damit onGenerateRoute für '/' feuert:
       initialRoute: '/',
-      onGenerateRoute: router.onGenerateRoute,
-    );
+      onGenerateRoute: AppRouter().onGenerateRoute,
+
+      // Entferne `home:` ganz, da wir jetzt über onGenerateRoute gehen
+);
   }
 }

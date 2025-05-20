@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/favorites/presentation/favorites_screen.dart';
 import '../../features/explore/exploreScreen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 
 const List<Widget> appTabs = [
   HomeScreen(),
   ExploreScreen(),
   FavoritesScreen(),
-  FavoritesScreen(), // Dummy Screen for the fourth tab
-  FavoritesScreen(), // Dummy Screen for the fourth tab
+  FavoritesScreen(),
+  ProfileScreen(),
 ];
 
 const List<BottomNavigationBarItem> appBottomNavigationBarItems = [

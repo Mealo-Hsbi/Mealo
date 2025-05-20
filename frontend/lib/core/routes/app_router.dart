@@ -2,25 +2,30 @@
 
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/presentation/auth_gate.dart';
-import 'package:frontend/features/home/presentation/home_screen.dart';
-import 'package:frontend/features/favorites/presentation/favorites_screen.dart';
+import 'package:frontend/core/routes/navigation_tabs.dart';
 
-// class AppRouter {
-//   static Route<dynamic> generateRoute(RouteSettings settings) {
-//     switch (settings.name) {
-//       case '/':
-//         return MaterialPageRoute(builder: (_) => const HomeScreen());
-//       case '/favorites':
-//         return MaterialPageRoute(builder: (_) => const FavoritesScreen());
-//       default:
-//         return MaterialPageRoute(
-//             builder: (_) => const Scaffold(
-//                   body: Center(child: Text('Seite nicht gefunden')),
-//                 ));
-//     }
-//   }
-// }
+/// Der zentrale Router für named routes.
+/// "/" → AuthGate (Login/Register oder Home)
+/// alle anderen → AppNavigationShell (deine Tab-Navigation)
+class AppRouter {
+  Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(
+          builder: (_) => AuthGate(),
+          settings: settings,
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (_) => const AppNavigationShell(),
+          settings: settings,
+        );
+    }
+  }
+}
 
+
+/// Deine bestehende Tab-Navigation (unverändert)
 class AppNavigationShell extends StatefulWidget {
   const AppNavigationShell({super.key});
 
@@ -45,7 +50,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
 
   Future<bool> _onWillPop() async {
     final currentNavigator = _navigatorKeys[_currentIndex].currentState!;
-
     if (currentNavigator.canPop()) {
       currentNavigator.pop();
       _tabStacks[_currentIndex]?.removeLast();
@@ -66,11 +70,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
         _currentIndex = index;
         _tabHistory.add(index);
       });
-    // } else if (index == 0) {  // 0 is the home tab TODO: maybe implement this function for all tabs and maybe use smth. like enums for the indexes
-    //   _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-    //   _tabStacks[index]?.clear();
-    // }
-
     } else {
       _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
       _tabStacks[index]?.clear();
@@ -98,8 +97,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
       child: Scaffold(
         body: Stack(
           children: appTabs.asMap().entries.map((entry) {
-            int index = entry.key;
-            return _buildOffstageNavigator(index);
+            return _buildOffstageNavigator(entry.key);
           }).toList(),
         ),
         bottomNavigationBar: BottomNavigationBar(
