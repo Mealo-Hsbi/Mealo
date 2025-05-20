@@ -58,7 +58,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
   }
 
   Widget _buildOffstageNavigator(int index) {
-    final isCameraTab = index == 2; // dein Kamera-Tab
     return Offstage(
       offstage: _currentIndex != index,
       child: Navigator(
