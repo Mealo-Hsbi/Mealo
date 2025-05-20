@@ -4,9 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:frontend/core/themes/app_theme.dart';
 import 'package:frontend/core/routes/app_router.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:frontend/core/config/app_config.dart';
+import 'package:frontend/core/config/environment.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
+
+
 import 'firebase_options.dart';
 
 Future<void> main() async {
+  AppConfig.init(Environment.dev);
+  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
