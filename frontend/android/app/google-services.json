@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "871743300253",
+    "project_id": "mealo-901c0",
+    "storage_bucket": "mealo-901c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871743300253:android:0de341002a39d7d1c86a74",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871743300253-li3fec2mtup00sncopfgk1apkpheos59.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_nUvz9erZ6cLdrz-whsaziVav0NVxVOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "871743300253-li3fec2mtup00sncopfgk1apkpheos59.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "871743300253-ht215nmau6nu7knoihpl23cunttsqu59.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.frontend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
