@@ -12,3 +12,5 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+# Ausnahme für den Android Keystore
+!app/keystore/apprelease.jks
