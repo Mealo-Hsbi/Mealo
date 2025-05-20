@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:frontend/features/auth/presentation/login_screen.dart';
+import 'package:frontend/features/auth/presentation/register_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,10 +35,12 @@ class MyApp extends StatelessWidget {
       title: 'Mealo',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-
-      initialRoute: '/',
-      onGenerateRoute: router.onGenerateRoute,
-
+      initialRoute: '/login',      // direkt zum Login starten
+      routes: {
+        '/login': (_)    => const LoginScreen(),
+        '/register': (_) => const RegisterScreen(),
+        '/home': (_)     => const AppNavigationShell(),
+      },
       navigatorObservers: [observer],
     );
   }

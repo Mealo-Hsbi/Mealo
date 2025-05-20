@@ -14,23 +14,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _loadingGoogle = false;
-  String? _error;
 
   Future<void> _loginWithGoogle() async {
-    setState(() {
-      _loadingGoogle = true;
-      _error = null;
-    });
+    setState(() => _loadingGoogle = true);
     try {
       await _repo.signInWithGoogle();
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
     } finally {
-      setState(() {
-        _loadingGoogle = false;
-      });
+      setState(() => _loadingGoogle = false);
     }
   }
 
@@ -52,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 140,
                 ),
               ),
-
               const SizedBox(height: 12),
 
               const Text(
@@ -60,7 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.black87),
               ),
-
               const SizedBox(height: 20),
 
               TextField(
@@ -77,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 12),
 
               TextField(
@@ -95,13 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 8),
 
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: Forgot Password Flow
+                  },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(50, 30),
@@ -112,13 +100,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
 
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: Email/Password Login
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.lightTheme.primaryColor,
                     shape: RoundedRectangleBorder(
@@ -131,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const Spacer(flex: 1),
 
               Row(
@@ -147,7 +135,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(child: Divider(color: Colors.black26)),
                 ],
               ),
-
               const SizedBox(height: 16),
 
               SizedBox(
@@ -182,13 +169,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const Spacer(flex: 3),
 
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushReplacementNamed('/register');
+                    Navigator.of(context).pushNamed('/register');
                   },
                   child: RichText(
                     text: TextSpan(
@@ -207,7 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 12),
             ],
           ),
