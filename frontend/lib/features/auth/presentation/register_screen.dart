@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/data/auth_repository.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -20,6 +21,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await _repo.signUp(
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text.trim(),
+      );
+      await FirebaseAnalytics.instance.logSignUp(
+        signUpMethod: 'email',
       );
       // onSuccess → AuthGate schaltet automatisch auf Home um
     } catch (e) {

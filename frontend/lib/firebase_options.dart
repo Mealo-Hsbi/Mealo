@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'mealo-901c0',
     storageBucket: 'mealo-901c0.firebasestorage.app',
   );
+
 }
