@@ -25,11 +25,9 @@ class _CameraScreenState extends State<CameraScreen> {
     final cameras = await availableCameras();
     // Frontkamera finden
     final frontCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+      (camera) => camera.lensDirection == CameraLensDirection.back,
       orElse: () => cameras.first, // Falls keine Frontkamera, dann Rückfall auf erste Kamera
     );
-
-    print('Verwende Kamera: ${frontCamera.name}, Richtung: ${frontCamera.lensDirection}');
 
     _controller = CameraController(
       frontCamera,
