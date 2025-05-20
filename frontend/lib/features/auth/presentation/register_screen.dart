@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/data/auth_repository.dart';
 import 'package:frontend/core/themes/app_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -11,31 +12,57 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _repo = AuthRepository();
+  final _firstNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  final _confirmPassCtrl = TextEditingController();
+
   bool _loading = false;
   String? _error;
 
   Future<void> _register() async {
+    final firstName = _firstNameCtrl.text.trim();
+    final email = _emailCtrl.text.trim();
+    final pass = _passCtrl.text;
+    final confirm = _confirmPassCtrl.text;
+
+    if (firstName.isEmpty) {
+      setState(() => _error = 'Bitte gib deinen Vornamen ein');
+      return;
+    }
+    if (email.isEmpty || pass.isEmpty || confirm.isEmpty) {
+      setState(() => _error = 'Bitte alle Felder ausfüllen');
+      return;
+    }
+    if (pass != confirm) {
+      setState(() => _error = 'Passwörter stimmen nicht überein');
+      return;
+    }
+
     setState(() {
       _loading = true;
       _error = null;
     });
+
     try {
-      await _repo.signUp(
-        email: _emailCtrl.text.trim(),
-        password: _passCtrl.text.trim(),
-      );
-      // direkt Onboarding starten
-      Navigator.of(context).pushReplacementNamed('/home');
+      // Registrierung via Firebase
+      await _repo.signUp(email: email, password: pass);
+
+      // DisplayName auf First Name setzen
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.updateDisplayName(firstName);
+        await user.reload();
+      }
+
+      // Zurück zum Login
+      Navigator.of(context).pop();
     } catch (e) {
       setState(() {
         _error = e.toString();
       });
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      setState(() => _loading = false);
     }
   }
 
@@ -76,7 +103,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 24),
 
               TextField(
+                controller: _firstNameCtrl,
+                decoration: InputDecoration(
+                  hintText: 'Vorname',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
                 controller: _emailCtrl,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'Email',
                   filled: true,
@@ -95,7 +139,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _passCtrl,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: 'Password',
+                  hintText: 'Passwort',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: _confirmPassCtrl,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Passwort bestätigen',
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding:
