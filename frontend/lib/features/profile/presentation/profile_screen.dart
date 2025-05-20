@@ -4,14 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  Future<void> _signOut(BuildContext context) async {
-    // 1) Firebase-Session beenden
+  Future<void> _signOut(BuildContext ctx) async {
+    // 1) Session beenden
     await FirebaseAuth.instance.signOut();
-    // 2) Zur Login-Seite springen und alle bisherigen Routen entfernen
-    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-      '/login',
-      (route) => false,
-    );
+
+    // 2) Alle Routen unter dem Root (AuthGate) entfernen,
+    //    sodass AuthGate neu baut und wieder zum Login wechselt.
+    Navigator.of(ctx, rootNavigator: true)
+        .popUntil((route) => route.isFirst);
   }
 
   @override
