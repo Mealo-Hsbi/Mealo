@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:frontend/common/data/ingredients.dart';
 import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/utils/string_similarity_helper.dart';
-import 'package:frontend/common/widgets/ingredient_chip.dart';
-import 'package:frontend/common/utils/image_availability_cache.dart';
+import 'package:frontend/common/widgets/ingredientChips/ingredient_chip_row.dart';
+import 'package:frontend/common/widgets/search/search_header.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -93,106 +93,46 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
-      child: Scaffold(
-        body: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).padding.top,
-              color: Colors.grey[200],
+    return Scaffold(
+      body: Column(
+        children: [
+          SearchHeader(
+            controller: _searchController,
+            focusNode: _focusNode,
+            onChanged: _onSearchChanged,
+          ),
+
+          if (selectedIngredients.isNotEmpty)
+            IngredientChipScroller(
+              ingredients: selectedIngredients,
+              selected: true,
+              onTap: toggleIngredient,
+              theme: theme,
+              imageAvailabilityCache: _imageAvailabilityCache,
+              showBackground: true,
             ),
-            Expanded(
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      color: Colors.grey[200],
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          focusNode: _focusNode,
-                          decoration: const InputDecoration(
-                            hintText: 'Search for recipes or ingredients...',
-                            prefixIcon: Icon(Icons.search),
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          onChanged: _onSearchChanged,
-                        ),
-                      ),
-                    ),
 
-                    if (selectedIngredients.isNotEmpty)
-                      Container(
-                        color: Colors.grey[200],
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        // Scrollbare Zeile statt Wrap:
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              for (final ingredient in selectedIngredients)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: IngredientChip(
-                                    ingredient: ingredient,
-                                    selected: true,
-                                    onTap: () => toggleIngredient(ingredient),
-                                    theme: theme,
-                                    showImage: _imageAvailabilityCache[ingredient.imageUrl ?? ''] ?? false,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    if (filteredIngredientSuggestions.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: filteredIngredientSuggestions.map((ingredient) {
-                            return IngredientChip(
-                              ingredient: ingredient,
-                              selected: false,
-                              onTap: () => toggleIngredient(ingredient),
-                              theme: theme,
-                              showImage: _imageAvailabilityCache[ingredient.imageUrl ?? ''] ?? false,
-                            );
-                          }).toList(),
-                        ),
-                      ),
-
-                    Expanded(
-                      child: query.isEmpty
-                          ? const Center(child: Text('Bitte etwas eingeben...'))
-                          : Center(
-                              child: Text(
-                                'Suche nach "$query"\n'
-                                'Filter: ${selectedIngredients.map((i) => i.name).join(', ')}',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
-              ),
+          if (filteredIngredientSuggestions.isNotEmpty)
+            IngredientChipScroller(
+              ingredients: filteredIngredientSuggestions,
+              selected: false,
+              onTap: toggleIngredient,
+              theme: Theme.of(context),
+              imageAvailabilityCache: _imageAvailabilityCache,
             ),
-          ],
-        ),
+
+          Expanded(
+            child: query.isEmpty
+                ? const Center(child: Text('Bitte etwas eingeben...'))
+                : Center(
+                    child: Text(
+                      'Suche nach "$query"\n'
+                      'Filter: ${selectedIngredients.map((i) => i.name).join(', ')}',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }

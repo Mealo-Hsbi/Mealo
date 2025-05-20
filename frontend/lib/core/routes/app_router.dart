@@ -1,22 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/routes/navigation_tabs.dart';
-import '../../features/favorites/presentation/favorites_screen.dart';
-
-// class AppRouter {
-//   static Route<dynamic> generateRoute(RouteSettings settings) {
-//     switch (settings.name) {
-//       case '/':
-//         return MaterialPageRoute(builder: (_) => const HomeScreen());
-//       case '/favorites':
-//         return MaterialPageRoute(builder: (_) => const FavoritesScreen());
-//       default:
-//         return MaterialPageRoute(
-//             builder: (_) => const Scaffold(
-//                   body: Center(child: Text('Seite nicht gefunden')),
-//                 ));
-//     }
-//   }
-// }
 
 class AppNavigationShell extends StatefulWidget {
   const AppNavigationShell({super.key});
@@ -34,7 +17,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < appTabs.length; i++) {
+    for (int i = 0; i < getAppTabs(0).length; i++) {
       _tabStacks[i] = [];
       _navigatorKeys.add(GlobalKey<NavigatorState>());
     }
@@ -75,13 +58,14 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
   }
 
   Widget _buildOffstageNavigator(int index) {
+    final isCameraTab = index == 2; // dein Kamera-Tab
     return Offstage(
       offstage: _currentIndex != index,
       child: Navigator(
         key: _navigatorKeys[index],
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
-            builder: (_) => appTabs[index],
+            builder: (_) => getAppTabs(_currentIndex)[index],
           );
         },
       ),
@@ -94,7 +78,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
       onWillPop: _onWillPop,
       child: Scaffold(
         body: Stack(
-          children: appTabs.asMap().entries.map((entry) {
+          children: getAppTabs(_currentIndex).asMap().entries.map((entry) {
             int index = entry.key;
             return _buildOffstageNavigator(index);
           }).toList(),
