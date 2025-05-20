@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/favorites/presentation/favorites_screen.dart';
 import '../../features/explore/exploreScreen.dart';
+import '../../features/camera/camera_screen.dart';
 
 const List<Widget> appTabs = [
   HomeScreen(),
   ExploreScreen(),
-  FavoritesScreen(),
+  CameraScreen(), // Dummy Screen for the third tab
   FavoritesScreen(), // Dummy Screen for the fourth tab
   FavoritesScreen(), // Dummy Screen for the fourth tab
 ];
