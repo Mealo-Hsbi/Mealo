@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:frontend/common/widgets/camera/capture_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -20,12 +21,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   bool _isInitialized = false;
   CameraLensDirection _currentLensDirection = CameraLensDirection.back;
   final GlobalKey _previewKey = GlobalKey();
+  double _cameraOpacity = 0.0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _tryInitializeCamera();
+    if (widget.isVisible) _initializeCamera();
   }
 
   @override
@@ -36,10 +38,10 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   }
 
   @override
-  void didUpdateWidget(covariant CameraScreen oldWidget) {
+  void didUpdateWidget(CameraScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isVisible && !_isInitialized) {
-      _tryInitializeCamera();
+      _initializeCamera();
     } else if (!widget.isVisible && _isInitialized) {
       _disposeCamera();
     }
@@ -51,66 +53,80 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     _isInitialized = false;
   }
 
-  Future<void> _tryInitializeCamera() async {
-    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+Future<void> _initializeCamera() async {
+  if (!mounted || !widget.isVisible) return;
 
-    final status = await Permission.camera.status;
-    if (!status.isGranted) {
-      final result = await Permission.camera.request();
-      if (!result.isGranted) return;
-    }
+  setState(() {
+    _cameraOpacity = 0.0; // Zeige das Widget (unsichtbar)
+    _isInitialized = true; // schon mal „aktiv“, damit es in build() erscheint
+  });
 
+  final permission = await Permission.camera.request();
+  if (!permission.isGranted) return;
+
+  try {
     final cameras = await availableCameras();
-    final selectedCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == _currentLensDirection,
+    final camera = cameras.firstWhere(
+      (cam) => cam.lensDirection == _currentLensDirection,
       orElse: () => cameras.first,
     );
 
-    final controller = CameraController(selectedCamera, ResolutionPreset.max);
-
-    try {
-      await controller.initialize();
-    } catch (e) {
-      print('Kamera-Initialisierung fehlgeschlagen: $e');
-      return;
-    }
+    final controller = CameraController(camera, ResolutionPreset.max);
+    await controller.initialize();
 
     if (!mounted) return;
+
     setState(() {
       _controller = controller;
-      _isInitialized = true;
     });
+
+    // Jetzt den Fade-In triggern
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) {
+        setState(() {
+          _cameraOpacity = 1.0;
+        });
+      }
+    });
+  } catch (e) {
+    print("Fehler bei Kamera-Initialisierung: $e");
   }
+}
 
   Future<void> _switchCamera() async {
-    _isInitialized = false;
     _disposeCamera();
 
     _currentLensDirection = _currentLensDirection == CameraLensDirection.back
         ? CameraLensDirection.front
         : CameraLensDirection.back;
 
-    await _tryInitializeCamera();
+    setState(() {
+      _cameraOpacity = 0.0; // ausblenden
+    });
+    await Future.delayed(const Duration(milliseconds: 200)); // Fade-Out abwarten
+
+
+    await _initializeCamera();
   }
 
-@override
-void didChangeAppLifecycleState(AppLifecycleState state) {
-  if (!widget.isVisible) return;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!widget.isVisible) return;
 
-  if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-    _disposeCamera(); // Wichtig: Kamera richtig schließen
-  } else if (state == AppLifecycleState.resumed) {
-    _tryInitializeCamera(); // Kamera neu starten
+    if (state == AppLifecycleState.resumed && !_isInitialized) {
+      _initializeCamera();
+    } else if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      _disposeCamera();
+    }
   }
-}
 
   Future<void> _takePicture() async {
-    if (!_controller!.value.isInitialized) return;
+    if (!(_controller?.value.isInitialized ?? false)) return;
 
     try {
       final picture = await _controller!.takePicture();
       print('Bild aufgenommen: ${picture.path}');
-      // Vorschau oder Upload hier
+      // Weiterverarbeitung
     } catch (e) {
       print('Fehler beim Fotografieren: $e');
     }
@@ -121,85 +137,81 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     if (pickedFile != null) {
       final file = File(pickedFile.path);
       print('Bild aus Galerie: ${file.path}');
-      // Vorschau oder Upload hier
+      // Weiterverarbeitung
     }
   }
-
-  Future<File?> _getLastImageThumbnail() async {
-    final picker = ImagePicker();
-    final recent = await picker.pickImage(source: ImageSource.gallery);
-    if (recent != null) {
-      return File(recent.path);
-    }
-    return null;
-  }
-
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized || _controller == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
+    
     final mediaSize = MediaQuery.of(context).size;
-    final scale = 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height));
+final scale = _controller != null && _controller!.value.isInitialized
+    ? 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height))
+    : 1.0;
 
-    return GestureDetector(
-      onDoubleTap: _switchCamera,
-      child: Stack(
-        children: [
-          ClipRect(
-            clipper: _MediaSizeClipper(mediaSize),
-            child: Transform.scale(
-              scale: scale,
-              alignment: Alignment.topCenter,
-              child: Transform(
-                alignment: Alignment.center,
-                transform: _currentLensDirection == CameraLensDirection.front
-                    ? Matrix4.rotationY(math.pi)
-                    : Matrix4.identity(),
-                child: CameraPreview(_controller!, key: _previewKey),
+return GestureDetector(
+  onDoubleTap: _switchCamera,
+  child: Stack(
+    children: [
+      // Schwarzer Hintergrund, wenn Kamera noch nicht da
+      Container(color: Colors.black),
+
+      // Kamera-Vorschau mit Fade
+      AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: _cameraOpacity,
+        child: _controller != null && _controller!.value.isInitialized
+            ? ClipRect(
+                clipper: _MediaSizeClipper(mediaSize),
+                child: Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.topCenter,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: _currentLensDirection == CameraLensDirection.front
+                        ? Matrix4.rotationY(math.pi)
+                        : Matrix4.identity(),
+                    child: CameraPreview(_controller!, key: _previewKey),
+                  ),
+                ),
+              )
+            : const SizedBox.shrink(), // leer, solange nicht initialisiert
+      ),
+
+      // UI (immer sichtbar)
+      Positioned(
+        bottom: 32,
+        left: 0,
+        right: 0,
+        child: SizedBox(
+          height: 72,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                left: 24,
+                top: (72 - 60) / 2,
+                child: GestureDetector(
+                  onTap: _pickImageFromGallery,
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.photo, color: Colors.white, size: 28),
+                  ),
+                ),
               ),
-            ),
-          ),
-Positioned(
-  bottom: 32,
-  left: 0,
-  right: 0,
-  child: SizedBox(
-    height: 72, // Höhe wie Aufnahme-Button, für einfachere Zentrierung
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        // Galerie-Button links, mit Abstand 24
-        Positioned(
-          left: 24,
-          top: (72 - 60) / 2, // zentriert den 60x60 Button vertikal im 72px hohen Container
-          child: GestureDetector(
-            onTap: _pickImageFromGallery,
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.photo, color: Colors.white, size: 28),
-            ),
+              AnimatedCaptureButton(onTap: _takePicture),
+            ],
           ),
         ),
-
-        // Aufnahme-Button exakt in der Mitte
-        AnimatedCaptureButton(onTap: _takePicture),
-      ],
-    ),
-  ),
-),
-
-
-        ],
       ),
-    );
+    ],
+  ),
+);
   }
 }
 
@@ -208,98 +220,8 @@ class _MediaSizeClipper extends CustomClipper<Rect> {
   const _MediaSizeClipper(this.mediaSize);
 
   @override
-  Rect getClip(Size size) {
-    return Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
-  }
+  Rect getClip(Size size) => Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
 
   @override
   bool shouldReclip(CustomClipper<Rect> oldClipper) => true;
 }
-
-class AnimatedCaptureButton extends StatefulWidget {
-  final VoidCallback onTap;
-  const AnimatedCaptureButton({Key? key, required this.onTap}) : super(key: key);
-
-  @override
-  State<AnimatedCaptureButton> createState() => _AnimatedCaptureButtonState();
-}
-
-class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 80),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.7).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
-  }
-
-  void _onTapDown(TapDownDetails details) {
-    _controller.forward();
-  }
-
-  void _onTapUp(TapUpDetails details) async {
-    widget.onTap(); // sofort Foto machen
-
-    // WICHTIG: warte ganz kurz, damit die "kleine" Animation sichtbar ist
-    await Future.delayed(const Duration(milliseconds: 40));
-    if (mounted) {
-      _controller.reverse();
-    }
-  }
-
-  void _onTapCancel() {
-    _controller.reverse();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      behavior: HitTestBehavior.translucent,
-      child: Container(
-        width: 72,
-        height: 72,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 4),
-          color: Colors.transparent, // kein Füllbereich im äußeren Ring
-        ),
-        child: Center(
-          child: AnimatedBuilder(
-            animation: _scaleAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _scaleAnimation.value,
-                child: child,
-              );
-            },
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.redAccent.withOpacity(0.8),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
