@@ -15,32 +15,34 @@ class SearchHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Column(
         children: [
           Container(
             height: MediaQuery.of(context).padding.top,
-            color: Colors.grey[200],
+            color: colorScheme.background, // genau Colors.grey[200]
           ),
           Container(
-            color: Colors.grey[200],
+            color: colorScheme.background, // genau Colors.grey[200]
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface, // genau Colors.white
                 borderRadius: BorderRadius.circular(12),
               ),
               child: TextField(
                 controller: controller,
                 focusNode: focusNode,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search for recipes or ingredients...',
                   prefixIcon: Icon(Icons.search),
                   border: InputBorder.none,
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onChanged: onChanged,
               ),

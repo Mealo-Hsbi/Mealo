@@ -142,11 +142,24 @@ Widget build(BuildContext context) {
           scale: scale,
           alignment: Alignment.topCenter,
           child: GestureDetector(
-            onDoubleTap: _switchCamera,  // hier wieder das Umschalten per Doppeltap
+            onDoubleTap: _switchCamera,
             child: CameraPreview(_controller!),
           ),
         ),
       ),
+
+      // Hintergrund für Statusleiste (oben)
+      // Positioned(
+      //   top: 0,
+      //   left: 0,
+      //   right: 0,
+      //   child: Container(
+      //     height: MediaQuery.of(context).padding.top,
+      //     color: Colors.grey[200], // hier kannst du jede Farbe nehmen
+      //   ),
+      // ),
+
+      // Buttons unten
       Positioned(
         bottom: 32,
         left: 0,
@@ -176,6 +189,7 @@ Widget build(BuildContext context) {
     ],
   );
 }
+
 
 
 
