@@ -23,6 +23,14 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   final GlobalKey _previewKey = GlobalKey();
   double _cameraOpacity = 0.0;
 
+  // Liste zum Speichern der aufgenommenen Bilder
+  final List<XFile> _capturedImages = [];
+
+  // Define constants for the navbar dimensions (used for layout calculations)
+  static const double _navbarHeight = 72.0;
+  static const double _navbarBottomPadding = 32.0;
+  static const double _thumbnailListHeight = 80.0; // Höhe für die Thumbnail-Liste
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +65,10 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     if (!mounted || !widget.isVisible) return;
 
     final permission = await Permission.camera.request();
-    if (!permission.isGranted) return;
+    if (!permission.isGranted) {
+      print("Kamera-Berechtigung nicht erteilt.");
+      return;
+    }
 
     try {
       final cameras = await availableCameras();
@@ -72,39 +83,40 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
       if (!mounted) return;
 
-setState(() {
-  _controller = controller;
-  _isInitialized = true;
-  _cameraOpacity = 0.0; // Kamera ist da, aber noch unsichtbar
-});
+      setState(() {
+        _controller = controller;
+        _isInitialized = true;
+        _cameraOpacity = 0.0; // Kamera ist da, aber noch unsichtbar
+      });
 
-// Nach kurzem Delay (z. B. 50ms), langsam sichtbar machen
-Future.delayed(const Duration(milliseconds: 50), () {
-  if (mounted) {
-    setState(() {
-      _cameraOpacity = 1.0;
-    });
-  }
-});
+      // Nach kurzem Delay (z. B. 50ms), langsam sichtbar machen
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (mounted) {
+          setState(() {
+            _cameraOpacity = 1.0;
+          });
+        }
+      });
     } catch (e) {
       print("Fehler bei Kamera-Initialisierung: $e");
     }
   }
 
   Future<void> _switchCamera() async {
-    _disposeCamera();
+    if (_controller == null || !_controller!.value.isInitialized) return;
+
+    setState(() {
+      _cameraOpacity = 0.0; // Ausblenden für den Übergang
+    });
+    await Future.delayed(const Duration(milliseconds: 200)); // Fade-Out abwarten
+
+    _disposeCamera(); // Dispose des alten Controllers
 
     _currentLensDirection = _currentLensDirection == CameraLensDirection.back
         ? CameraLensDirection.front
         : CameraLensDirection.back;
 
-    setState(() {
-      _cameraOpacity = 0.0; // ausblenden
-    });
-    await Future.delayed(const Duration(milliseconds: 200)); // Fade-Out abwarten
-
-
-    await _initializeCamera();
+    await _initializeCamera(); // Initialisiere die neue Kamera
   }
 
   @override
@@ -124,7 +136,9 @@ Future.delayed(const Duration(milliseconds: 50), () {
     try {
       final picture = await _controller!.takePicture();
       print('Bild aufgenommen: ${picture.path}');
-      // Weiterverarbeitung
+      setState(() {
+        _capturedImages.add(picture); // Bild zur Liste hinzufügen
+      });
     } catch (e) {
       print('Fehler beim Fotografieren: $e');
     }
@@ -135,89 +149,144 @@ Future.delayed(const Duration(milliseconds: 50), () {
     if (pickedFile != null) {
       final file = File(pickedFile.path);
       print('Bild aus Galerie: ${file.path}');
-      // Weiterverarbeitung
+      // Optional: Bild aus Galerie auch zur Liste hinzufügen, wenn gewünscht
+      // setState(() {
+      //   _capturedImages.add(pickedFile);
+      // });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaSize = MediaQuery.of(context).size;
-final scale = _controller != null && _controller!.value.isInitialized
-    ? 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height))
-    : 1.0;
+    final mediaSize = MediaQuery.of(context).size; // Die volle Bildschirmgröße
 
-return GestureDetector(
-  onDoubleTap: _switchCamera,
-  child: Stack(
-    children: [
-      // Schwarzer Hintergrund, wenn Kamera noch nicht da
-      Container(color: Colors.black),
+    final previewSize = _controller?.value.previewSize;
 
-      // Kamera-Vorschau mit Fade
-      AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: _cameraOpacity,
-        child: _controller != null && _controller!.value.isInitialized
-            ? ClipRect(
-                clipper: _MediaSizeClipper(mediaSize),
-                child: Transform.scale(
-                  scale: scale,
-                  alignment: Alignment.topCenter,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: _currentLensDirection == CameraLensDirection.front
-                        ? Matrix4.rotationY(math.pi)
-                        : Matrix4.identity(),
-                    child: CameraPreview(_controller!, key: _previewKey),
-                  ),
-                ),
-              )
-            : const SizedBox.shrink(), // leer, solange nicht initialisiert
-      ),
+    // Skalierungsfaktor, um die Kamera-Vorschau den **gesamten Bildschirm** zu 'cover'n
+    double scale = 1.0;
+    if (_controller != null && _controller!.value.isInitialized && previewSize != null) {
+      final double scaleX = mediaSize.width / previewSize.width;
+      final double scaleY = mediaSize.height / previewSize.height;
+      scale = math.max(scaleX, scaleY);
+    }
 
-      // UI (immer sichtbar)
-      Positioned(
-        bottom: 32,
-        left: 0,
-        right: 0,
-        child: SizedBox(
-          height: 72,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                left: 24,
-                top: (72 - 60) / 2,
-                child: GestureDetector(
-                  onTap: _pickImageFromGallery,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
+    return GestureDetector(
+      onDoubleTap: _switchCamera,
+      child: Stack(
+        children: [
+          // Schwarzer Hintergrund, wenn Kamera noch nicht da
+          Container(color: Colors.black),
+
+          // Kamera-Vorschau mit Fade
+          // Positioniert die Vorschau über den gesamten Bildschirm
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: _cameraOpacity,
+            child: _controller != null && _controller!.value.isInitialized && previewSize != null
+                ? ClipRect(
+                    // Schneidet die Kamera-Vorschau auf die Bildschirmgröße zu
+                    clipper: _MediaSizeClipper(mediaSize),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(20.0),
+                          bottom: Radius.circular(20.0)),
+                      child: Transform.scale(
+                        scale: scale,
+                        // Zentriert die Kamera-Vorschau, um den 'cover'-Effekt zu erzielen
+                        alignment: Alignment.center,
+                        child: Transform(
+                          alignment: Alignment.center,
+                          transform: _currentLensDirection == CameraLensDirection.front
+                              ? Matrix4.rotationY(math.pi)
+                              : Matrix4.identity(),
+                          child: CameraPreview(_controller!, key: _previewKey),
+                        ),
+                      ),
                     ),
-                    child: const Icon(Icons.photo, color: Colors.white, size: 28),
-                  ),
+                  )
+                : const SizedBox.shrink(), // leer, solange nicht initialisiert
+          ),
+
+          // Thumbnail-Liste (angezeigt, wenn Bilder aufgenommen wurden)
+          // Positioniert ÜBER der Navigationsleiste
+          if (_capturedImages.isNotEmpty)
+            Positioned(
+              bottom: _navbarHeight + _navbarBottomPadding, // Über den Buttons positionieren
+              left: 0,
+              right: 0,
+              height: _thumbnailListHeight,
+              child: Container(
+                color: Colors.black.withOpacity(0.5), // Leichter Hintergrund für Sichtbarkeit
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _capturedImages.length,
+                  itemBuilder: (context, index) {
+                    final imageFile = _capturedImages[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0), // Abgerundete Ecken für Thumbnails
+                        child: Image.file(
+                          File(imageFile.path),
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-              AnimatedCaptureButton(onTap: _takePicture),
-            ],
+            ),
+
+          // UI (Navigationsleiste mit Buttons)
+          // Positioniert am unteren Rand
+          Positioned(
+            bottom: _navbarBottomPadding,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: _navbarHeight,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    left: 24,
+                    top: (_navbarHeight - 60) / 2,
+                    child: GestureDetector(
+                      onTap: _pickImageFromGallery,
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.photo, color: Colors.white, size: 28),
+                      ),
+                    ),
+                  ),
+                  AnimatedCaptureButton(onTap: _takePicture),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 }
 
 class _MediaSizeClipper extends CustomClipper<Rect> {
-  final Size mediaSize;
-  const _MediaSizeClipper(this.mediaSize);
+  final Size clipSize;
+
+  const _MediaSizeClipper(this.clipSize);
 
   @override
-  Rect getClip(Size size) => Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 0, clipSize.width, clipSize.height);
+  }
 
   @override
   bool shouldReclip(CustomClipper<Rect> oldClipper) => true;
