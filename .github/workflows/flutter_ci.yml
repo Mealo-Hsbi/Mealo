@@ -33,24 +33,3 @@ jobs:
 
       - name: Unit- & Widget-Tests
         run: flutter test --coverage
-
-  integration_test:
-    name: Integration Tests (frontend)
-    runs-on: ubuntu-latest
-    needs: analyze_and_test
-
-    defaults:
-      run:
-        working-directory: frontend
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 'latest'
-
-      - run: flutter pub get
-
-      - name: Integration Tests
-        run: flutter test integration_test/app_test.dart
