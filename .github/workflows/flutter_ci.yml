@@ -1,0 +1,56 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze_and_test:
+    name: Analyse & Tests (frontend)
+    runs-on: ubuntu-latest
+
+    # Hier geben wir an, dass alle `run:`-Schritte im Unterordner "frontend" ausgeführt werden
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'latest'
+
+      - name: Dependencies holen
+        run: flutter pub get
+
+      - name: Statische Analyse
+        run: flutter analyze
+
+      - name: Unit- & Widget-Tests
+        run: flutter test --coverage
+
+  integration_test:
+    name: Integration Tests (frontend)
+    runs-on: ubuntu-latest
+    needs: analyze_and_test
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'latest'
+
+      - run: flutter pub get
+
+      - name: Integration Tests
+        run: flutter test integration_test/app_test.dart
