@@ -93,16 +93,16 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     await _tryInitializeCamera();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  if (!widget.isVisible) return;
 
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-      _controller?.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      _tryInitializeCamera();
-    }
+  if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+    _disposeCamera(); // Wichtig: Kamera richtig schließen
+  } else if (state == AppLifecycleState.resumed) {
+    _tryInitializeCamera(); // Kamera neu starten
   }
+}
 
   Future<void> _takePicture() async {
     if (!_controller!.value.isInitialized) return;
@@ -190,18 +190,7 @@ Positioned(
         ),
 
         // Aufnahme-Button exakt in der Mitte
-        GestureDetector(
-          onTap: _takePicture,
-          child: Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 4),
-              color: Colors.white,
-            ),
-          ),
-        ),
+        AnimatedCaptureButton(onTap: _takePicture),
       ],
     ),
   ),
@@ -243,7 +232,7 @@ class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with Sing
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 80),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.7).animate(
@@ -255,9 +244,14 @@ class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with Sing
     _controller.forward();
   }
 
-  void _onTapUp(TapUpDetails details) {
-    _controller.reverse();
-    widget.onTap();
+  void _onTapUp(TapUpDetails details) async {
+    widget.onTap(); // sofort Foto machen
+
+    // WICHTIG: warte ganz kurz, damit die "kleine" Animation sichtbar ist
+    await Future.delayed(const Duration(milliseconds: 40));
+    if (mounted) {
+      _controller.reverse();
+    }
   }
 
   void _onTapCancel() {
@@ -276,13 +270,14 @@ class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with Sing
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
+      behavior: HitTestBehavior.translucent,
       child: Container(
         width: 72,
         height: 72,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white, width: 4),
-          color: Colors.white,
+          color: Colors.transparent, // kein Füllbereich im äußeren Ring
         ),
         child: Center(
           child: AnimatedBuilder(
@@ -294,11 +289,11 @@ class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with Sing
               );
             },
             child: Container(
-              width: 56, // kleiner als 72, damit ein Rand sichtbar bleibt
+              width: 56,
               height: 56,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.8), // etwas transparent, je nach Wunsch
+                color: Colors.redAccent.withOpacity(0.8),
               ),
             ),
           ),
@@ -307,3 +302,4 @@ class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with Sing
     );
   }
 }
+
