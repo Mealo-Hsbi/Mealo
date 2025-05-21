@@ -190,8 +190,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 : const SizedBox.shrink(), // leer, solange nicht initialisiert
           ),
 
-          // NEU: Thumbnail-Liste (angezeigt, wenn Bilder aufgenommen wurden)
-          // Diese Liste wird über den Navigationsbuttons positioniert.
           if (_capturedImages.isNotEmpty)
             Positioned(
               bottom: _navbarHeight + _navbarBottomPadding, // Platzierung über den Buttons
@@ -199,7 +197,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               right: 0,
               height: _thumbnailListHeight,
               child: Container(
-                color: Colors.black.withOpacity(0.5), // Leichter Hintergrund für Sichtbarkeit
+                color: Colors.black.withOpacity(0), // Leichter Hintergrund für Sichtbarkeit
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal, // Horizontal scrollbar
