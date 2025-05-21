@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/recipeList/parallax_recipes.dart';
 import 'package:frontend/features/recipeList/recipe.dart';
 import 'package:frontend/features/recipeList/recipe_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  Future<void> _signOut(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-  }
+
 
   @override
   Widget build(BuildContext context) {

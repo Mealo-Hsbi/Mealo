@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/data/auth_repository.dart';
 import 'package:frontend/features/auth/domain/user_model.dart';
 import 'package:frontend/features/auth/presentation/login_screen.dart';
-import 'package:frontend/core/routes/navigation_tabs.dart';
 import 'package:frontend/core/routes/app_router.dart';
 
 class AuthGate extends StatelessWidget {

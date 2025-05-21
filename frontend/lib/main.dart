@@ -3,11 +3,9 @@ import 'package:frontend/core/themes/app_theme.dart';
 import 'package:frontend/features/auth/presentation/auth_gate.dart';
 import 'package:frontend/features/auth/presentation/login_screen.dart';
 import 'package:frontend/features/auth/presentation/register_screen.dart';
-import 'package:frontend/core/routes/navigation_tabs.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:frontend/core/routes/app_router.dart';
 
 Future<void> main() async {

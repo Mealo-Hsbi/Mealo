@@ -4,7 +4,6 @@ import 'package:frontend/common/data/ingredients.dart';
 import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/utils/string_similarity_helper.dart';
 import 'package:frontend/common/widgets/ingredient_chip.dart';
-import 'package:frontend/common/utils/image_availability_cache.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

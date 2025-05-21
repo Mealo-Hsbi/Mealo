@@ -3,10 +3,20 @@ import '../domain/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRepository {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _firebaseAuth;
+  final GoogleSignIn _googleSignIn;
 
-  /// Stream, der bei jedem Login/Logout das aktuelle UserModel oder null liefert
+  /// Standard-Konstruktor: benutzt die echten Instanzen
+  AuthRepository({
+    FirebaseAuth? firebaseAuth,
+    GoogleSignIn? googleSignIn,
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
+
+  /// Für Tests: z.B. `AuthRepository(firebaseAuth: mockAuth)`
+  factory AuthRepository.forAuth(FirebaseAuth auth) =>
+      AuthRepository(firebaseAuth: auth);
+
   Stream<UserModel?> get user {
     return _firebaseAuth.authStateChanges()
       .map((u) => u == null ? null : UserModel.fromFirebase(u));
@@ -15,8 +25,8 @@ class AuthRepository {
   Future<void> signUp({
     required String email,
     required String password,
-  }) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(
+  }) {
+    return _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
@@ -25,36 +35,25 @@ class AuthRepository {
   Future<void> signIn({
     required String email,
     required String password,
-  }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
+  }) {
+    return _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
   }
 
   Future<void> signInWithGoogle() async {
-    // Startet den Google-Flow
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) {
-      // User hat abgebrochen
-      return;
-    }
-    // Holt die Authentifizierungsdaten
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-    // Erzeugt Firebase-Credential
+    if (googleUser == null) return;
+    final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-
-    // Anmeldung bei Firebase
     await _firebaseAuth.signInWithCredential(credential);
   }
 
-  @override
   Future<void> signOut() async {
-    // Firebase und Google ausloggen
     await _firebaseAuth.signOut();
     await _googleSignIn.signOut();
   }

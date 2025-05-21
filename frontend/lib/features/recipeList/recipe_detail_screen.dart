@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/recipeList/recipe.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   // final Recipe recipe;
