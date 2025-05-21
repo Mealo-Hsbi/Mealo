@@ -53,45 +53,43 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     _isInitialized = false;
   }
 
-Future<void> _initializeCamera() async {
-  if (!mounted || !widget.isVisible) return;
+  Future<void> _initializeCamera() async {
+    if (!mounted || !widget.isVisible) return;
 
-  setState(() {
-    _cameraOpacity = 0.0; // Zeige das Widget (unsichtbar)
-    _isInitialized = true; // schon mal „aktiv“, damit es in build() erscheint
-  });
+    final permission = await Permission.camera.request();
+    if (!permission.isGranted) return;
 
-  final permission = await Permission.camera.request();
-  if (!permission.isGranted) return;
+    try {
+      final cameras = await availableCameras();
+      final camera = cameras.firstWhere(
+        (cam) => cam.lensDirection == _currentLensDirection,
+        orElse: () => cameras.first,
+      );
 
-  try {
-    final cameras = await availableCameras();
-    final camera = cameras.firstWhere(
-      (cam) => cam.lensDirection == _currentLensDirection,
-      orElse: () => cameras.first,
-    );
+      final controller = CameraController(camera, ResolutionPreset.max);
 
-    final controller = CameraController(camera, ResolutionPreset.max);
-    await controller.initialize();
+      await controller.initialize();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
+setState(() {
+  _controller = controller;
+  _isInitialized = true;
+  _cameraOpacity = 0.0; // Kamera ist da, aber noch unsichtbar
+});
+
+// Nach kurzem Delay (z. B. 50ms), langsam sichtbar machen
+Future.delayed(const Duration(milliseconds: 50), () {
+  if (mounted) {
     setState(() {
-      _controller = controller;
+      _cameraOpacity = 1.0;
     });
-
-    // Jetzt den Fade-In triggern
-    Future.delayed(const Duration(milliseconds: 50), () {
-      if (mounted) {
-        setState(() {
-          _cameraOpacity = 1.0;
-        });
-      }
-    });
-  } catch (e) {
-    print("Fehler bei Kamera-Initialisierung: $e");
   }
-}
+});
+    } catch (e) {
+      print("Fehler bei Kamera-Initialisierung: $e");
+    }
+  }
 
   Future<void> _switchCamera() async {
     _disposeCamera();
@@ -143,7 +141,6 @@ Future<void> _initializeCamera() async {
 
   @override
   Widget build(BuildContext context) {
-    
     final mediaSize = MediaQuery.of(context).size;
 final scale = _controller != null && _controller!.value.isInitialized
     ? 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height))
