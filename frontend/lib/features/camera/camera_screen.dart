@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:math' as math;
-
 
 class CameraScreen extends StatefulWidget {
   final bool isVisible;
@@ -21,11 +20,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   bool _isInitialized = false;
   CameraLensDirection _currentLensDirection = CameraLensDirection.back;
   final GlobalKey _previewKey = GlobalKey();
-
-  // Fokus-Overlay
-  bool _showFocusCircle = false;
-  double _tapX = 0;
-  double _tapY = 0;
 
   @override
   void initState() {
@@ -131,38 +125,15 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-Future<void> _handleTap(TapUpDetails details) async {
-  if (!mounted || _controller == null || !_controller!.value.isInitialized) return;
-
-final RenderBox? previewBox = _previewKey.currentContext!.findRenderObject() as RenderBox?;
-final RenderBox? stackBox = context.findRenderObject() as RenderBox?;
-
-if (previewBox == null || stackBox == null) return;
-
-final Offset previewLocal = previewBox.globalToLocal(details.globalPosition);
-final Offset stackLocal = stackBox.globalToLocal(details.globalPosition);
-final Size previewSize = previewBox.size;
-
-final double x = (previewLocal.dx / previewSize.width).clamp(0.0, 1.0);
-final double y = (previewLocal.dy / previewSize.height).clamp(0.0, 1.0);
-
-// 🎯 Zeige den Kreis SOFORT
-setState(() {
-  _showFocusCircle = true;
-  _tapX = stackLocal.dx;
-  _tapY = stackLocal.dy;
-});
-
-// 🔧 Fokus & Belichtung später (asynchron)
-unawaited(_controller?.setFocusPoint(Offset(x, y)));
-unawaited(_controller?.setExposurePoint(Offset(x, y)));
-
-Future.delayed(const Duration(seconds: 2), () {
-  if (mounted) {
-    setState(() => _showFocusCircle = false);
+  Future<File?> _getLastImageThumbnail() async {
+    final picker = ImagePicker();
+    final recent = await picker.pickImage(source: ImageSource.gallery);
+    if (recent != null) {
+      return File(recent.path);
+    }
+    return null;
   }
-});
-}
+
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +145,6 @@ Future.delayed(const Duration(seconds: 2), () {
     final scale = 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height));
 
     return GestureDetector(
-      onTapUp: _handleTap,
       onDoubleTap: _switchCamera,
       child: Stack(
         children: [
@@ -183,7 +153,6 @@ Future.delayed(const Duration(seconds: 2), () {
             child: Transform.scale(
               scale: scale,
               alignment: Alignment.topCenter,
-              // child: CameraPreview(_controller!),
               child: Transform(
                 alignment: Alignment.center,
                 transform: _currentLensDirection == CameraLensDirection.front
@@ -193,66 +162,56 @@ Future.delayed(const Duration(seconds: 2), () {
               ),
             ),
           ),
-          if (_showFocusCircle) _buildFocusCircle(),
-          Positioned(
-            bottom: 32,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: Colors.black54,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.photo),
-                    iconSize: 36,
-                    color: Colors.white,
-                    onPressed: _pickImageFromGallery,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    iconSize: 48,
-                    color: Colors.white,
-                    onPressed: _takePicture,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFocusCircle() {
-  return Positioned(
-    left: _tapX - 30,
-    top: _tapY - 30,
-    child: TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.6, end: 1.0),
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOutBack,
-      builder: (context, scale, child) {
-        return Transform.scale(
-          scale: scale,
-          child: AnimatedOpacity(
-            opacity: _showFocusCircle ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 200),
+Positioned(
+  bottom: 32,
+  left: 0,
+  right: 0,
+  child: SizedBox(
+    height: 72, // Höhe wie Aufnahme-Button, für einfachere Zentrierung
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        // Galerie-Button links, mit Abstand 24
+        Positioned(
+          left: 24,
+          top: (72 - 60) / 2, // zentriert den 60x60 Button vertikal im 72px hohen Container
+          child: GestureDetector(
+            onTap: _pickImageFromGallery,
             child: Container(
               width: 60,
               height: 60,
               decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
               ),
+              child: const Icon(Icons.photo, color: Colors.white, size: 28),
             ),
           ),
-        );
-      },
+        ),
+
+        // Aufnahme-Button exakt in der Mitte
+        GestureDetector(
+          onTap: _takePicture,
+          child: Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 4),
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     ),
-  );
-}
+  ),
+),
+
+
+        ],
+      ),
+    );
+  }
 }
 
 class _MediaSizeClipper extends CustomClipper<Rect> {
@@ -268,3 +227,83 @@ class _MediaSizeClipper extends CustomClipper<Rect> {
   bool shouldReclip(CustomClipper<Rect> oldClipper) => true;
 }
 
+class AnimatedCaptureButton extends StatefulWidget {
+  final VoidCallback onTap;
+  const AnimatedCaptureButton({Key? key, required this.onTap}) : super(key: key);
+
+  @override
+  State<AnimatedCaptureButton> createState() => _AnimatedCaptureButtonState();
+}
+
+class _AnimatedCaptureButtonState extends State<AnimatedCaptureButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.7).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+
+  void _onTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 4),
+          color: Colors.white,
+        ),
+        child: Center(
+          child: AnimatedBuilder(
+            animation: _scaleAnimation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _scaleAnimation.value,
+                child: child,
+              );
+            },
+            child: Container(
+              width: 56, // kleiner als 72, damit ein Rand sichtbar bleibt
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.8), // etwas transparent, je nach Wunsch
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
