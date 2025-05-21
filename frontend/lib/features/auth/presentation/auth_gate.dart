@@ -7,6 +7,7 @@ import 'package:frontend/core/routes/app_router.dart';
 class AuthGate extends StatelessWidget {
   const AuthGate({Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<UserModel?>(
