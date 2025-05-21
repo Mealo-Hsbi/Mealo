@@ -6,7 +6,7 @@ class AppTheme {
     primaryColor: Colors.green,
     primarySwatch: Colors.green,
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: Colors.green,
       foregroundColor: Colors.white,
       elevation: 0,
@@ -16,15 +16,20 @@ class AppTheme {
         fontWeight: FontWeight.bold,
       ),
     ),
+    scaffoldBackgroundColor: Colors.white,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Colors.white, // Hintergrundfarbe der Leiste
-      selectedItemColor: Colors.green, // Farbe des ausgewählten Items
-      unselectedItemColor: Colors.grey, // Farbe der nicht ausgewählten Items
-      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold), // Stil des ausgewählten Labels
-      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal), // Stil des nicht ausgewählten Labels
-      showSelectedLabels: true, // Labels für ausgewählte Items anzeigen
-      showUnselectedLabels: false, // Labels für nicht ausgewählte Items ausblenden
-      type: BottomNavigationBarType.fixed, // Oder BottomNavigationBarType.shifting für animierte Farbe
+      backgroundColor: Colors.white,
+      selectedItemColor: Colors.green,
+      unselectedItemColor: Colors.grey,
+      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+      showSelectedLabels: true,
+      showUnselectedLabels: false,
+      type: BottomNavigationBarType.fixed,
+    ),
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: Colors.green,
+      circularTrackColor: Colors.grey.shade300,
     ),
   );
 }
