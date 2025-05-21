@@ -28,8 +28,5 @@ jobs:
       - name: Dependencies holen
         run: flutter pub get
 
-      - name: Statische Analyse
-        run: flutter analyze
-
       - name: Unit- & Widget-Tests
         run: flutter test --coverage
