@@ -4,14 +4,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // <--- HIER: services.dart importieren
 import 'package:camera/camera.dart';
 import 'package:frontend/common/widgets/camera/camera_controls.dart';
 import 'package:frontend/common/widgets/camera/camera_view.dart';
 import 'package:frontend/common/widgets/camera/thumbnail_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-
 
 class CameraScreen extends StatefulWidget {
   final bool isVisible;
@@ -204,70 +203,74 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   @override
   Widget build(BuildContext context) {
-    final mediaSize = MediaQuery.of(context).size;
-    final theme = Theme.of(context); // Theme abrufen
+    final mediaQuery = MediaQuery.of(context);
+    final mediaSize = mediaQuery.size;
+    final theme = Theme.of(context);
 
-    // Die berechnete Höhe für die Kamera-Vorschau
-    final cameraPreviewHeight = mediaSize.height - _navbarHeight;
+    final double topSafeAreaPadding = mediaQuery.padding.top;
 
-    // Der Skalierungsfaktor bleibt gleich
+    final cameraPreviewHeight = mediaSize.height - _navbarHeight - topSafeAreaPadding;
+
     final scale = _controller != null && _controller!.value.isInitialized
         ? 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height))
         : 1.0;
 
-    return GestureDetector(
-      onDoubleTap: _switchCamera,
-      child: Stack(
-        children: [
-          // Hier wird die Farbe geändert!
-          Container(color: theme.colorScheme.background), // <--- ÄNDERUNG HIER
+    return AnnotatedRegion<SystemUiOverlayStyle>( // <--- HIER DAS ANNOTATEDREGION HINZUFÜGEN
+      value: SystemUiOverlayStyle.dark, // Oder .light, je nach gewünschter Farbe der Symbole
+      child: GestureDetector(
+        onDoubleTap: _switchCamera,
+        child: Stack(
+          children: [
+            // Hintergrundfarbe für den gesamten Screen
+            Container(color: theme.colorScheme.background),
 
-          // 1. Kamera-Vorschau
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: cameraPreviewHeight,
-            child: CameraView(
-              controller: _controller,
-              isInitialized: _isInitialized,
-              cameraOpacity: _cameraOpacity,
-              previewKey: _previewKey,
-              currentLensDirection: _currentLensDirection,
-              mediaSize: mediaSize,
-              scale: scale,
-              borderRadius: _borderRadius,
-            ),
-          ),
-
-          // 2. Thumbnail-Liste (falls Bilder vorhanden)
-          if (_capturedImages.isNotEmpty)
+            // 1. Kamera-Vorschau
             Positioned(
-              bottom: _navbarHeight + _navbarBottomPadding,
+              top: topSafeAreaPadding,
               left: 0,
               right: 0,
-              height: _thumbnailListHeight,
-              child: ThumbnailBar(
-                capturedImages: _capturedImages,
-                thumbnailSize: _thumbnailSize,
-                onDeleteImage: _deleteImage,
+              height: cameraPreviewHeight,
+              child: CameraView(
+                controller: _controller,
+                isInitialized: _isInitialized,
+                cameraOpacity: _cameraOpacity,
+                previewKey: _previewKey,
+                currentLensDirection: _currentLensDirection,
+                mediaSize: mediaSize,
+                scale: scale,
+                borderRadius: _borderRadius,
               ),
             ),
 
-          // 3. Kamera-Steuerung (Capture, Galerie, Weiter)
-          Positioned(
-            bottom: _navbarBottomPadding,
-            left: 0,
-            right: 0,
-            child: CameraControls(
-              navbarHeight: _navbarHeight,
-              onTakePicture: _takePicture,
-              onPickImageFromGallery: _pickImageFromGallery,
-              onContinueButtonPressed: _onContinueButtonPressed,
-              showContinueButton: _capturedImages.isNotEmpty,
+            // 2. Thumbnail-Liste (falls Bilder vorhanden)
+            if (_capturedImages.isNotEmpty)
+              Positioned(
+                bottom: _navbarHeight + _navbarBottomPadding,
+                left: 0,
+                right: 0,
+                height: _thumbnailListHeight,
+                child: ThumbnailBar(
+                  capturedImages: _capturedImages,
+                  thumbnailSize: _thumbnailSize,
+                  onDeleteImage: _deleteImage,
+                ),
+              ),
+
+            // 3. Kamera-Steuerung (Capture, Galerie, Weiter)
+            Positioned(
+              bottom: _navbarBottomPadding,
+              left: 0,
+              right: 0,
+              child: CameraControls(
+                navbarHeight: _navbarHeight,
+                onTakePicture: _takePicture,
+                onPickImageFromGallery: _pickImageFromGallery,
+                onContinueButtonPressed: _onContinueButtonPressed,
+                showContinueButton: _capturedImages.isNotEmpty,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

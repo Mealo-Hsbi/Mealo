@@ -10,9 +10,9 @@ class CameraView extends StatelessWidget {
   final double cameraOpacity;
   final GlobalKey previewKey;
   final CameraLensDirection currentLensDirection;
-  final Size mediaSize; // Bleibt, da es für die Skalierung wichtig ist
+  final Size mediaSize;
   final double scale;
-  final double borderRadius; // Neuer Parameter für die Eckenrundung
+  final double borderRadius;
 
   const CameraView({
     super.key,
@@ -23,7 +23,7 @@ class CameraView extends StatelessWidget {
     required this.currentLensDirection,
     required this.mediaSize,
     required this.scale,
-    this.borderRadius = 0.0, // Standardwert, falls nicht übergeben
+    this.borderRadius = 0.0,
   });
 
   @override
@@ -32,17 +32,19 @@ class CameraView extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       opacity: cameraOpacity,
       child: controller != null && isInitialized
-          ? ClipRRect( // Hier kommt der ClipRRect ins Spiel!
+          ? ClipRRect( // Hier wird der ClipRRect angepasst!
               borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(borderRadius),     // <--- NEU: Obere linke Ecke
+                topRight: Radius.circular(borderRadius),    // <--- NEU: Obere rechte Ecke
                 bottomLeft: Radius.circular(borderRadius),
                 bottomRight: Radius.circular(borderRadius),
               ),
-              child: SizedBox.expand( // Wichtig: Füllt den verfügbaren Platz im Positioned-Container
-                child: FittedBox( // Sorgt dafür, dass CameraPreview den verfügbaren Platz ausfüllt
-                  fit: BoxFit.cover, // Wichtig für das Seitenverhältnis
+              child: SizedBox.expand(
+                child: FittedBox(
+                  fit: BoxFit.cover,
                   child: SizedBox(
-                    width: mediaSize.width, // Originalbreite der Kamera
-                    height: mediaSize.width * controller!.value.aspectRatio, // Originalhöhe der Kamera
+                    width: mediaSize.width,
+                    height: mediaSize.width * controller!.value.aspectRatio,
                     child: Transform(
                       alignment: Alignment.center,
                       transform: currentLensDirection == CameraLensDirection.front
@@ -54,7 +56,7 @@ class CameraView extends StatelessWidget {
                 ),
               ),
             )
-          : Container(color: Colors.white), // Schwarzer Hintergrund, wenn nicht initialisiert
+          : Container(color: Colors.black), // Beachte: Diese Farbe wird jetzt vom CameraScreen gesteuert
     );
   }
 }
