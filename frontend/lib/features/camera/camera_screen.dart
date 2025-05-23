@@ -222,7 +222,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         child: Stack(
           children: [
             // Hintergrundfarbe für den gesamten Screen
-            Container(color: theme.colorScheme.background),
+            Container(color: theme.colorScheme.surface),
 
             // 1. Kamera-Vorschau
             Positioned(
