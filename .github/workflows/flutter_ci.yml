@@ -1,0 +1,32 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze_and_test:
+    name: Analyse & Tests (frontend)
+    runs-on: ubuntu-latest
+
+    # Hier geben wir an, dass alle `run:`-Schritte im Unterordner "frontend" ausgeführt werden
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+
+      - name: Dependencies holen
+        run: flutter pub get
+
+      - name: Unit- & Widget-Tests
+        run: flutter test --coverage

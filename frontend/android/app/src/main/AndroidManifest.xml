@@ -5,7 +5,7 @@
     <application
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
-        android:label="frontend"
+        android:label="Mealo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
