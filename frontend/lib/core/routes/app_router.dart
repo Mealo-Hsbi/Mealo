@@ -42,7 +42,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < appTabs.length; i++) {
+    for (int i = 0; i < getAppTabs(0).length; i++) {
       _tabStacks[i] = [];
       _navigatorKeys.add(GlobalKey<NavigatorState>());
     }
@@ -83,7 +83,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
         key: _navigatorKeys[index],
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
-            builder: (_) => appTabs[index],
+            builder: (_) => getAppTabs(_currentIndex)[index],
           );
         },
       ),
@@ -96,8 +96,9 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
       onWillPop: _onWillPop,
       child: Scaffold(
         body: Stack(
-          children: appTabs.asMap().entries.map((entry) {
-            return _buildOffstageNavigator(entry.key);
+          children: getAppTabs(_currentIndex).asMap().entries.map((entry) {
+            int index = entry.key;
+            return _buildOffstageNavigator(index);
           }).toList(),
         ),
         bottomNavigationBar: BottomNavigationBar(

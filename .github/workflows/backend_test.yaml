@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache backend dependencies
+        uses: actions/cache@v3
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-node-backend-${{ hashFiles('backend/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-backend-
+
+      - name: Install backend dependencies
+        run: npm install --prefix backend
+
+      - name: Run backend tests
+        run: npm test --prefix backend
