@@ -122,6 +122,7 @@ app.*.symbols
 # Node.js / Express
 node_modules/
 .env
+.env.*
 dist/
 coverage/
 npm-debug.log*

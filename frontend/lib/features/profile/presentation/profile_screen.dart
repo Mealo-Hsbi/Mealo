@@ -1,22 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/api_client.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  Future<void> _signOut(BuildContext ctx) async {
-    // 1) Session beenden
-    await FirebaseAuth.instance.signOut();
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
 
-    // 2) Alle Routen unter dem Root (AuthGate) entfernen,
-    //    sodass AuthGate neu baut und wieder zum Login wechselt.
-    Navigator.of(ctx, rootNavigator: true)
-        .popUntil((route) => route.isFirst);
+class _ProfileScreenState extends State<ProfileScreen> {
+  final ApiClient _api = ApiClient();
+  late Future<String> _nameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameFuture = _fetchName();
+  }
+
+  Future<String> _fetchName() async {
+    try {
+      final response = await _api.getUser();
+      final data = response.data['user'] as Map<String, dynamic>;
+      // Nimm 'name' falls gesetzt, sonst Email
+      return data['name'] as String? ?? data['email'] as String;
+    } catch (e) {
+      debugPrint('Error fetching name: $e');
+      return 'Unbekannt';
+    }
+  }
+
+  Future<void> _signOut(BuildContext ctx) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(ctx, rootNavigator: true).popUntil((route) => route.isFirst);
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final fbUser = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       appBar: AppBar(
@@ -33,15 +55,28 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (user?.photoURL != null)
+            // Profilbild aus Firebase, falls vorhanden
+            if (fbUser?.photoURL != null)
               CircleAvatar(
                 radius: 48,
-                backgroundImage: NetworkImage(user!.photoURL!),
+                backgroundImage: NetworkImage(fbUser!.photoURL!),
               ),
             const SizedBox(height: 16),
-            Text(
-              user?.displayName ?? user?.email ?? 'Unbekannt',
-              style: const TextStyle(fontSize: 18),
+            // Name per FutureBuilder aus dem Backend holen
+            FutureBuilder<String>(
+              future: _nameFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return const Text('Fehler beim Laden');
+                } else {
+                  return Text(
+                    'Mein Name: ${snapshot.data}',
+                    style: const TextStyle(fontSize: 18),
+                  );
+                }
+              },
             ),
           ],
         ),
