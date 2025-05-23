@@ -1,11 +1,16 @@
+// frontend/screens/camera_screen.dart
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:frontend/common/widgets/camera/capture_button.dart'; // Stelle sicher, dass dieser Pfad korrekt ist
+import 'package:frontend/common/widgets/camera/camera_controls.dart';
+import 'package:frontend/common/widgets/camera/camera_view.dart';
+import 'package:frontend/common/widgets/camera/thumbnail_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 
 class CameraScreen extends StatefulWidget {
   final bool isVisible;
@@ -20,17 +25,17 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   CameraController? _controller;
   bool _isInitialized = false;
   CameraLensDirection _currentLensDirection = CameraLensDirection.back;
-  final GlobalKey _previewKey = GlobalKey();
+  final GlobalKey _previewKey = GlobalKey(); // Behalten, da CameraPreview hier initialisiert wird
   double _cameraOpacity = 0.0;
 
   // Liste zum Speichern der aufgenommenen Bilder
   final List<XFile> _capturedImages = [];
 
-  // Konstanten für die UI-Elemente
+  // Konstanten für die UI-Elemente (bleiben hier, da sie den gesamten Screen beeinflussen)
   static const double _navbarHeight = 72.0;
   static const double _navbarBottomPadding = 32.0;
-  static const double _thumbnailListHeight = 80.0; // Höhe für die Thumbnail-Liste
-  static const double _thumbnailSize = 60.0; // Die Größe der einzelnen Thumbnails (Breite und Höhe)
+  static const double _thumbnailListHeight = 80.0;
+  static const double _thumbnailSize = 60.0;
 
   @override
   void initState() {
@@ -91,10 +96,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       setState(() {
         _controller = controller;
         _isInitialized = true;
-        _cameraOpacity = 0.0; // Kamera ist da, aber noch unsichtbar
+        _cameraOpacity = 0.0;
       });
 
-      // Nach kurzem Delay (z. B. 50ms), langsam sichtbar machen
       Future.delayed(const Duration(milliseconds: 50), () {
         if (mounted) {
           setState(() {
@@ -115,9 +119,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         : CameraLensDirection.back;
 
     setState(() {
-      _cameraOpacity = 0.0; // ausblenden
+      _cameraOpacity = 0.0;
     });
-    await Future.delayed(const Duration(milliseconds: 200)); // Fade-Out abwarten
+    await Future.delayed(const Duration(milliseconds: 200));
 
     await _initializeCamera();
   }
@@ -133,7 +137,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-  // Bild aufnehmen und zur Liste hinzufügen
   Future<void> _takePicture() async {
     if (!(_controller?.value.isInitialized ?? false)) return;
 
@@ -141,55 +144,53 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       final picture = await _controller!.takePicture();
       print('Bild aufgenommen: ${picture.path}');
       setState(() {
-        _capturedImages.add(picture); // Bild zur Liste hinzufügen
+        _capturedImages.add(picture);
       });
     } catch (e) {
       print('Fehler beim Fotografieren: $e');
     }
   }
 
+  // Diese Funktion wurde für die Auswahl mehrerer Bilder angepasst
   Future<void> _pickImageFromGallery() async {
-    // Fading-Effekt für die Kamera-Vorschau vor dem Öffnen der Galerie
     setState(() {
-      _cameraOpacity = 0.0; // Kamera-Vorschau ausblenden
+      _cameraOpacity = 0.0;
     });
-    // Kurze Verzögerung, damit der Fade-Out sichtbar wird
     await Future.delayed(const Duration(milliseconds: 50));
 
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    // ***************************************************************
+    // HIER IST DIE WICHTIGE ÄNDERUNG: pickImage() zu pickMultiImage()
+    // ***************************************************************
+    final List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
 
-    if (pickedFile != null) {
-      print('Bild aus Galerie: ${pickedFile.path}');
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      for (final file in pickedFiles) {
+        print('Bild aus Galerie: ${file.path}');
+      }
       setState(() {
-        _capturedImages.add(pickedFile); // Bild aus Galerie zur Liste hinzufügen
+        _capturedImages.addAll(pickedFiles); // Fügt ALLE ausgewählten Bilder zur Liste hinzu
       });
     }
 
-    // Kamera-Vorschau wieder einblenden, nachdem der ImagePicker geschlossen wurde
     if (widget.isVisible && mounted) {
       setState(() {
-        _cameraOpacity = 1.0; // Kamera-Vorschau wieder einblenden
+        _cameraOpacity = 1.0;
       });
     } else {
       _disposeCamera();
     }
   }
 
-  // Funktion für den "Weiter"-Knopf
   void _onContinueButtonPressed() {
     print('Weiter-Button gedrückt! Anzahl der Bilder: ${_capturedImages.length}');
-    // Hier würde die Logik für den nächsten Schritt implementiert werden,
-    // z.B. das Senden der _capturedImages an die Google Vision API
-    // oder das Navigieren zu einem anderen Bildschirm.
+    // Hier würde die Logik für den nächsten Schritt implementiert werden.
   }
 
-  // Funktion zum Löschen eines Bildes (wird vom _ImageThumbnail aufgerufen)
   void _deleteImage(int index, String? imagePath) {
     setState(() {
       if (index >= 0 && index < _capturedImages.length) {
         _capturedImages.removeAt(index);
 
-        // Optional: Bild von der Festplatte löschen
         if (imagePath != null) {
           final file = File(imagePath);
           if (file.existsSync()) {
@@ -208,7 +209,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   @override
   Widget build(BuildContext context) {
     final mediaSize = MediaQuery.of(context).size;
-    final theme = Theme.of(context); // Theme abrufen, um ColorScheme zu nutzen
 
     // Der Skalierungsfaktor aus deinem Originalcode
     final scale = _controller != null && _controller!.value.isInitialized
@@ -217,115 +217,44 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
     return GestureDetector(
       onDoubleTap: _switchCamera,
-      onTap: () {
-        // Hier könnte man zukünftig eine andere Interaktion einbauen,
-        // z.B. wenn man einen Bild-Viewer öffnen möchte.
-      },
       child: Stack(
         children: [
-          // Schwarzer Hintergrund, wenn Kamera noch nicht da
-          Container(color: Colors.black),
-
-          // Kamera-Vorschau mit Fade
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: _cameraOpacity,
-            child: _controller != null && _controller!.value.isInitialized
-                ? ClipRect(
-                    clipper: _MediaSizeClipper(mediaSize),
-                    child: Transform.scale(
-                      scale: scale,
-                      alignment: Alignment.topCenter,
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: _currentLensDirection == CameraLensDirection.front
-                            ? Matrix4.rotationY(math.pi)
-                            : Matrix4.identity(),
-                        child: CameraPreview(_controller!, key: _previewKey),
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink(), // leer, solange nicht initialisiert
+          // 1. Kamera-Vorschau
+          CameraView(
+            controller: _controller,
+            isInitialized: _isInitialized,
+            cameraOpacity: _cameraOpacity,
+            previewKey: _previewKey,
+            currentLensDirection: _currentLensDirection,
+            mediaSize: mediaSize,
+            scale: scale,
           ),
 
-          // Thumbnail-Liste
+          // 2. Thumbnail-Liste (falls Bilder vorhanden)
           if (_capturedImages.isNotEmpty)
             Positioned(
-              bottom: _navbarHeight + _navbarBottomPadding, // Platzierung über den Buttons
+              bottom: _navbarHeight + _navbarBottomPadding,
               left: 0,
               right: 0,
               height: _thumbnailListHeight,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal, // Horizontal scrollbar
-                  itemCount: _capturedImages.length,
-                  clipBehavior: Clip.none, // WICHTIG: Erlaubt dem Dismissible, sich außerhalb der ListView zu bewegen
-                  itemBuilder: (context, index) {
-                    final imageFile = _capturedImages[index];
-
-                    return _ImageThumbnail(
-                      key: ValueKey(imageFile.path), // Wichtig für Dismissible
-                      imageFile: imageFile,
-                      thumbnailSize: _thumbnailSize, // Die Größe des Thumbnails übergeben
-                      onDeleteConfirmed: () => _deleteImage(index, imageFile.path), // Löschen bestätigen
-                    );
-                  },
-                ),
+              child: ThumbnailBar(
+                capturedImages: _capturedImages,
+                thumbnailSize: _thumbnailSize,
+                onDeleteImage: _deleteImage,
               ),
             ),
 
-          // UI (Navigationsleiste mit Buttons)
+          // 3. Kamera-Steuerung (Capture, Galerie, Weiter)
           Positioned(
             bottom: _navbarBottomPadding,
             left: 0,
             right: 0,
-            child: SizedBox(
-              height: _navbarHeight,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned(
-                    left: 24,
-                    top: (_navbarHeight - 60) / 2,
-                    child: GestureDetector(
-                      onTap: _pickImageFromGallery,
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.photo, color: Colors.white, size: 28),
-                      ),
-                    ),
-                  ),
-                  // Der Aufnahme-Button
-                  AnimatedCaptureButton(onTap: _takePicture),
-
-                  // Der "Weiter"-Knopf als Icon
-                  if (_capturedImages.isNotEmpty) // Nur anzeigen, wenn mindestens ein Bild aufgenommen wurde
-                    Positioned(
-                      right: 24, // Positionierung rechts
-                      child: ElevatedButton(
-                        onPressed: _onContinueButtonPressed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.colorScheme.primary,
-                          shape: const CircleBorder(),
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(60, 60),
-                          fixedSize: const Size(60, 60),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+            child: CameraControls(
+              navbarHeight: _navbarHeight,
+              onTakePicture: _takePicture,
+              onPickImageFromGallery: _pickImageFromGallery,
+              onContinueButtonPressed: _onContinueButtonPressed,
+              showContinueButton: _capturedImages.isNotEmpty, // Nur anzeigen, wenn Bilder da sind
             ),
           ),
         ],
@@ -334,8 +263,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   }
 }
 
-// --- Hilfs-Widgets ---
-
+// Hilfs-Clipper (bleibt hier, da es stark an CameraScreen gebunden ist)
 class _MediaSizeClipper extends CustomClipper<Rect> {
   final Size mediaSize;
   const _MediaSizeClipper(this.mediaSize);
@@ -345,72 +273,4 @@ class _MediaSizeClipper extends CustomClipper<Rect> {
 
   @override
   bool shouldReclip(CustomClipper<Rect> oldClipper) => true;
-}
-
-// NEUES WIDGET: _ImageThumbnail mit Swipe-to-Delete und verbessertem Hintergrund
-class _ImageThumbnail extends StatelessWidget {
-  final XFile imageFile;
-  final VoidCallback onDeleteConfirmed; // Callback, wenn Löschung bestätigt wird
-  final double thumbnailSize; // Die Größe des Thumbnails, übergeben vom Parent
-
-  const _ImageThumbnail({
-    required Key key, // Key ist hier WICHTIG für Dismissible
-    required this.imageFile,
-    required this.onDeleteConfirmed,
-    this.thumbnailSize = 60.0, // Standardwert, falls nicht übergeben
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // Die Größe des Lösch-Hintergrunds, z.B. 80% der Thumbnail-Größe
-    // Du kannst den Multiplikator anpassen, um die gewünschte Größe zu erhalten
-    final double deleteBackgroundSize = thumbnailSize * 0.8;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Dismissible(
-        key: key!,
-        direction: DismissDirection.up, // Nur nach oben wischen erlauben
-        onDismissed: (direction) {
-          // Callback, wenn das Element vollständig weggewischt wurde
-          onDeleteConfirmed();
-        },
-        // Der Hintergrund, der sichtbar wird, wenn gewischt wird
-        background: Center( // Zentriert den Hintergrund innerhalb des Dismissible-Bereichs
-          child: Container(
-            // Der Container für den Hintergrund
-            width: deleteBackgroundSize, // Kleinere Breite
-            height: deleteBackgroundSize, // Kleinere Höhe
-            alignment: Alignment.center, // Icon in der Mitte zentrieren
-            decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.8), // Roter Hintergrund
-              borderRadius: BorderRadius.circular(8.0), // Abgerundete Ecken passend zum Thumbnail
-              boxShadow: [ // Subtiler Schatten für Tiefe
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 2), // Schatten leicht nach unten
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.delete_forever, // Mülleimer-Icon
-              color: Colors.white, // Weißes Icon
-              size: 36, // Größe des Icons
-            ),
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: Image.file(
-            File(imageFile.path),
-            width: thumbnailSize, // Sicherstellen, dass das Bild die korrekte Größe hat
-            height: thumbnailSize,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    );
-  }
 }
