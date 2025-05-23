@@ -158,9 +158,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     });
     await Future.delayed(const Duration(milliseconds: 50));
 
-    // ***************************************************************
-    // HIER IST DIE WICHTIGE ÄNDERUNG: pickImage() zu pickMultiImage()
-    // ***************************************************************
     final List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
 
     if (pickedFiles != null && pickedFiles.isNotEmpty) {

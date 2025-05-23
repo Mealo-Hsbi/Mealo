@@ -4,27 +4,15 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
-// Hilfs-Clipper (kann entweder hierher oder im CameraScreen bleiben,
-// da es nur für CameraPreview verwendet wird. Ich lasse es hier.)
-class _MediaSizeClipper extends CustomClipper<Rect> {
-  final Size mediaSize;
-  const _MediaSizeClipper(this.mediaSize);
-
-  @override
-  Rect getClip(Size size) => Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
-
-  @override
-  bool shouldReclip(CustomClipper<Rect> oldClipper) => true;
-}
-
 class CameraView extends StatelessWidget {
   final CameraController? controller;
   final bool isInitialized;
   final double cameraOpacity;
   final GlobalKey previewKey;
   final CameraLensDirection currentLensDirection;
-  final Size mediaSize;
+  final Size mediaSize; // Bleibt, da es für die Skalierung wichtig ist
   final double scale;
+  final double borderRadius; // Neuer Parameter für die Eckenrundung
 
   const CameraView({
     super.key,
@@ -35,25 +23,26 @@ class CameraView extends StatelessWidget {
     required this.currentLensDirection,
     required this.mediaSize,
     required this.scale,
+    this.borderRadius = 0.0, // Standardwert, falls nicht übergeben
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // Schwarzer Hintergrund, wenn Kamera noch nicht da
-        Container(color: Colors.black),
-
-        // Kamera-Vorschau mit Fade-Animation
-        AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          opacity: cameraOpacity,
-          child: controller != null && isInitialized
-              ? ClipRect(
-                  clipper: _MediaSizeClipper(mediaSize),
-                  child: Transform.scale(
-                    scale: scale,
-                    alignment: Alignment.topCenter,
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: cameraOpacity,
+      child: controller != null && isInitialized
+          ? ClipRRect( // Hier kommt der ClipRRect ins Spiel!
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius),
+              ),
+              child: SizedBox.expand( // Wichtig: Füllt den verfügbaren Platz im Positioned-Container
+                child: FittedBox( // Sorgt dafür, dass CameraPreview den verfügbaren Platz ausfüllt
+                  fit: BoxFit.cover, // Wichtig für das Seitenverhältnis
+                  child: SizedBox(
+                    width: mediaSize.width, // Originalbreite der Kamera
+                    height: mediaSize.width * controller!.value.aspectRatio, // Originalhöhe der Kamera
                     child: Transform(
                       alignment: Alignment.center,
                       transform: currentLensDirection == CameraLensDirection.front
@@ -62,10 +51,10 @@ class CameraView extends StatelessWidget {
                       child: CameraPreview(controller!, key: previewKey),
                     ),
                   ),
-                )
-              : const SizedBox.shrink(), // Leer, solange nicht initialisiert
-        ),
-      ],
+                ),
+              ),
+            )
+          : Container(color: Colors.white), // Schwarzer Hintergrund, wenn nicht initialisiert
     );
   }
 }
