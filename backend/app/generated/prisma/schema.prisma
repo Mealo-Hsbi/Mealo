@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model favorites {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id    String   @db.Uuid
+  recipe_id  String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  recipes    recipes  @relation(fields: [recipe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, recipe_id], map: "uniq_fav_per_user_recipe")
+}
+
+model ingredients {
+  id                 String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name               String
+  category           String?
+  shelf_life_days    Int?
+  calories           Int?
+  protein_gram       Decimal?             @db.Decimal
+  carbs_gram         Decimal?             @db.Decimal
+  fat_gram           Decimal?             @db.Decimal
+  inventory          inventory[]
+  recipe_ingredients recipe_ingredients[]
+  shopping_list_item shopping_list_item[]
+}
+
+model inventory {
+  id              String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id         String      @db.Uuid
+  ingredient_id   String      @db.Uuid
+  quantity        String
+  expiration_date DateTime    @db.Date
+  ingredients     ingredients @relation(fields: [ingredient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ratings {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id    String   @db.Uuid
+  recipe_id  String   @db.Uuid
+  score      Int
+  comment    String?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  recipes    recipes  @relation(fields: [recipe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, recipe_id], map: "uniq_rating_per_user_recipe")
+}
+
+model recipe_ingredients {
+  id            String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  recipe_id     String      @db.Uuid
+  ingredient_id String      @db.Uuid
+  amount        Decimal     @db.Decimal
+  unit          String
+  original      String?
+  ingredients   ingredients @relation(fields: [ingredient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  recipes       recipes     @relation(fields: [recipe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model recipe_steps {
+  id               String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  recipe_id        String  @db.Uuid
+  step_number      Int
+  description      String
+  duration_minutes Int?
+  recipes          recipes @relation(fields: [recipe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model recipes {
+  id                    String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_by_id         String?              @db.Uuid
+  spoonacular_id        Int?                 @unique
+  title                 String
+  image_url             String?
+  servings              Int?
+  ready_in_minutes      Int?
+  cooking_minutes       Int?
+  preparation_minutes   Int?
+  dish_types            String[]
+  summary               String?
+  instructions          String?
+  health_score          Float?               @db.Real
+  spoonacular_score     Float?               @db.Real
+  price_per_serving     Float?               @db.Real
+  vegan                 Boolean              @default(false)
+  vegetarian            Boolean              @default(false)
+  gluten_free           Boolean              @default(false)
+  dairy_free            Boolean              @default(false)
+  weight_watcher_points Int?
+  created_at            DateTime             @default(now()) @db.Timestamptz(6)
+  favorites             favorites[]
+  ratings               ratings[]
+  recipe_ingredients    recipe_ingredients[]
+  recipe_steps          recipe_steps[]
+  users                 users?               @relation(fields: [created_by_id], references: [id], onUpdate: NoAction)
+  weekly_plan_item      weekly_plan_item[]
+}
+
+model shopping_list {
+  id                 String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id            String               @db.Uuid
+  plan_id            String?              @db.Uuid
+  name               String
+  created_at         DateTime             @default(now()) @db.Timestamptz(6)
+  finalized          Boolean              @default(false)
+  weekly_plan        weekly_plan?         @relation(fields: [plan_id], references: [id], onUpdate: NoAction)
+  users              users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  shopping_list_item shopping_list_item[]
+}
+
+model shopping_list_item {
+  id            String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  list_id       String        @db.Uuid
+  ingredient_id String        @db.Uuid
+  amount        Decimal       @db.Decimal
+  unit          String
+  purchased     Boolean       @default(false)
+  ingredients   ingredients   @relation(fields: [ingredient_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  shopping_list shopping_list @relation(fields: [list_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model users {
+  id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  firebase_uid  String          @unique
+  email         String?
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  favorites     favorites[]
+  inventory     inventory[]
+  ratings       ratings[]
+  recipes       recipes[]
+  shopping_list shopping_list[]
+  weekly_plan   weekly_plan[]
+}
+
+model weekly_plan {
+  id               String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id          String             @db.Uuid
+  name             String
+  start_date       DateTime           @db.Date
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  shopping_list    shopping_list[]
+  users            users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  weekly_plan_item weekly_plan_item[]
+}
+
+model weekly_plan_item {
+  id          String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  plan_id     String      @db.Uuid
+  date        DateTime    @db.Date
+  meal_type   String
+  recipe_id   String      @db.Uuid
+  weekly_plan weekly_plan @relation(fields: [plan_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  recipes     recipes     @relation(fields: [recipe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([plan_id, date, meal_type], map: "uniq_plan_date_meal")
+}
