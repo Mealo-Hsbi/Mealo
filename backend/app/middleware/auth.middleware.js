@@ -4,7 +4,7 @@ const admin = require('../firebase');
 module.exports = async function authMiddleware(req, res, next) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Kein Token' });
+    return res.status(401).json({ message: 'Kein Token gefunden' });
   }
   const idToken = header.split(' ')[1];
   try {
