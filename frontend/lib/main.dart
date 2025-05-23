@@ -10,7 +10,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:frontend/core/routes/app_router.dart';
-import 'package:frontend/core/themes/app_theme.dart';
 import 'package:frontend/core/config/app_config.dart';
 import 'package:frontend/core/config/environment.dart';
 

@@ -5,14 +5,15 @@ import '../../features/explore/exploreScreen.dart';
 import '../../features/camera/camera_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 
-const List<Widget> appTabs = [
-  HomeScreen(),
-  ExploreScreen(),
-  FavoritesScreen(),
-  CameraScreen(isVisible: true),
-  FavoritesScreen(),
-  ProfileScreen(),
-];
+List<Widget> getAppTabs(int currentIndex) {
+  return [
+    const HomeScreen(),
+    const ExploreScreen(),
+    CameraScreen(isVisible: currentIndex == 2),
+    const FavoritesScreen(),
+    const ProfileScreen(),
+  ];
+}
 
 const List<BottomNavigationBarItem> appBottomNavigationBarItems = [
   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
