@@ -34,7 +34,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   static const double _navbarBottomPadding = 32.0;
   static const double _thumbnailListHeight = 80.0;
   static const double _thumbnailSize = 60.0;
-  static const double _borderRadius = 24.0;
+  static const double _borderRadius = 18.0;
 
   @override
   void initState() {
