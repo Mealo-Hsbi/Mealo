@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
+
 class CameraScreen extends StatefulWidget {
   final bool isVisible;
 
@@ -25,17 +26,16 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   CameraController? _controller;
   bool _isInitialized = false;
   CameraLensDirection _currentLensDirection = CameraLensDirection.back;
-  final GlobalKey _previewKey = GlobalKey(); // Behalten, da CameraPreview hier initialisiert wird
+  final GlobalKey _previewKey = GlobalKey();
   double _cameraOpacity = 0.0;
 
-  // Liste zum Speichern der aufgenommenen Bilder
   final List<XFile> _capturedImages = [];
 
-  // Konstanten für die UI-Elemente (bleiben hier, da sie den gesamten Screen beeinflussen)
   static const double _navbarHeight = 72.0;
   static const double _navbarBottomPadding = 32.0;
   static const double _thumbnailListHeight = 80.0;
   static const double _thumbnailSize = 60.0;
+  static const double _borderRadius = 24.0;
 
   @override
   void initState() {
@@ -151,7 +151,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-  // Diese Funktion wurde für die Auswahl mehrerer Bilder angepasst
   Future<void> _pickImageFromGallery() async {
     setState(() {
       _cameraOpacity = 0.0;
@@ -165,7 +164,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         print('Bild aus Galerie: ${file.path}');
       }
       setState(() {
-        _capturedImages.addAll(pickedFiles); // Fügt ALLE ausgewählten Bilder zur Liste hinzu
+        _capturedImages.addAll(pickedFiles);
       });
     }
 
@@ -206,8 +205,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   @override
   Widget build(BuildContext context) {
     final mediaSize = MediaQuery.of(context).size;
+    final theme = Theme.of(context); // Theme abrufen
 
-    // Der Skalierungsfaktor aus deinem Originalcode
+    // Die berechnete Höhe für die Kamera-Vorschau
+    final cameraPreviewHeight = mediaSize.height - _navbarHeight;
+
+    // Der Skalierungsfaktor bleibt gleich
     final scale = _controller != null && _controller!.value.isInitialized
         ? 1 / (_controller!.value.aspectRatio * (mediaSize.width / mediaSize.height))
         : 1.0;
@@ -216,15 +219,25 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       onDoubleTap: _switchCamera,
       child: Stack(
         children: [
+          // Hier wird die Farbe geändert!
+          Container(color: theme.colorScheme.background), // <--- ÄNDERUNG HIER
+
           // 1. Kamera-Vorschau
-          CameraView(
-            controller: _controller,
-            isInitialized: _isInitialized,
-            cameraOpacity: _cameraOpacity,
-            previewKey: _previewKey,
-            currentLensDirection: _currentLensDirection,
-            mediaSize: mediaSize,
-            scale: scale,
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: cameraPreviewHeight,
+            child: CameraView(
+              controller: _controller,
+              isInitialized: _isInitialized,
+              cameraOpacity: _cameraOpacity,
+              previewKey: _previewKey,
+              currentLensDirection: _currentLensDirection,
+              mediaSize: mediaSize,
+              scale: scale,
+              borderRadius: _borderRadius,
+            ),
           ),
 
           // 2. Thumbnail-Liste (falls Bilder vorhanden)
@@ -251,7 +264,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               onTakePicture: _takePicture,
               onPickImageFromGallery: _pickImageFromGallery,
               onContinueButtonPressed: _onContinueButtonPressed,
-              showContinueButton: _capturedImages.isNotEmpty, // Nur anzeigen, wenn Bilder da sind
+              showContinueButton: _capturedImages.isNotEmpty,
             ),
           ),
         ],
