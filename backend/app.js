@@ -1,5 +1,6 @@
 const express = require('express');
 const userRoutes = require('./app/routes/user.routes');
+require('./app/firebase');
 
 const app = express();
 app.use(express.json());
