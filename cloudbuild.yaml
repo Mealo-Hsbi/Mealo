@@ -1,0 +1,41 @@
+# cloudbuild.yaml im Root-Verzeichnis deines GitHub-Repos
+steps:
+# Schritt 1: Docker Image bauen
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA' # Verwendet $PROJECT_ID und $COMMIT_SHA für dynamisches Tagging
+    - '.' # Build-Kontext ist das aktuelle Verzeichnis (Repo-Root)
+  # Wenn dein Dockerfile und Code in einem Unterordner namens 'backend' liegen, füge diese Zeile hinzu:
+  # dir: 'backend'
+  # Ansonsten, wenn sie im Root liegen, lasse 'dir' weg oder setze es auf '.'.
+
+# Schritt 2: Docker Image in Artifact Registry pushen
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+
+# Schritt 3: Docker Image nach Cloud Run deployen
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'beta'
+    - 'run'
+    - 'deploy'
+    - 'mealo'
+    - '--project=$PROJECT_ID' # $PROJECT_ID wird automatisch von Cloud Build ersetzt
+    - '--region=europe-west3'
+    - '--platform=managed'
+    - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA' # Das soeben gepushte Image
+    # HIER DIE UMWELTVARIABLEN UND SECRETS FÜR CLOUD RUN
+    - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json,TEST_VAR=hallo_welt'
+    - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest'
+    - '--service-account=1095476512586-compute@developer.gserviceaccount.com' # Dein Cloud Run Laufzeit-Dienstkonto
+    - '--quiet' # Kannst du für die Fehlersuche entfernen, zeigt dann mehr Details im Log an
+  waitFor: ['-'] # Wartet auf alle vorherigen Schritte
+
+# Gibt an, welche Images dieser Build erzeugt. Wichtig für die Nachverfolgbarkeit.
+images:
+- 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
