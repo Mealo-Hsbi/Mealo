@@ -1,43 +1,42 @@
-# cloudbuild.yaml im Root-Verzeichnis deines GitHub-Repos
 steps:
-# Schritt 1: Docker Image bauen
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-    - '.' # Wichtig: Der Punkt bezieht sich jetzt auf das 'dir'-Verzeichnis
-  dir: 'backend' 
+  # 1) Build the image (from ./backend) and tag it
+  - id: 'build'
+    name: 'gcr.io/cloud-builders/docker'
+    dir: 'backend'
+    args:
+      - build
+      - '-t'
+      - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+      - '.'
 
+  # 2) Push the image up to Artifact Registry
+  - id: 'push'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
 
-# Schritt 2: Docker Image in Artifact Registry pushen
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+  # 3) Deploy to Cloud Run (will automatically wait for “build” and “push”)
+  - id: 'deploy'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - beta
+      - run
+      - deploy
+      - mealo
+      - --project=$PROJECT_ID
+      - --region=europe-west3
+      - --platform=managed
+      - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
+      - --set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json,TEST_VAR=hallo_welt
+      - --update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest
+      - --service-account=1095476512586-compute@developer.gserviceaccount.com
+      - --quiet
 
-# Schritt 3: Docker Image nach Cloud Run deployen
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args:
-    - 'beta'
-    - 'run'
-    - 'deploy'
-    - 'mealo'
-    - '--project=$PROJECT_ID'
-    - '--region=europe-west3'
-    - '--platform=managed'
-    - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-    - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json,TEST_VAR=hallo_welt'
-    - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest'
-    - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
-    - '--quiet'
-  waitFor: ['-']
-
-# Diesen Block fügst du NEU HINZU, ganz unten in der cloudbuild.yaml, nach dem 'images'-Block oder wenn kein 'images'-Block da ist, nach dem letzten 'step'.
+# Logging options (leave this at the bottom)
 options:
-  # Konfiguriert, dass Logs nur in Cloud Logging gespeichert werden.
   logging: CLOUD_LOGGING_ONLY
 
 images:
-- 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+  - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
