@@ -5,11 +5,10 @@ steps:
   args:
     - 'build'
     - '-t'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA' # Verwendet $PROJECT_ID und $COMMIT_SHA für dynamisches Tagging
-    - '.' # Build-Kontext ist das aktuelle Verzeichnis (Repo-Root)
+    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+    - '.'
   # Wenn dein Dockerfile und Code in einem Unterordner namens 'backend' liegen, füge diese Zeile hinzu:
   # dir: 'backend'
-  # Ansonsten, wenn sie im Root liegen, lasse 'dir' weg oder setze es auf '.'.
 
 # Schritt 2: Docker Image in Artifact Registry pushen
 - name: 'gcr.io/cloud-builders/docker'
@@ -25,17 +24,20 @@ steps:
     - 'run'
     - 'deploy'
     - 'mealo'
-    - '--project=$PROJECT_ID' # $PROJECT_ID wird automatisch von Cloud Build ersetzt
+    - '--project=$PROJECT_ID'
     - '--region=europe-west3'
     - '--platform=managed'
-    - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA' # Das soeben gepushte Image
-    # HIER DIE UMWELTVARIABLEN UND SECRETS FÜR CLOUD RUN
+    - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
     - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json,TEST_VAR=hallo_welt'
     - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest'
-    - '--service-account=1095476512586-compute@developer.gserviceaccount.com' # Dein Cloud Run Laufzeit-Dienstkonto
-    - '--quiet' # Kannst du für die Fehlersuche entfernen, zeigt dann mehr Details im Log an
-  waitFor: ['-'] # Wartet auf alle vorherigen Schritte
+    - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
+    - '--quiet'
+  waitFor: ['-']
 
-# Gibt an, welche Images dieser Build erzeugt. Wichtig für die Nachverfolgbarkeit.
+# Diesen Block fügst du NEU HINZU, ganz unten in der cloudbuild.yaml, nach dem 'images'-Block oder wenn kein 'images'-Block da ist, nach dem letzten 'step'.
+options:
+  # Konfiguriert, dass Logs nur in Cloud Logging gespeichert werden.
+  logging: CLOUD_LOGGING_ONLY
+
 images:
 - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
