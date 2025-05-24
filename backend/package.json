@@ -13,8 +13,10 @@
     "@prisma/client": "^6.8.2",
     "express": "^5.1.0",
     "firebase-admin": "^13.4.0",
+    "prisma": "^6.8.2"
+  },
+  "devDependencies": {
     "jest": "^29.7.0",
-    "prisma": "^6.8.2",
-    "supertest": "^7.1.0"
+    "supertest": "^7.1.1"
   }
 }

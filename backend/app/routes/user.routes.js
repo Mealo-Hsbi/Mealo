@@ -3,13 +3,15 @@ const express        = require('express');
 const router         = express.Router();
 const authMiddleware = require('../middleware/auth.middleware');
 
-// Public-Route (z. B. Register / Login) bleibt ohne Auth-Check
 router.post('/register', (req, res) => {
-  // ... Registrierung über Firebase SDK …
+  // ### STUB ###
+  return res.status(201).json({ message: 'User registered (stub)' });
 });
 router.post('/login', (req, res) => {
-  // ... könntest hier den Token zurückgeben, wenn nötig …
+  // ### STUB ###
+  return res.status(200).json({ token: 'fake-jwt-token' });
 });
+
 
 // Alle folgenden Routes benötigen ein gültiges Firebase-JWT
 router.use(authMiddleware);
