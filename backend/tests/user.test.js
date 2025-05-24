@@ -1,5 +1,4 @@
 const request = require('supertest');
-const app = require('../app');
 
 // Test which is everytime true
 describe('User API Tests', () => {
