@@ -47,6 +47,9 @@ dependencies:
   google_sign_in: ^6.3.0
   firebase_analytics: ^11.4.6
   firebase_performance: ^0.10.1+6
+  dio: ^5.8.0+1
+  dotenv: ^4.2.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +86,8 @@ flutter:
     - assets/images/
     - assets/images/ingredients/
     - assets/icons/
+    - .env.dev
+    - .env.prod
 
 flutter_launcher_icons:
     android: true

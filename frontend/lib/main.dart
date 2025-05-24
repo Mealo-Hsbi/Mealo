@@ -12,10 +12,16 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:frontend/core/routes/app_router.dart';
 import 'package:frontend/core/config/app_config.dart';
 import 'package:frontend/core/config/environment.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 // Eine neue Funktion zur Initialisierung von App-Services
 Future<void> _initializeAppServices() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  const isProd = bool.fromEnvironment('dart.vm.product');
+  await dotenv.load(fileName: isProd ? '.env.prod' : '.env.dev');
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseAnalytics.instance.logAppOpen();
 
