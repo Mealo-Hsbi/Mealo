@@ -32,7 +32,6 @@ steps:
     - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json,TEST_VAR=hallo_welt'
     - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest'
     - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
-    - '--quiet'
   waitFor: ['-']
 
 # Diesen Block fügst du NEU HINZU, ganz unten in der cloudbuild.yaml, nach dem 'images'-Block oder wenn kein 'images'-Block da ist, nach dem letzten 'step'.
