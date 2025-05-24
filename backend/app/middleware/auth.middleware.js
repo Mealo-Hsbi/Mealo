@@ -16,6 +16,7 @@ module.exports = async function authMiddleware(req, res, next) {
     };
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Ungültiges Token' });
-  }
+  console.error('verifyIdToken failed:', err);
+  return res.status(401).json({ message: 'Ungültiges Token', error: err.message });
+}
 };

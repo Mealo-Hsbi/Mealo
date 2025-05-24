@@ -1,9 +1,6 @@
-// backend/app/firebase.js
 const admin = require('firebase-admin');
-const serviceAccount = require('../certs/serviceAccountKey.json');
-
+const keyFile = process.env.GOOGLE_APPLICATION_CREDENTIALS;      // "/secrets/…/serviceAccountKey.json"
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(require(keyFile))
 });
-
 module.exports = admin;
