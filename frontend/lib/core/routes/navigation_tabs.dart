@@ -11,7 +11,7 @@ List<Widget> getAppTabs(int currentIndex) {
     const ExploreScreen(),
     CameraScreen(isVisible: currentIndex == 2),
     const FavoritesScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 }
 
