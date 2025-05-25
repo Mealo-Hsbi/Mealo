@@ -6,9 +6,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // <--- HIER: services.dart importieren
 import 'package:camera/camera.dart';
-import 'package:frontend/common/widgets/camera/camera_controls.dart';
-import 'package:frontend/common/widgets/camera/camera_view.dart';
-import 'package:frontend/common/widgets/camera/thumbnail_bar.dart';
+import 'package:frontend/features/camera/presentation/widgets/camera_controls.dart';
+import 'package:frontend/features/camera/presentation/widgets/camera_view.dart';
+import 'package:frontend/features/camera/presentation/widgets/thumbnail_bar.dart';
+import 'package:frontend/features/camera/presentation/screens/ingredient_review_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -27,6 +28,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   CameraLensDirection _currentLensDirection = CameraLensDirection.back;
   final GlobalKey _previewKey = GlobalKey();
   double _cameraOpacity = 0.0;
+  bool _isProcessingImages = false;
 
   final List<XFile> _capturedImages = [];
 
@@ -176,10 +178,140 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-  void _onContinueButtonPressed() {
-    print('Weiter-Button gedrückt! Anzahl der Bilder: ${_capturedImages.length}');
-    // Hier würde die Logik für den nächsten Schritt implementiert werden.
+Future<List<String>> _uploadAndProcessImages(List<XFile> images) async {
+  try {
+    // Simuliere eine Netzwerkoperation oder Backend-Verarbeitung
+    // Jetzt mit einer simulierten längeren Verzögerung, um den Timeout zu testen
+    await Future.delayed(const Duration(seconds: 3)) // Simuliert eine lange Antwortzeit
+        .timeout(const Duration(seconds: 5), onTimeout: () { // Timeout nach 5 Sekunden
+      throw TimeoutException('Der Server hat zu lange für die Antwort gebraucht.');
+    });
+
+    // Hier würde dein tatsächlicher HTTP-Request an das Backend stehen, z.B. mit Dio oder http
+    // Beispiel:
+    // var response = await Dio().post(
+    //   'YOUR_BACKEND_URL/api/process-images',
+    //   data: formData, // Deine Multipart-Form-Daten
+    // ).timeout(const Duration(seconds: 30)); // Setze hier einen realistischen Timeout (z.B. 30 Sekunden)
+
+    // Beispielhafte erkannte Zutaten bei Erfolg
+    return ['Tomate', 'Mozzarella', 'Basilikum', 'Olivenöl'];
+
+  } on TimeoutException catch (e) {
+    // Hier wird die spezifische Timeout-Ausnahme abgefangen
+    print('Timeout bei der Bildverarbeitung: $e');
+    rethrow; // Wirf die Ausnahme erneut, damit sie im _onContinueButtonPressed gefangen wird
+  } catch (e) {
+    // Hier werden andere potenzielle Fehler (z.B. Netzwerkfehler, Serverfehler) abgefangen
+    print('Fehler im _uploadAndProcessImages: $e');
+    rethrow; // Wirf die Ausnahme erneut
   }
+}
+
+
+// Aktualisierter _onContinueButtonPressed Callback
+Future<void> _onContinueButtonPressed() async {
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+
+  if (_capturedImages.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Bitte nimm zuerst mindestens ein Bild auf.')),
+    );
+    return;
+  }
+
+  setState(() {
+    _isProcessingImages = true;
+  });
+
+
+
+  // Zeige den Lade-Dialog an
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext dialogContext) {
+      return PopScope(
+        canPop: false,
+        child: Dialog(
+          backgroundColor: theme.colorScheme.surface.withOpacity(0.9),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Bilder werden analysiert...',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black87),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Dies kann einen Moment dauern.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+
+  try {
+    // Hier wird die Funktion mit Timeout aufgerufen
+    final List<String> processedIngredients = await _uploadAndProcessImages(_capturedImages);
+
+    // Dialog schließen
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    // Navigiere zum nächsten Screen
+    if (mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => IngredientReviewScreen(ingredients: processedIngredients),
+        ),
+      );
+    }
+  } catch (e) {
+    print('Fehler bei der Bildverarbeitung: $e');
+    if (mounted) {
+      // Im Fehlerfall: Dialog schließen
+      Navigator.of(context, rootNavigator: true).pop();
+
+      String errorMessage = 'Ein unbekannter Fehler ist aufgetreten.';
+      if (e is TimeoutException) {
+        errorMessage = 'Die Serverantwort hat zu lange gedauert. Bitte versuche es später erneut.';
+      } else {
+        // Hier könntest du spezifischere Fehlerbehandlung für andere Exception-Typen hinzufügen
+        errorMessage = 'Fehler beim Analysieren der Bilder: ${e.toString()}';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5), // Längere Anzeige für Fehler
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isProcessingImages = false; // Ladezustand deaktivieren
+      });
+    }
+  }
+}
 
   void _deleteImage(int index, String? imagePath) {
     setState(() {

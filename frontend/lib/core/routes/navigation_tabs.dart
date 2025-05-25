@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/favorites/presentation/favorites_screen.dart';
 import '../../features/explore/exploreScreen.dart';
-import '../../features/camera/camera_screen.dart';
+import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 
 List<Widget> getAppTabs(int currentIndex) {

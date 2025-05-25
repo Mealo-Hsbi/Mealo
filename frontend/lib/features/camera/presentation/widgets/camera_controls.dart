@@ -1,7 +1,7 @@
 // frontend/common/widgets/camera_screen/camera_controls.dart
 
 import 'package:flutter/material.dart';
-import 'package:frontend/common/widgets/camera/capture_button.dart'; // Pfad zum CaptureButton
+import 'package:frontend/features/camera/presentation/widgets/capture_button.dart'; // Pfad zum CaptureButton
 
 class CameraControls extends StatelessWidget {
   final double navbarHeight;
