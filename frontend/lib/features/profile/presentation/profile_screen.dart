@@ -10,18 +10,23 @@ const double kSectionSpacing = 8.0;
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key);
 
-  // --- Mock-Daten ---
+  // --- Mock data ---
   final String _userName = 'Max Mustermann';
   final String _userEmail = 'test@mealo.app';
   final String _avatarUrl = '';
-  final List<String> _tags = ['Vegan', 'Glutenfrei', 'Low Carb', 'Proteinreich'];
+  final List<String> _tags = [
+    'Vegan',
+    'Gluten-free',
+    'Low-carb',
+    'Protein-rich'
+  ];
   final int _recipesCount = 42;
   final int _rescuedCount = 128;
   final int _likesCount = 354;
   final List<Map<String, String>> _recipePreview = [
     {
-      'image': 'https://via.placeholder.com/120x100.png?text=Bunter%20Salat',
-      'title': 'Bunter Salat',
+      'image': 'https://via.placeholder.com/120x100.png?text=Colorful%20Salad',
+      'title': 'Colorful Salad',
     },
     {
       'image': 'https://via.placeholder.com/120x100.png?text=Avocado%20Pasta',
@@ -39,9 +44,9 @@ class ProfileScreen extends StatelessWidget {
     final primary = theme.colorScheme.primary;
 
     final achievements = [
-      {'icon': Icons.book, 'value': 10, 'label': 'Rezepte'},
+      {'icon': Icons.book, 'value': 10, 'label': 'Recipes'},
       {'icon': Icons.star, 'value': 100, 'label': 'Likes'},
-      {'icon': Icons.kitchen, 'value': 50, 'label': 'Zutaten gerettet'},
+      {'icon': Icons.kitchen, 'value': 50, 'label': 'Ingredients Saved'},
     ];
 
     Future<void> _signOut() async {
@@ -52,11 +57,11 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text('Profil'),
+        title: const Text('Profile'),
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
-            tooltip: 'Einstellungen',
+            tooltip: 'Settings',
             onPressed: () {
               Navigator.of(context)
                   .push(_createSlideRoute(const SettingsScreen()));
@@ -69,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Profil-Card & Avatar
+            // Profile card & avatar
             Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.topCenter,
@@ -109,8 +114,8 @@ class ProfileScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          StatItem('Rezepte', _recipesCount),
-                          StatItem('Zutaten gerettet', _rescuedCount),
+                          StatItem('Recipes', _recipesCount),
+                          StatItem('Ingredients Saved', _rescuedCount),
                           StatItem('Likes', _likesCount),
                         ],
                       ),
@@ -129,16 +134,14 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
 
-            // Abstand zu den Sektionen
-            // (wird durch ProfileSection.margin oben erzeugt)
-
-            // Achievements
+            // Achievements section
             ProfileSection(
               title: 'Achievements',
               action: TextButton(
-                onPressed: () => Navigator.of(context)
-                    .push(_createSlideRoute(const AchievementsOverviewScreen())),
-                child: const Text('Alle ansehen'),
+                onPressed: () => Navigator.of(context).push(
+                  _createSlideRoute(const AchievementsOverviewScreen()),
+                ),
+                child: const Text('View All'),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -166,23 +169,24 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            // Mein Vorratsschrank
+            // My Pantry section
             ProfileSection(
-              title: 'Mein Vorratsschrank',
+              title: 'My Pantry',
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 leading: const Icon(Icons.kitchen, size: 32),
-                title: const Text('Du hast derzeit 7 Artikel'),
+                title: const Text('You currently have 7 items'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.of(context)
                     .push(_createSlideRoute(const PantryScreen())),
               ),
             ),
 
-            // Meine Rezepte
+            // My Recipes section
             ProfileSection(
-              title: 'Meine Rezepte',
-              action: TextButton(onPressed: () {}, child: const Text('Alle ansehen')),
+              title: 'My Recipes',
+              action:
+                  TextButton(onPressed: () {}, child: const Text('View All')),
               child: SizedBox(
                 height: 140,
                 child: ListView.builder(
@@ -209,7 +213,8 @@ class ProfileScreen extends StatelessWidget {
     return PageRouteBuilder(
       pageBuilder: (_, animation, __) => page,
       transitionsBuilder: (_, animation, __, child) {
-        final tween = Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero);
+        final tween =
+            Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero);
         return SlideTransition(
           position: tween.animate(
             CurvedAnimation(parent: animation, curve: Curves.easeInOut),
@@ -221,6 +226,7 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+/// Full-width, white, no radius (except on profile card), spacing via kSectionSpacing
 class ProfileSection extends StatelessWidget {
   final String title;
   final Widget? action;
@@ -270,8 +276,10 @@ class StatItem extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('$value',
-            style: t.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          '$value',
+          style: t.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 4),
         Text(label, style: t.textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
       ],

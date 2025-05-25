@@ -1,5 +1,3 @@
-// lib/screens/settings_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -8,40 +6,41 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
-    // Zurück bis zum Root (z. B. Login-Screen)
     Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Einstellungen')),
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(title: const Text('Settings')),
       body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           ListTile(
             leading: const Icon(Icons.person),
-            title: const Text('Profil bearbeiten'),
+            title: const Text('Edit Profile'),
             onTap: () {/* TODO: EditProfileScreen */},
           ),
           ListTile(
             leading: const Icon(Icons.lock),
-            title: const Text('Passwort ändern'),
+            title: const Text('Change Password'),
             onTap: () {/* TODO */},
           ),
           ListTile(
             leading: const Icon(Icons.notifications),
-            title: const Text('Benachrichtigungen'),
+            title: const Text('Notifications'),
             onTap: () {/* TODO */},
           ),
           ListTile(
             leading: const Icon(Icons.info),
-            title: const Text('Über Mealo'),
+            title: const Text('About Mealo'),
             onTap: () {/* TODO */},
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('Abmelden'),
+            title: const Text('Sign Out'),
             onTap: () => _signOut(context),
           ),
         ],
