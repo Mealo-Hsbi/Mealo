@@ -1,38 +1,47 @@
-// lib/screens/profile_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/services/api_client.dart';
-import 'settings_screen.dart';
 import 'achievements_overview_screen.dart';
+import 'pantry_screen.dart';
+import 'settings_screen.dart';
+
+const double kSectionSpacing = 8.0;
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
+  ProfileScreen({Key? key}) : super(key: key);
 
   // --- Mock-Daten ---
-  final String _userName  = 'Max Mustermann';
+  final String _userName = 'Max Mustermann';
   final String _userEmail = 'test@mealo.app';
   final String _avatarUrl = '';
   final List<String> _tags = ['Vegan', 'Glutenfrei', 'Low Carb', 'Proteinreich'];
   final int _recipesCount = 42;
   final int _rescuedCount = 128;
-  final int _likesCount   = 354;
-  final List<Map<String,String>> _recipePreview = [
-    {'image':'https://via.placeholder.com/120x100.png?text=Salat','title':'Bunter Salat'},
-    {'image':'https://via.placeholder.com/120x100.png?text=Pasta','title':'Avocado Pasta'},
-    {'image':'https://via.placeholder.com/120x100.png?text=Stir-Fry','title':'Veggie Stir-Fry'},
+  final int _likesCount = 354;
+  final List<Map<String, String>> _recipePreview = [
+    {
+      'image': 'https://via.placeholder.com/120x100.png?text=Bunter%20Salat',
+      'title': 'Bunter Salat',
+    },
+    {
+      'image': 'https://via.placeholder.com/120x100.png?text=Avocado%20Pasta',
+      'title': 'Avocado Pasta',
+    },
+    {
+      'image': 'https://via.placeholder.com/120x100.png?text=Veggie%20Stir-Fry',
+      'title': 'Veggie Stir-Fry',
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
-    final theme   = Theme.of(context);
+    final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
 
-    // Achievements mit Icon, Wert und Label
     final achievements = [
-      {'icon': Icons.book,    'value': 10,  'label': 'Rezepte'},
-      {'icon': Icons.star,    'value': 100, 'label': 'Likes'},
-      {'icon': Icons.kitchen, 'value': 50,  'label': 'Zutaten gerettet'},
+      {'icon': Icons.book, 'value': 10, 'label': 'Rezepte'},
+      {'icon': Icons.star, 'value': 100, 'label': 'Likes'},
+      {'icon': Icons.kitchen, 'value': 50, 'label': 'Zutaten gerettet'},
     ];
 
     Future<void> _signOut() async {
@@ -41,205 +50,297 @@ class ProfileScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text('Profil'),
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
-            iconSize: 28,
             tooltip: 'Einstellungen',
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              );
+              Navigator.of(context)
+                  .push(_createSlideRoute(const SettingsScreen()));
             },
           ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Column(
-            children: [
-
-              // Profil-Card & Avatar
-              Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.topCenter,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 48),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0,2))
-                      ],
-                    ),
-                    padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
-                    child: Column(
-                      children: [
-                        Text(_userName, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 4),
-                        Text(_userEmail, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                        const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 8, runSpacing: 6, alignment: WrapAlignment.center,
-                          children: _tags.map((tag) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: primary),
-                              ),
-                              child: Text(tag, style: TextStyle(color: primary)),
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildStat('Rezepte', _recipesCount, theme),
-                            _buildStat('Zutaten gerettet', _rescuedCount, theme),
-                            _buildStat('Likes', _likesCount, theme),
-                          ],
-                        ),
-                      ],
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Profil-Card & Avatar
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 48),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
                   ),
-                  Positioned(
-                    top: 0,
-                    child: CircleAvatar(
-                      radius: 48,
-                      backgroundColor: primary,
-                      backgroundImage: _avatarUrl.isNotEmpty ? NetworkImage(_avatarUrl) : null,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Abstand reduziert
-              const SizedBox(height: 16),
-
-              // Achievements-Box
-              Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Kopfzeile
-                      Row(
-                        children: [
-                          Text('Achievements', style: theme.textTheme.titleLarge),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => const AchievementsOverviewScreen(),
-                            )),
-                            child: const Text('Alle ansehen'),
-                          ),
-                        ],
+                      Text(
+                        _userName,
+                        style: theme.textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _userEmail,
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: achievements.map((a) {
-                          return Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(a['icon'] as IconData, size: 28, color: primary),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${a['value']}',
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  a['label'] as String,
-                                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        alignment: WrapAlignment.center,
+                        children: _tags.map((t) => TagChip(t)).toList(),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Neuer Abstand
-              const SizedBox(height: 16),
-
-              // Meine Rezepte-Box
-              Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Kopfzeile
+                      const SizedBox(height: 24),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text('Meine Rezepte', style: theme.textTheme.titleLarge),
-                          const Spacer(),
-                          TextButton(onPressed: () {}, child: const Text('Alle ansehen')),
+                          StatItem('Rezepte', _recipesCount),
+                          StatItem('Zutaten gerettet', _rescuedCount),
+                          StatItem('Likes', _likesCount),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 140,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _recipePreview.length,
-                          itemBuilder: (ctx, i) {
-                            final r = _recipePreview[i];
-                            return Container(
-                              width: 120,
-                              margin: EdgeInsets.only(right: i == _recipePreview.length - 1 ? 0 : 12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(r['image']!, width: 120, height: 80, fit: BoxFit.cover),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(r['title']!, style: theme.textTheme.bodyMedium, overflow: TextOverflow.ellipsis),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 ),
-              ),
+                Positioned(
+                  top: 0,
+                  child: CircleAvatar(
+                    radius: 48,
+                    backgroundColor: primary,
+                    backgroundImage:
+                        _avatarUrl.isNotEmpty ? NetworkImage(_avatarUrl) : null,
+                  ),
+                ),
+              ],
+            ),
 
-            ],
-          ),
+            // Abstand zu den Sektionen
+            // (wird durch ProfileSection.margin oben erzeugt)
+
+            // Achievements
+            ProfileSection(
+              title: 'Achievements',
+              action: TextButton(
+                onPressed: () => Navigator.of(context)
+                    .push(_createSlideRoute(const AchievementsOverviewScreen())),
+                child: const Text('Alle ansehen'),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: achievements.map((a) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(a['icon'] as IconData, size: 28, color: primary),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${a['value']}',
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        a['label'] as String,
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: Colors.grey[600]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+
+            // Mein Vorratsschrank
+            ProfileSection(
+              title: 'Mein Vorratsschrank',
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                leading: const Icon(Icons.kitchen, size: 32),
+                title: const Text('Du hast derzeit 7 Artikel'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(_createSlideRoute(const PantryScreen())),
+              ),
+            ),
+
+            // Meine Rezepte
+            ProfileSection(
+              title: 'Meine Rezepte',
+              action: TextButton(onPressed: () {}, child: const Text('Alle ansehen')),
+              child: SizedBox(
+                height: 140,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _recipePreview.length,
+                  itemBuilder: (ctx, i) {
+                    final r = _recipePreview[i];
+                    return RecipePreviewItem(
+                      imageUrl: r['image']!,
+                      title: r['title']!,
+                      isLast: i == _recipePreview.length - 1,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildStat(String label, int value, ThemeData theme) {
+  Route _createSlideRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (_, animation, __) => page,
+      transitionsBuilder: (_, animation, __, child) {
+        final tween = Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero);
+        return SlideTransition(
+          position: tween.animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+          ),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
+class ProfileSection extends StatelessWidget {
+  final String title;
+  final Widget? action;
+  final Widget child;
+
+  const ProfileSection({
+    Key? key,
+    required this.title,
+    this.action,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: kSectionSpacing),
+      padding: const EdgeInsets.all(16),
+      color: Theme.of(context).colorScheme.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleLarge),
+              const Spacer(),
+              if (action != null) action!,
+            ],
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class StatItem extends StatelessWidget {
+  final String label;
+  final int value;
+
+  const StatItem(this.label, this.value, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text('$value', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text('$value',
+            style: t.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text(label, style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
+        Text(label, style: t.textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
       ],
+    );
+  }
+}
+
+class TagChip extends StatelessWidget {
+  final String tag;
+
+  const TagChip(this.tag, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final p = Theme.of(context).colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: p.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(tag, style: TextStyle(color: p)),
+    );
+  }
+}
+
+class RecipePreviewItem extends StatelessWidget {
+  final String imageUrl;
+  final String title;
+  final bool isLast;
+
+  const RecipePreviewItem({
+    Key? key,
+    required this.imageUrl,
+    required this.title,
+    this.isLast = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      margin: EdgeInsets.only(right: isLast ? 0 : 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              Uri.encodeFull(imageUrl),
+              width: 120,
+              height: 80,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 120,
+                height: 80,
+                color: Colors.grey[200],
+                child: const Icon(Icons.broken_image, color: Colors.grey),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }
