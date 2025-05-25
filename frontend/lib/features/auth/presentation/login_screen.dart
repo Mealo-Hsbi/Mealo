@@ -95,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               TextField(
                 controller: _emailCtrl,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'Email',
                   filled: true,
