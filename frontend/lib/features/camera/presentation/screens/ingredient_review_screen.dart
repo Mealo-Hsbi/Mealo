@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/common/models/ingredient.dart';
 
 class IngredientReviewScreen extends StatefulWidget {
-  final List<String> ingredients; // Die erkannten Zutaten vom CameraScreen
+  final List<Ingredient> ingredients; // List of Ingredient objects
 
   const IngredientReviewScreen({
     Key? key,
@@ -13,14 +14,14 @@ class IngredientReviewScreen extends StatefulWidget {
 }
 
 class _IngredientReviewScreenState extends State<IngredientReviewScreen> {
-  // Hier könntest du später einen lokalen Zustand für die bearbeitbaren Zutaten halten.
-  // Zum Beispiel:
+  // You might keep a local state for editable ingredients here later.
+  // For example:
   // List<String> _editableIngredients = [];
 
   @override
   void initState() {
     super.initState();
-    // Wenn du eine lokale Kopie der Zutaten machen möchtest, um sie zu bearbeiten:
+    // If you want to make a local copy of ingredients for editing:
     // _editableIngredients = List.from(widget.ingredients);
   }
 
@@ -28,7 +29,7 @@ class _IngredientReviewScreenState extends State<IngredientReviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zutaten überprüfen'),
+        title: const Text('Review Ingredients'), // English text
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -39,7 +40,7 @@ class _IngredientReviewScreenState extends State<IngredientReviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Wir haben folgende Zutaten erkannt:',
+              'We recognized the following ingredients:', // English text
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -52,9 +53,35 @@ class _IngredientReviewScreenState extends State<IngredientReviewScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        ingredient,
-                        style: const TextStyle(fontSize: 16),
+                      child: Row(
+                        children: [
+                          // Display image if imageUrl is available
+                          // AND it successfully loads. Otherwise, it will be SizedBox.shrink()
+                          if (ingredient.imageUrl != null && ingredient.imageUrl!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: Image.asset(
+                                  ingredient.imageUrl!,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    // If image fails to load (e.g., path is wrong),
+                                    // return an empty box so no space is taken.
+                                    return SizedBox.shrink(); // <-- Changed here!
+                                  },
+                                ),
+                              ),
+                            ),
+                          // Display ingredient name
+                          Expanded(
+                            child: Text(
+                              ingredient.name,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -64,15 +91,8 @@ class _IngredientReviewScreenState extends State<IngredientReviewScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: Hier später die Logik zum Anzeigen der Rezepte implementieren
-                print('Zutaten bestätigt! Navigiere zu Rezepten.');
-                // Beispiel: Navigator.of(context).pushReplacement(
-                //   MaterialPageRoute(
-                //     builder: (context) => RecipeResultsScreen(
-                //       finalIngredients: _editableIngredients, // Oder widget.ingredients
-                //     ),
-                //   ),
-                // );
+                // TODO: Implement logic to show recipes here later
+                print('Ingredients confirmed! Navigating to recipes.'); // English print statement
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
@@ -82,7 +102,7 @@ class _IngredientReviewScreenState extends State<IngredientReviewScreen> {
                 ),
               ),
               child: const Text(
-                'Rezepte finden!',
+                'Find Recipes!', // English text
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
