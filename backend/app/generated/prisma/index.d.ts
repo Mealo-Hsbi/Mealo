@@ -73,6 +73,16 @@ export type weekly_plan = $Result.DefaultSelection<Prisma.$weekly_planPayload>
  * 
  */
 export type weekly_plan_item = $Result.DefaultSelection<Prisma.$weekly_plan_itemPayload>
+/**
+ * Model tags
+ * 
+ */
+export type tags = $Result.DefaultSelection<Prisma.$tagsPayload>
+/**
+ * Model user_tags
+ * 
+ */
+export type user_tags = $Result.DefaultSelection<Prisma.$user_tagsPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -318,6 +328,26 @@ export class PrismaClient<
     * ```
     */
   get weekly_plan_item(): Prisma.weekly_plan_itemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tags`: Exposes CRUD operations for the **tags** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Tags
+    * const tags = await prisma.tags.findMany()
+    * ```
+    */
+  get tags(): Prisma.tagsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.user_tags`: Exposes CRUD operations for the **user_tags** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more User_tags
+    * const user_tags = await prisma.user_tags.findMany()
+    * ```
+    */
+  get user_tags(): Prisma.user_tagsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -769,7 +799,9 @@ export namespace Prisma {
     shopping_list_item: 'shopping_list_item',
     users: 'users',
     weekly_plan: 'weekly_plan',
-    weekly_plan_item: 'weekly_plan_item'
+    weekly_plan_item: 'weekly_plan_item',
+    tags: 'tags',
+    user_tags: 'user_tags'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -788,7 +820,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "favorites" | "ingredients" | "inventory" | "ratings" | "recipe_ingredients" | "recipe_steps" | "recipes" | "shopping_list" | "shopping_list_item" | "users" | "weekly_plan" | "weekly_plan_item"
+      modelProps: "favorites" | "ingredients" | "inventory" | "ratings" | "recipe_ingredients" | "recipe_steps" | "recipes" | "shopping_list" | "shopping_list_item" | "users" | "weekly_plan" | "weekly_plan_item" | "tags" | "user_tags"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1632,6 +1664,146 @@ export namespace Prisma {
           }
         }
       }
+      tags: {
+        payload: Prisma.$tagsPayload<ExtArgs>
+        fields: Prisma.tagsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.tagsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.tagsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>
+          }
+          findFirst: {
+            args: Prisma.tagsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.tagsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>
+          }
+          findMany: {
+            args: Prisma.tagsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>[]
+          }
+          create: {
+            args: Prisma.tagsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>
+          }
+          createMany: {
+            args: Prisma.tagsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.tagsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>[]
+          }
+          delete: {
+            args: Prisma.tagsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>
+          }
+          update: {
+            args: Prisma.tagsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>
+          }
+          deleteMany: {
+            args: Prisma.tagsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.tagsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.tagsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$tagsPayload>
+          }
+          aggregate: {
+            args: Prisma.TagsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTags>
+          }
+          groupBy: {
+            args: Prisma.tagsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TagsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.tagsCountArgs<ExtArgs>
+            result: $Utils.Optional<TagsCountAggregateOutputType> | number
+          }
+        }
+      }
+      user_tags: {
+        payload: Prisma.$user_tagsPayload<ExtArgs>
+        fields: Prisma.user_tagsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.user_tagsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.user_tagsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>
+          }
+          findFirst: {
+            args: Prisma.user_tagsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.user_tagsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>
+          }
+          findMany: {
+            args: Prisma.user_tagsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>[]
+          }
+          create: {
+            args: Prisma.user_tagsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>
+          }
+          createMany: {
+            args: Prisma.user_tagsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.user_tagsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>[]
+          }
+          delete: {
+            args: Prisma.user_tagsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>
+          }
+          update: {
+            args: Prisma.user_tagsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>
+          }
+          deleteMany: {
+            args: Prisma.user_tagsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.user_tagsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.user_tagsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>
+          }
+          aggregate: {
+            args: Prisma.User_tagsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUser_tags>
+          }
+          groupBy: {
+            args: Prisma.user_tagsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<User_tagsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.user_tagsCountArgs<ExtArgs>
+            result: $Utils.Optional<User_tagsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1728,6 +1900,8 @@ export namespace Prisma {
     users?: usersOmit
     weekly_plan?: weekly_planOmit
     weekly_plan_item?: weekly_plan_itemOmit
+    tags?: tagsOmit
+    user_tags?: user_tagsOmit
   }
 
   /* Types for Logging */
@@ -1974,6 +2148,7 @@ export namespace Prisma {
     ratings: number
     recipes: number
     shopping_list: number
+    user_tags: number
     weekly_plan: number
   }
 
@@ -1983,6 +2158,7 @@ export namespace Prisma {
     ratings?: boolean | UsersCountOutputTypeCountRatingsArgs
     recipes?: boolean | UsersCountOutputTypeCountRecipesArgs
     shopping_list?: boolean | UsersCountOutputTypeCountShopping_listArgs
+    user_tags?: boolean | UsersCountOutputTypeCountUser_tagsArgs
     weekly_plan?: boolean | UsersCountOutputTypeCountWeekly_planArgs
   }
 
@@ -2035,6 +2211,13 @@ export namespace Prisma {
   /**
    * UsersCountOutputType without action
    */
+  export type UsersCountOutputTypeCountUser_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: user_tagsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
   export type UsersCountOutputTypeCountWeekly_planArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: weekly_planWhereInput
   }
@@ -2077,6 +2260,37 @@ export namespace Prisma {
    */
   export type Weekly_planCountOutputTypeCountWeekly_plan_itemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: weekly_plan_itemWhereInput
+  }
+
+
+  /**
+   * Count Type TagsCountOutputType
+   */
+
+  export type TagsCountOutputType = {
+    user_tags: number
+  }
+
+  export type TagsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user_tags?: boolean | TagsCountOutputTypeCountUser_tagsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TagsCountOutputType without action
+   */
+  export type TagsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TagsCountOutputType
+     */
+    select?: TagsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TagsCountOutputType without action
+   */
+  export type TagsCountOutputTypeCountUser_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: user_tagsWhereInput
   }
 
 
@@ -11747,6 +11961,8 @@ export namespace Prisma {
     firebase_uid: string | null
     email: string | null
     created_at: Date | null
+    name: string | null
+    avatar_url: string | null
   }
 
   export type UsersMaxAggregateOutputType = {
@@ -11754,6 +11970,8 @@ export namespace Prisma {
     firebase_uid: string | null
     email: string | null
     created_at: Date | null
+    name: string | null
+    avatar_url: string | null
   }
 
   export type UsersCountAggregateOutputType = {
@@ -11761,6 +11979,8 @@ export namespace Prisma {
     firebase_uid: number
     email: number
     created_at: number
+    name: number
+    avatar_url: number
     _all: number
   }
 
@@ -11770,6 +11990,8 @@ export namespace Prisma {
     firebase_uid?: true
     email?: true
     created_at?: true
+    name?: true
+    avatar_url?: true
   }
 
   export type UsersMaxAggregateInputType = {
@@ -11777,6 +11999,8 @@ export namespace Prisma {
     firebase_uid?: true
     email?: true
     created_at?: true
+    name?: true
+    avatar_url?: true
   }
 
   export type UsersCountAggregateInputType = {
@@ -11784,6 +12008,8 @@ export namespace Prisma {
     firebase_uid?: true
     email?: true
     created_at?: true
+    name?: true
+    avatar_url?: true
     _all?: true
   }
 
@@ -11864,6 +12090,8 @@ export namespace Prisma {
     firebase_uid: string
     email: string | null
     created_at: Date
+    name: string | null
+    avatar_url: string | null
     _count: UsersCountAggregateOutputType | null
     _min: UsersMinAggregateOutputType | null
     _max: UsersMaxAggregateOutputType | null
@@ -11888,11 +12116,14 @@ export namespace Prisma {
     firebase_uid?: boolean
     email?: boolean
     created_at?: boolean
+    name?: boolean
+    avatar_url?: boolean
     favorites?: boolean | users$favoritesArgs<ExtArgs>
     inventory?: boolean | users$inventoryArgs<ExtArgs>
     ratings?: boolean | users$ratingsArgs<ExtArgs>
     recipes?: boolean | users$recipesArgs<ExtArgs>
     shopping_list?: boolean | users$shopping_listArgs<ExtArgs>
+    user_tags?: boolean | users$user_tagsArgs<ExtArgs>
     weekly_plan?: boolean | users$weekly_planArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["users"]>
@@ -11902,6 +12133,8 @@ export namespace Prisma {
     firebase_uid?: boolean
     email?: boolean
     created_at?: boolean
+    name?: boolean
+    avatar_url?: boolean
   }, ExtArgs["result"]["users"]>
 
 
@@ -11910,15 +12143,18 @@ export namespace Prisma {
     firebase_uid?: boolean
     email?: boolean
     created_at?: boolean
+    name?: boolean
+    avatar_url?: boolean
   }
 
-  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firebase_uid" | "email" | "created_at", ExtArgs["result"]["users"]>
+  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firebase_uid" | "email" | "created_at" | "name" | "avatar_url", ExtArgs["result"]["users"]>
   export type usersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     favorites?: boolean | users$favoritesArgs<ExtArgs>
     inventory?: boolean | users$inventoryArgs<ExtArgs>
     ratings?: boolean | users$ratingsArgs<ExtArgs>
     recipes?: boolean | users$recipesArgs<ExtArgs>
     shopping_list?: boolean | users$shopping_listArgs<ExtArgs>
+    user_tags?: boolean | users$user_tagsArgs<ExtArgs>
     weekly_plan?: boolean | users$weekly_planArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -11932,6 +12168,7 @@ export namespace Prisma {
       ratings: Prisma.$ratingsPayload<ExtArgs>[]
       recipes: Prisma.$recipesPayload<ExtArgs>[]
       shopping_list: Prisma.$shopping_listPayload<ExtArgs>[]
+      user_tags: Prisma.$user_tagsPayload<ExtArgs>[]
       weekly_plan: Prisma.$weekly_planPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11939,6 +12176,8 @@ export namespace Prisma {
       firebase_uid: string
       email: string | null
       created_at: Date
+      name: string | null
+      avatar_url: string | null
     }, ExtArgs["result"]["users"]>
     composites: {}
   }
@@ -12308,6 +12547,7 @@ export namespace Prisma {
     ratings<T extends users$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, users$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ratingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     recipes<T extends users$recipesArgs<ExtArgs> = {}>(args?: Subset<T, users$recipesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$recipesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shopping_list<T extends users$shopping_listArgs<ExtArgs> = {}>(args?: Subset<T, users$shopping_listArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    user_tags<T extends users$user_tagsArgs<ExtArgs> = {}>(args?: Subset<T, users$user_tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     weekly_plan<T extends users$weekly_planArgs<ExtArgs> = {}>(args?: Subset<T, users$weekly_planArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$weekly_planPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -12342,6 +12582,8 @@ export namespace Prisma {
     readonly firebase_uid: FieldRef<"users", 'String'>
     readonly email: FieldRef<"users", 'String'>
     readonly created_at: FieldRef<"users", 'DateTime'>
+    readonly name: FieldRef<"users", 'String'>
+    readonly avatar_url: FieldRef<"users", 'String'>
   }
     
 
@@ -12813,6 +13055,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Shopping_listScalarFieldEnum | Shopping_listScalarFieldEnum[]
+  }
+
+  /**
+   * users.user_tags
+   */
+  export type users$user_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    where?: user_tagsWhereInput
+    orderBy?: user_tagsOrderByWithRelationInput | user_tagsOrderByWithRelationInput[]
+    cursor?: user_tagsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: User_tagsScalarFieldEnum | User_tagsScalarFieldEnum[]
   }
 
   /**
@@ -14881,6 +15147,1917 @@ export namespace Prisma {
 
 
   /**
+   * Model tags
+   */
+
+  export type AggregateTags = {
+    _count: TagsCountAggregateOutputType | null
+    _min: TagsMinAggregateOutputType | null
+    _max: TagsMaxAggregateOutputType | null
+  }
+
+  export type TagsMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+  }
+
+  export type TagsMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+  }
+
+  export type TagsCountAggregateOutputType = {
+    id: number
+    name: number
+    _all: number
+  }
+
+
+  export type TagsMinAggregateInputType = {
+    id?: true
+    name?: true
+  }
+
+  export type TagsMaxAggregateInputType = {
+    id?: true
+    name?: true
+  }
+
+  export type TagsCountAggregateInputType = {
+    id?: true
+    name?: true
+    _all?: true
+  }
+
+  export type TagsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which tags to aggregate.
+     */
+    where?: tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of tags to fetch.
+     */
+    orderBy?: tagsOrderByWithRelationInput | tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned tags
+    **/
+    _count?: true | TagsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TagsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TagsMaxAggregateInputType
+  }
+
+  export type GetTagsAggregateType<T extends TagsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTags]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTags[P]>
+      : GetScalarType<T[P], AggregateTags[P]>
+  }
+
+
+
+
+  export type tagsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: tagsWhereInput
+    orderBy?: tagsOrderByWithAggregationInput | tagsOrderByWithAggregationInput[]
+    by: TagsScalarFieldEnum[] | TagsScalarFieldEnum
+    having?: tagsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TagsCountAggregateInputType | true
+    _min?: TagsMinAggregateInputType
+    _max?: TagsMaxAggregateInputType
+  }
+
+  export type TagsGroupByOutputType = {
+    id: string
+    name: string
+    _count: TagsCountAggregateOutputType | null
+    _min: TagsMinAggregateOutputType | null
+    _max: TagsMaxAggregateOutputType | null
+  }
+
+  type GetTagsGroupByPayload<T extends tagsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TagsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TagsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TagsGroupByOutputType[P]>
+            : GetScalarType<T[P], TagsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type tagsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    user_tags?: boolean | tags$user_tagsArgs<ExtArgs>
+    _count?: boolean | TagsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tags"]>
+
+  export type tagsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+  }, ExtArgs["result"]["tags"]>
+
+
+  export type tagsSelectScalar = {
+    id?: boolean
+    name?: boolean
+  }
+
+  export type tagsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name", ExtArgs["result"]["tags"]>
+  export type tagsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user_tags?: boolean | tags$user_tagsArgs<ExtArgs>
+    _count?: boolean | TagsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type tagsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $tagsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "tags"
+    objects: {
+      user_tags: Prisma.$user_tagsPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+    }, ExtArgs["result"]["tags"]>
+    composites: {}
+  }
+
+  type tagsGetPayload<S extends boolean | null | undefined | tagsDefaultArgs> = $Result.GetResult<Prisma.$tagsPayload, S>
+
+  type tagsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<tagsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TagsCountAggregateInputType | true
+    }
+
+  export interface tagsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['tags'], meta: { name: 'tags' } }
+    /**
+     * Find zero or one Tags that matches the filter.
+     * @param {tagsFindUniqueArgs} args - Arguments to find a Tags
+     * @example
+     * // Get one Tags
+     * const tags = await prisma.tags.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends tagsFindUniqueArgs>(args: SelectSubset<T, tagsFindUniqueArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Tags that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {tagsFindUniqueOrThrowArgs} args - Arguments to find a Tags
+     * @example
+     * // Get one Tags
+     * const tags = await prisma.tags.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends tagsFindUniqueOrThrowArgs>(args: SelectSubset<T, tagsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Tags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {tagsFindFirstArgs} args - Arguments to find a Tags
+     * @example
+     * // Get one Tags
+     * const tags = await prisma.tags.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends tagsFindFirstArgs>(args?: SelectSubset<T, tagsFindFirstArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Tags that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {tagsFindFirstOrThrowArgs} args - Arguments to find a Tags
+     * @example
+     * // Get one Tags
+     * const tags = await prisma.tags.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends tagsFindFirstOrThrowArgs>(args?: SelectSubset<T, tagsFindFirstOrThrowArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Tags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {tagsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Tags
+     * const tags = await prisma.tags.findMany()
+     * 
+     * // Get first 10 Tags
+     * const tags = await prisma.tags.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tagsWithIdOnly = await prisma.tags.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends tagsFindManyArgs>(args?: SelectSubset<T, tagsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Tags.
+     * @param {tagsCreateArgs} args - Arguments to create a Tags.
+     * @example
+     * // Create one Tags
+     * const Tags = await prisma.tags.create({
+     *   data: {
+     *     // ... data to create a Tags
+     *   }
+     * })
+     * 
+     */
+    create<T extends tagsCreateArgs>(args: SelectSubset<T, tagsCreateArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Tags.
+     * @param {tagsCreateManyArgs} args - Arguments to create many Tags.
+     * @example
+     * // Create many Tags
+     * const tags = await prisma.tags.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends tagsCreateManyArgs>(args?: SelectSubset<T, tagsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Tags and returns the data saved in the database.
+     * @param {tagsCreateManyAndReturnArgs} args - Arguments to create many Tags.
+     * @example
+     * // Create many Tags
+     * const tags = await prisma.tags.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Tags and only return the `id`
+     * const tagsWithIdOnly = await prisma.tags.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends tagsCreateManyAndReturnArgs>(args?: SelectSubset<T, tagsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Tags.
+     * @param {tagsDeleteArgs} args - Arguments to delete one Tags.
+     * @example
+     * // Delete one Tags
+     * const Tags = await prisma.tags.delete({
+     *   where: {
+     *     // ... filter to delete one Tags
+     *   }
+     * })
+     * 
+     */
+    delete<T extends tagsDeleteArgs>(args: SelectSubset<T, tagsDeleteArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Tags.
+     * @param {tagsUpdateArgs} args - Arguments to update one Tags.
+     * @example
+     * // Update one Tags
+     * const tags = await prisma.tags.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends tagsUpdateArgs>(args: SelectSubset<T, tagsUpdateArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Tags.
+     * @param {tagsDeleteManyArgs} args - Arguments to filter Tags to delete.
+     * @example
+     * // Delete a few Tags
+     * const { count } = await prisma.tags.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends tagsDeleteManyArgs>(args?: SelectSubset<T, tagsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {tagsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Tags
+     * const tags = await prisma.tags.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends tagsUpdateManyArgs>(args: SelectSubset<T, tagsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Tags.
+     * @param {tagsUpsertArgs} args - Arguments to update or create a Tags.
+     * @example
+     * // Update or create a Tags
+     * const tags = await prisma.tags.upsert({
+     *   create: {
+     *     // ... data to create a Tags
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Tags we want to update
+     *   }
+     * })
+     */
+    upsert<T extends tagsUpsertArgs>(args: SelectSubset<T, tagsUpsertArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {tagsCountArgs} args - Arguments to filter Tags to count.
+     * @example
+     * // Count the number of Tags
+     * const count = await prisma.tags.count({
+     *   where: {
+     *     // ... the filter for the Tags we want to count
+     *   }
+     * })
+    **/
+    count<T extends tagsCountArgs>(
+      args?: Subset<T, tagsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TagsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TagsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TagsAggregateArgs>(args: Subset<T, TagsAggregateArgs>): Prisma.PrismaPromise<GetTagsAggregateType<T>>
+
+    /**
+     * Group by Tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {tagsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends tagsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: tagsGroupByArgs['orderBy'] }
+        : { orderBy?: tagsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, tagsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the tags model
+   */
+  readonly fields: tagsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for tags.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__tagsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user_tags<T extends tags$user_tagsArgs<ExtArgs> = {}>(args?: Subset<T, tags$user_tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the tags model
+   */
+  interface tagsFieldRefs {
+    readonly id: FieldRef<"tags", 'String'>
+    readonly name: FieldRef<"tags", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * tags findUnique
+   */
+  export type tagsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which tags to fetch.
+     */
+    where: tagsWhereUniqueInput
+  }
+
+  /**
+   * tags findUniqueOrThrow
+   */
+  export type tagsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which tags to fetch.
+     */
+    where: tagsWhereUniqueInput
+  }
+
+  /**
+   * tags findFirst
+   */
+  export type tagsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which tags to fetch.
+     */
+    where?: tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of tags to fetch.
+     */
+    orderBy?: tagsOrderByWithRelationInput | tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for tags.
+     */
+    cursor?: tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of tags.
+     */
+    distinct?: TagsScalarFieldEnum | TagsScalarFieldEnum[]
+  }
+
+  /**
+   * tags findFirstOrThrow
+   */
+  export type tagsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which tags to fetch.
+     */
+    where?: tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of tags to fetch.
+     */
+    orderBy?: tagsOrderByWithRelationInput | tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for tags.
+     */
+    cursor?: tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of tags.
+     */
+    distinct?: TagsScalarFieldEnum | TagsScalarFieldEnum[]
+  }
+
+  /**
+   * tags findMany
+   */
+  export type tagsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which tags to fetch.
+     */
+    where?: tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of tags to fetch.
+     */
+    orderBy?: tagsOrderByWithRelationInput | tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing tags.
+     */
+    cursor?: tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` tags.
+     */
+    skip?: number
+    distinct?: TagsScalarFieldEnum | TagsScalarFieldEnum[]
+  }
+
+  /**
+   * tags create
+   */
+  export type tagsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a tags.
+     */
+    data: XOR<tagsCreateInput, tagsUncheckedCreateInput>
+  }
+
+  /**
+   * tags createMany
+   */
+  export type tagsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many tags.
+     */
+    data: tagsCreateManyInput | tagsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * tags createManyAndReturn
+   */
+  export type tagsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * The data used to create many tags.
+     */
+    data: tagsCreateManyInput | tagsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * tags update
+   */
+  export type tagsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a tags.
+     */
+    data: XOR<tagsUpdateInput, tagsUncheckedUpdateInput>
+    /**
+     * Choose, which tags to update.
+     */
+    where: tagsWhereUniqueInput
+  }
+
+  /**
+   * tags updateMany
+   */
+  export type tagsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update tags.
+     */
+    data: XOR<tagsUpdateManyMutationInput, tagsUncheckedUpdateManyInput>
+    /**
+     * Filter which tags to update
+     */
+    where?: tagsWhereInput
+  }
+
+  /**
+   * tags upsert
+   */
+  export type tagsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the tags to update in case it exists.
+     */
+    where: tagsWhereUniqueInput
+    /**
+     * In case the tags found by the `where` argument doesn't exist, create a new tags with this data.
+     */
+    create: XOR<tagsCreateInput, tagsUncheckedCreateInput>
+    /**
+     * In case the tags was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<tagsUpdateInput, tagsUncheckedUpdateInput>
+  }
+
+  /**
+   * tags delete
+   */
+  export type tagsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+    /**
+     * Filter which tags to delete.
+     */
+    where: tagsWhereUniqueInput
+  }
+
+  /**
+   * tags deleteMany
+   */
+  export type tagsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which tags to delete
+     */
+    where?: tagsWhereInput
+  }
+
+  /**
+   * tags.user_tags
+   */
+  export type tags$user_tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    where?: user_tagsWhereInput
+    orderBy?: user_tagsOrderByWithRelationInput | user_tagsOrderByWithRelationInput[]
+    cursor?: user_tagsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: User_tagsScalarFieldEnum | User_tagsScalarFieldEnum[]
+  }
+
+  /**
+   * tags without action
+   */
+  export type tagsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the tags
+     */
+    select?: tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the tags
+     */
+    omit?: tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: tagsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model user_tags
+   */
+
+  export type AggregateUser_tags = {
+    _count: User_tagsCountAggregateOutputType | null
+    _min: User_tagsMinAggregateOutputType | null
+    _max: User_tagsMaxAggregateOutputType | null
+  }
+
+  export type User_tagsMinAggregateOutputType = {
+    user_id: string | null
+    tag_id: string | null
+  }
+
+  export type User_tagsMaxAggregateOutputType = {
+    user_id: string | null
+    tag_id: string | null
+  }
+
+  export type User_tagsCountAggregateOutputType = {
+    user_id: number
+    tag_id: number
+    _all: number
+  }
+
+
+  export type User_tagsMinAggregateInputType = {
+    user_id?: true
+    tag_id?: true
+  }
+
+  export type User_tagsMaxAggregateInputType = {
+    user_id?: true
+    tag_id?: true
+  }
+
+  export type User_tagsCountAggregateInputType = {
+    user_id?: true
+    tag_id?: true
+    _all?: true
+  }
+
+  export type User_tagsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which user_tags to aggregate.
+     */
+    where?: user_tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_tags to fetch.
+     */
+    orderBy?: user_tagsOrderByWithRelationInput | user_tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: user_tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned user_tags
+    **/
+    _count?: true | User_tagsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: User_tagsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: User_tagsMaxAggregateInputType
+  }
+
+  export type GetUser_tagsAggregateType<T extends User_tagsAggregateArgs> = {
+        [P in keyof T & keyof AggregateUser_tags]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUser_tags[P]>
+      : GetScalarType<T[P], AggregateUser_tags[P]>
+  }
+
+
+
+
+  export type user_tagsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: user_tagsWhereInput
+    orderBy?: user_tagsOrderByWithAggregationInput | user_tagsOrderByWithAggregationInput[]
+    by: User_tagsScalarFieldEnum[] | User_tagsScalarFieldEnum
+    having?: user_tagsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: User_tagsCountAggregateInputType | true
+    _min?: User_tagsMinAggregateInputType
+    _max?: User_tagsMaxAggregateInputType
+  }
+
+  export type User_tagsGroupByOutputType = {
+    user_id: string
+    tag_id: string
+    _count: User_tagsCountAggregateOutputType | null
+    _min: User_tagsMinAggregateOutputType | null
+    _max: User_tagsMaxAggregateOutputType | null
+  }
+
+  type GetUser_tagsGroupByPayload<T extends user_tagsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<User_tagsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof User_tagsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], User_tagsGroupByOutputType[P]>
+            : GetScalarType<T[P], User_tagsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type user_tagsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    user_id?: boolean
+    tag_id?: boolean
+    tags?: boolean | tagsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["user_tags"]>
+
+  export type user_tagsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    user_id?: boolean
+    tag_id?: boolean
+    tags?: boolean | tagsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["user_tags"]>
+
+
+  export type user_tagsSelectScalar = {
+    user_id?: boolean
+    tag_id?: boolean
+  }
+
+  export type user_tagsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"user_id" | "tag_id", ExtArgs["result"]["user_tags"]>
+  export type user_tagsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tags?: boolean | tagsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type user_tagsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tags?: boolean | tagsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $user_tagsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "user_tags"
+    objects: {
+      tags: Prisma.$tagsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      user_id: string
+      tag_id: string
+    }, ExtArgs["result"]["user_tags"]>
+    composites: {}
+  }
+
+  type user_tagsGetPayload<S extends boolean | null | undefined | user_tagsDefaultArgs> = $Result.GetResult<Prisma.$user_tagsPayload, S>
+
+  type user_tagsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<user_tagsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: User_tagsCountAggregateInputType | true
+    }
+
+  export interface user_tagsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['user_tags'], meta: { name: 'user_tags' } }
+    /**
+     * Find zero or one User_tags that matches the filter.
+     * @param {user_tagsFindUniqueArgs} args - Arguments to find a User_tags
+     * @example
+     * // Get one User_tags
+     * const user_tags = await prisma.user_tags.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends user_tagsFindUniqueArgs>(args: SelectSubset<T, user_tagsFindUniqueArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one User_tags that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {user_tagsFindUniqueOrThrowArgs} args - Arguments to find a User_tags
+     * @example
+     * // Get one User_tags
+     * const user_tags = await prisma.user_tags.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends user_tagsFindUniqueOrThrowArgs>(args: SelectSubset<T, user_tagsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first User_tags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_tagsFindFirstArgs} args - Arguments to find a User_tags
+     * @example
+     * // Get one User_tags
+     * const user_tags = await prisma.user_tags.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends user_tagsFindFirstArgs>(args?: SelectSubset<T, user_tagsFindFirstArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first User_tags that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_tagsFindFirstOrThrowArgs} args - Arguments to find a User_tags
+     * @example
+     * // Get one User_tags
+     * const user_tags = await prisma.user_tags.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends user_tagsFindFirstOrThrowArgs>(args?: SelectSubset<T, user_tagsFindFirstOrThrowArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more User_tags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_tagsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all User_tags
+     * const user_tags = await prisma.user_tags.findMany()
+     * 
+     * // Get first 10 User_tags
+     * const user_tags = await prisma.user_tags.findMany({ take: 10 })
+     * 
+     * // Only select the `user_id`
+     * const user_tagsWithUser_idOnly = await prisma.user_tags.findMany({ select: { user_id: true } })
+     * 
+     */
+    findMany<T extends user_tagsFindManyArgs>(args?: SelectSubset<T, user_tagsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a User_tags.
+     * @param {user_tagsCreateArgs} args - Arguments to create a User_tags.
+     * @example
+     * // Create one User_tags
+     * const User_tags = await prisma.user_tags.create({
+     *   data: {
+     *     // ... data to create a User_tags
+     *   }
+     * })
+     * 
+     */
+    create<T extends user_tagsCreateArgs>(args: SelectSubset<T, user_tagsCreateArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many User_tags.
+     * @param {user_tagsCreateManyArgs} args - Arguments to create many User_tags.
+     * @example
+     * // Create many User_tags
+     * const user_tags = await prisma.user_tags.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends user_tagsCreateManyArgs>(args?: SelectSubset<T, user_tagsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many User_tags and returns the data saved in the database.
+     * @param {user_tagsCreateManyAndReturnArgs} args - Arguments to create many User_tags.
+     * @example
+     * // Create many User_tags
+     * const user_tags = await prisma.user_tags.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many User_tags and only return the `user_id`
+     * const user_tagsWithUser_idOnly = await prisma.user_tags.createManyAndReturn({
+     *   select: { user_id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends user_tagsCreateManyAndReturnArgs>(args?: SelectSubset<T, user_tagsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a User_tags.
+     * @param {user_tagsDeleteArgs} args - Arguments to delete one User_tags.
+     * @example
+     * // Delete one User_tags
+     * const User_tags = await prisma.user_tags.delete({
+     *   where: {
+     *     // ... filter to delete one User_tags
+     *   }
+     * })
+     * 
+     */
+    delete<T extends user_tagsDeleteArgs>(args: SelectSubset<T, user_tagsDeleteArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one User_tags.
+     * @param {user_tagsUpdateArgs} args - Arguments to update one User_tags.
+     * @example
+     * // Update one User_tags
+     * const user_tags = await prisma.user_tags.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends user_tagsUpdateArgs>(args: SelectSubset<T, user_tagsUpdateArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more User_tags.
+     * @param {user_tagsDeleteManyArgs} args - Arguments to filter User_tags to delete.
+     * @example
+     * // Delete a few User_tags
+     * const { count } = await prisma.user_tags.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends user_tagsDeleteManyArgs>(args?: SelectSubset<T, user_tagsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more User_tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_tagsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many User_tags
+     * const user_tags = await prisma.user_tags.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends user_tagsUpdateManyArgs>(args: SelectSubset<T, user_tagsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one User_tags.
+     * @param {user_tagsUpsertArgs} args - Arguments to update or create a User_tags.
+     * @example
+     * // Update or create a User_tags
+     * const user_tags = await prisma.user_tags.upsert({
+     *   create: {
+     *     // ... data to create a User_tags
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the User_tags we want to update
+     *   }
+     * })
+     */
+    upsert<T extends user_tagsUpsertArgs>(args: SelectSubset<T, user_tagsUpsertArgs<ExtArgs>>): Prisma__user_tagsClient<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of User_tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_tagsCountArgs} args - Arguments to filter User_tags to count.
+     * @example
+     * // Count the number of User_tags
+     * const count = await prisma.user_tags.count({
+     *   where: {
+     *     // ... the filter for the User_tags we want to count
+     *   }
+     * })
+    **/
+    count<T extends user_tagsCountArgs>(
+      args?: Subset<T, user_tagsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], User_tagsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a User_tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {User_tagsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends User_tagsAggregateArgs>(args: Subset<T, User_tagsAggregateArgs>): Prisma.PrismaPromise<GetUser_tagsAggregateType<T>>
+
+    /**
+     * Group by User_tags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_tagsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends user_tagsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: user_tagsGroupByArgs['orderBy'] }
+        : { orderBy?: user_tagsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, user_tagsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUser_tagsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the user_tags model
+   */
+  readonly fields: user_tagsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for user_tags.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__user_tagsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tags<T extends tagsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, tagsDefaultArgs<ExtArgs>>): Prisma__tagsClient<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the user_tags model
+   */
+  interface user_tagsFieldRefs {
+    readonly user_id: FieldRef<"user_tags", 'String'>
+    readonly tag_id: FieldRef<"user_tags", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * user_tags findUnique
+   */
+  export type user_tagsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_tags to fetch.
+     */
+    where: user_tagsWhereUniqueInput
+  }
+
+  /**
+   * user_tags findUniqueOrThrow
+   */
+  export type user_tagsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_tags to fetch.
+     */
+    where: user_tagsWhereUniqueInput
+  }
+
+  /**
+   * user_tags findFirst
+   */
+  export type user_tagsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_tags to fetch.
+     */
+    where?: user_tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_tags to fetch.
+     */
+    orderBy?: user_tagsOrderByWithRelationInput | user_tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for user_tags.
+     */
+    cursor?: user_tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of user_tags.
+     */
+    distinct?: User_tagsScalarFieldEnum | User_tagsScalarFieldEnum[]
+  }
+
+  /**
+   * user_tags findFirstOrThrow
+   */
+  export type user_tagsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_tags to fetch.
+     */
+    where?: user_tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_tags to fetch.
+     */
+    orderBy?: user_tagsOrderByWithRelationInput | user_tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for user_tags.
+     */
+    cursor?: user_tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_tags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of user_tags.
+     */
+    distinct?: User_tagsScalarFieldEnum | User_tagsScalarFieldEnum[]
+  }
+
+  /**
+   * user_tags findMany
+   */
+  export type user_tagsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_tags to fetch.
+     */
+    where?: user_tagsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_tags to fetch.
+     */
+    orderBy?: user_tagsOrderByWithRelationInput | user_tagsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing user_tags.
+     */
+    cursor?: user_tagsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_tags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_tags.
+     */
+    skip?: number
+    distinct?: User_tagsScalarFieldEnum | User_tagsScalarFieldEnum[]
+  }
+
+  /**
+   * user_tags create
+   */
+  export type user_tagsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a user_tags.
+     */
+    data: XOR<user_tagsCreateInput, user_tagsUncheckedCreateInput>
+  }
+
+  /**
+   * user_tags createMany
+   */
+  export type user_tagsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many user_tags.
+     */
+    data: user_tagsCreateManyInput | user_tagsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * user_tags createManyAndReturn
+   */
+  export type user_tagsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * The data used to create many user_tags.
+     */
+    data: user_tagsCreateManyInput | user_tagsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * user_tags update
+   */
+  export type user_tagsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a user_tags.
+     */
+    data: XOR<user_tagsUpdateInput, user_tagsUncheckedUpdateInput>
+    /**
+     * Choose, which user_tags to update.
+     */
+    where: user_tagsWhereUniqueInput
+  }
+
+  /**
+   * user_tags updateMany
+   */
+  export type user_tagsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update user_tags.
+     */
+    data: XOR<user_tagsUpdateManyMutationInput, user_tagsUncheckedUpdateManyInput>
+    /**
+     * Filter which user_tags to update
+     */
+    where?: user_tagsWhereInput
+  }
+
+  /**
+   * user_tags upsert
+   */
+  export type user_tagsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the user_tags to update in case it exists.
+     */
+    where: user_tagsWhereUniqueInput
+    /**
+     * In case the user_tags found by the `where` argument doesn't exist, create a new user_tags with this data.
+     */
+    create: XOR<user_tagsCreateInput, user_tagsUncheckedCreateInput>
+    /**
+     * In case the user_tags was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<user_tagsUpdateInput, user_tagsUncheckedUpdateInput>
+  }
+
+  /**
+   * user_tags delete
+   */
+  export type user_tagsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+    /**
+     * Filter which user_tags to delete.
+     */
+    where: user_tagsWhereUniqueInput
+  }
+
+  /**
+   * user_tags deleteMany
+   */
+  export type user_tagsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which user_tags to delete
+     */
+    where?: user_tagsWhereInput
+  }
+
+  /**
+   * user_tags without action
+   */
+  export type user_tagsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_tags
+     */
+    select?: user_tagsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the user_tags
+     */
+    omit?: user_tagsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_tagsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15019,7 +17196,9 @@ export namespace Prisma {
     id: 'id',
     firebase_uid: 'firebase_uid',
     email: 'email',
-    created_at: 'created_at'
+    created_at: 'created_at',
+    name: 'name',
+    avatar_url: 'avatar_url'
   };
 
   export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -15045,6 +17224,22 @@ export namespace Prisma {
   };
 
   export type Weekly_plan_itemScalarFieldEnum = (typeof Weekly_plan_itemScalarFieldEnum)[keyof typeof Weekly_plan_itemScalarFieldEnum]
+
+
+  export const TagsScalarFieldEnum: {
+    id: 'id',
+    name: 'name'
+  };
+
+  export type TagsScalarFieldEnum = (typeof TagsScalarFieldEnum)[keyof typeof TagsScalarFieldEnum]
+
+
+  export const User_tagsScalarFieldEnum: {
+    user_id: 'user_id',
+    tag_id: 'tag_id'
+  };
+
+  export type User_tagsScalarFieldEnum = (typeof User_tagsScalarFieldEnum)[keyof typeof User_tagsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15825,11 +18020,14 @@ export namespace Prisma {
     firebase_uid?: StringFilter<"users"> | string
     email?: StringNullableFilter<"users"> | string | null
     created_at?: DateTimeFilter<"users"> | Date | string
+    name?: StringNullableFilter<"users"> | string | null
+    avatar_url?: StringNullableFilter<"users"> | string | null
     favorites?: FavoritesListRelationFilter
     inventory?: InventoryListRelationFilter
     ratings?: RatingsListRelationFilter
     recipes?: RecipesListRelationFilter
     shopping_list?: Shopping_listListRelationFilter
+    user_tags?: User_tagsListRelationFilter
     weekly_plan?: Weekly_planListRelationFilter
   }
 
@@ -15838,11 +18036,14 @@ export namespace Prisma {
     firebase_uid?: SortOrder
     email?: SortOrderInput | SortOrder
     created_at?: SortOrder
+    name?: SortOrderInput | SortOrder
+    avatar_url?: SortOrderInput | SortOrder
     favorites?: favoritesOrderByRelationAggregateInput
     inventory?: inventoryOrderByRelationAggregateInput
     ratings?: ratingsOrderByRelationAggregateInput
     recipes?: recipesOrderByRelationAggregateInput
     shopping_list?: shopping_listOrderByRelationAggregateInput
+    user_tags?: user_tagsOrderByRelationAggregateInput
     weekly_plan?: weekly_planOrderByRelationAggregateInput
   }
 
@@ -15854,11 +18055,14 @@ export namespace Prisma {
     NOT?: usersWhereInput | usersWhereInput[]
     email?: StringNullableFilter<"users"> | string | null
     created_at?: DateTimeFilter<"users"> | Date | string
+    name?: StringNullableFilter<"users"> | string | null
+    avatar_url?: StringNullableFilter<"users"> | string | null
     favorites?: FavoritesListRelationFilter
     inventory?: InventoryListRelationFilter
     ratings?: RatingsListRelationFilter
     recipes?: RecipesListRelationFilter
     shopping_list?: Shopping_listListRelationFilter
+    user_tags?: User_tagsListRelationFilter
     weekly_plan?: Weekly_planListRelationFilter
   }, "id" | "firebase_uid">
 
@@ -15867,6 +18071,8 @@ export namespace Prisma {
     firebase_uid?: SortOrder
     email?: SortOrderInput | SortOrder
     created_at?: SortOrder
+    name?: SortOrderInput | SortOrder
+    avatar_url?: SortOrderInput | SortOrder
     _count?: usersCountOrderByAggregateInput
     _max?: usersMaxOrderByAggregateInput
     _min?: usersMinOrderByAggregateInput
@@ -15880,6 +18086,8 @@ export namespace Prisma {
     firebase_uid?: StringWithAggregatesFilter<"users"> | string
     email?: StringNullableWithAggregatesFilter<"users"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"users"> | Date | string
+    name?: StringNullableWithAggregatesFilter<"users"> | string | null
+    avatar_url?: StringNullableWithAggregatesFilter<"users"> | string | null
   }
 
   export type weekly_planWhereInput = {
@@ -16000,6 +18208,90 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"weekly_plan_item"> | Date | string
     meal_type?: StringWithAggregatesFilter<"weekly_plan_item"> | string
     recipe_id?: UuidWithAggregatesFilter<"weekly_plan_item"> | string
+  }
+
+  export type tagsWhereInput = {
+    AND?: tagsWhereInput | tagsWhereInput[]
+    OR?: tagsWhereInput[]
+    NOT?: tagsWhereInput | tagsWhereInput[]
+    id?: UuidFilter<"tags"> | string
+    name?: StringFilter<"tags"> | string
+    user_tags?: User_tagsListRelationFilter
+  }
+
+  export type tagsOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    user_tags?: user_tagsOrderByRelationAggregateInput
+  }
+
+  export type tagsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: tagsWhereInput | tagsWhereInput[]
+    OR?: tagsWhereInput[]
+    NOT?: tagsWhereInput | tagsWhereInput[]
+    user_tags?: User_tagsListRelationFilter
+  }, "id" | "name">
+
+  export type tagsOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    _count?: tagsCountOrderByAggregateInput
+    _max?: tagsMaxOrderByAggregateInput
+    _min?: tagsMinOrderByAggregateInput
+  }
+
+  export type tagsScalarWhereWithAggregatesInput = {
+    AND?: tagsScalarWhereWithAggregatesInput | tagsScalarWhereWithAggregatesInput[]
+    OR?: tagsScalarWhereWithAggregatesInput[]
+    NOT?: tagsScalarWhereWithAggregatesInput | tagsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"tags"> | string
+    name?: StringWithAggregatesFilter<"tags"> | string
+  }
+
+  export type user_tagsWhereInput = {
+    AND?: user_tagsWhereInput | user_tagsWhereInput[]
+    OR?: user_tagsWhereInput[]
+    NOT?: user_tagsWhereInput | user_tagsWhereInput[]
+    user_id?: UuidFilter<"user_tags"> | string
+    tag_id?: UuidFilter<"user_tags"> | string
+    tags?: XOR<TagsRelationFilter, tagsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }
+
+  export type user_tagsOrderByWithRelationInput = {
+    user_id?: SortOrder
+    tag_id?: SortOrder
+    tags?: tagsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type user_tagsWhereUniqueInput = Prisma.AtLeast<{
+    user_id_tag_id?: user_tagsUser_idTag_idCompoundUniqueInput
+    AND?: user_tagsWhereInput | user_tagsWhereInput[]
+    OR?: user_tagsWhereInput[]
+    NOT?: user_tagsWhereInput | user_tagsWhereInput[]
+    user_id?: UuidFilter<"user_tags"> | string
+    tag_id?: UuidFilter<"user_tags"> | string
+    tags?: XOR<TagsRelationFilter, tagsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }, "user_id_tag_id">
+
+  export type user_tagsOrderByWithAggregationInput = {
+    user_id?: SortOrder
+    tag_id?: SortOrder
+    _count?: user_tagsCountOrderByAggregateInput
+    _max?: user_tagsMaxOrderByAggregateInput
+    _min?: user_tagsMinOrderByAggregateInput
+  }
+
+  export type user_tagsScalarWhereWithAggregatesInput = {
+    AND?: user_tagsScalarWhereWithAggregatesInput | user_tagsScalarWhereWithAggregatesInput[]
+    OR?: user_tagsScalarWhereWithAggregatesInput[]
+    NOT?: user_tagsScalarWhereWithAggregatesInput | user_tagsScalarWhereWithAggregatesInput[]
+    user_id?: UuidWithAggregatesFilter<"user_tags"> | string
+    tag_id?: UuidWithAggregatesFilter<"user_tags"> | string
   }
 
   export type favoritesCreateInput = {
@@ -16687,11 +18979,14 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
   }
 
@@ -16700,11 +18995,14 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -16713,11 +19011,14 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
   }
 
@@ -16726,11 +19027,14 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -16739,6 +19043,8 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
   }
 
   export type usersUpdateManyMutationInput = {
@@ -16746,6 +19052,8 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type usersUncheckedUpdateManyInput = {
@@ -16753,6 +19061,8 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type weekly_planCreateInput = {
@@ -16870,6 +19180,79 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     meal_type?: StringFieldUpdateOperationsInput | string
     recipe_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type tagsCreateInput = {
+    id?: string
+    name: string
+    user_tags?: user_tagsCreateNestedManyWithoutTagsInput
+  }
+
+  export type tagsUncheckedCreateInput = {
+    id?: string
+    name: string
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutTagsInput
+  }
+
+  export type tagsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    user_tags?: user_tagsUpdateManyWithoutTagsNestedInput
+  }
+
+  export type tagsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    user_tags?: user_tagsUncheckedUpdateManyWithoutTagsNestedInput
+  }
+
+  export type tagsCreateManyInput = {
+    id?: string
+    name: string
+  }
+
+  export type tagsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type tagsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type user_tagsCreateInput = {
+    tags: tagsCreateNestedOneWithoutUser_tagsInput
+    users: usersCreateNestedOneWithoutUser_tagsInput
+  }
+
+  export type user_tagsUncheckedCreateInput = {
+    user_id: string
+    tag_id: string
+  }
+
+  export type user_tagsUpdateInput = {
+    tags?: tagsUpdateOneRequiredWithoutUser_tagsNestedInput
+    users?: usersUpdateOneRequiredWithoutUser_tagsNestedInput
+  }
+
+  export type user_tagsUncheckedUpdateInput = {
+    user_id?: StringFieldUpdateOperationsInput | string
+    tag_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type user_tagsCreateManyInput = {
+    user_id: string
+    tag_id: string
+  }
+
+  export type user_tagsUpdateManyMutationInput = {
+
+  }
+
+  export type user_tagsUncheckedUpdateManyInput = {
+    user_id?: StringFieldUpdateOperationsInput | string
+    tag_id?: StringFieldUpdateOperationsInput | string
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -17654,6 +20037,12 @@ export namespace Prisma {
     none?: shopping_listWhereInput
   }
 
+  export type User_tagsListRelationFilter = {
+    every?: user_tagsWhereInput
+    some?: user_tagsWhereInput
+    none?: user_tagsWhereInput
+  }
+
   export type Weekly_planListRelationFilter = {
     every?: weekly_planWhereInput
     some?: weekly_planWhereInput
@@ -17668,6 +20057,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type user_tagsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type weekly_planOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -17677,6 +20070,8 @@ export namespace Prisma {
     firebase_uid?: SortOrder
     email?: SortOrder
     created_at?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrder
   }
 
   export type usersMaxOrderByAggregateInput = {
@@ -17684,6 +20079,8 @@ export namespace Prisma {
     firebase_uid?: SortOrder
     email?: SortOrder
     created_at?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrder
   }
 
   export type usersMinOrderByAggregateInput = {
@@ -17691,6 +20088,8 @@ export namespace Prisma {
     firebase_uid?: SortOrder
     email?: SortOrder
     created_at?: SortOrder
+    name?: SortOrder
+    avatar_url?: SortOrder
   }
 
   export type weekly_planCountOrderByAggregateInput = {
@@ -17750,6 +20149,46 @@ export namespace Prisma {
     date?: SortOrder
     meal_type?: SortOrder
     recipe_id?: SortOrder
+  }
+
+  export type tagsCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type tagsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type tagsMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type TagsRelationFilter = {
+    is?: tagsWhereInput
+    isNot?: tagsWhereInput
+  }
+
+  export type user_tagsUser_idTag_idCompoundUniqueInput = {
+    user_id: string
+    tag_id: string
+  }
+
+  export type user_tagsCountOrderByAggregateInput = {
+    user_id?: SortOrder
+    tag_id?: SortOrder
+  }
+
+  export type user_tagsMaxOrderByAggregateInput = {
+    user_id?: SortOrder
+    tag_id?: SortOrder
+  }
+
+  export type user_tagsMinOrderByAggregateInput = {
+    user_id?: SortOrder
+    tag_id?: SortOrder
   }
 
   export type recipesCreateNestedOneWithoutFavoritesInput = {
@@ -18430,6 +20869,13 @@ export namespace Prisma {
     connect?: shopping_listWhereUniqueInput | shopping_listWhereUniqueInput[]
   }
 
+  export type user_tagsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<user_tagsCreateWithoutUsersInput, user_tagsUncheckedCreateWithoutUsersInput> | user_tagsCreateWithoutUsersInput[] | user_tagsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutUsersInput | user_tagsCreateOrConnectWithoutUsersInput[]
+    createMany?: user_tagsCreateManyUsersInputEnvelope
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+  }
+
   export type weekly_planCreateNestedManyWithoutUsersInput = {
     create?: XOR<weekly_planCreateWithoutUsersInput, weekly_planUncheckedCreateWithoutUsersInput> | weekly_planCreateWithoutUsersInput[] | weekly_planUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: weekly_planCreateOrConnectWithoutUsersInput | weekly_planCreateOrConnectWithoutUsersInput[]
@@ -18470,6 +20916,13 @@ export namespace Prisma {
     connectOrCreate?: shopping_listCreateOrConnectWithoutUsersInput | shopping_listCreateOrConnectWithoutUsersInput[]
     createMany?: shopping_listCreateManyUsersInputEnvelope
     connect?: shopping_listWhereUniqueInput | shopping_listWhereUniqueInput[]
+  }
+
+  export type user_tagsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<user_tagsCreateWithoutUsersInput, user_tagsUncheckedCreateWithoutUsersInput> | user_tagsCreateWithoutUsersInput[] | user_tagsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutUsersInput | user_tagsCreateOrConnectWithoutUsersInput[]
+    createMany?: user_tagsCreateManyUsersInputEnvelope
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
   }
 
   export type weekly_planUncheckedCreateNestedManyWithoutUsersInput = {
@@ -18547,6 +21000,20 @@ export namespace Prisma {
     update?: shopping_listUpdateWithWhereUniqueWithoutUsersInput | shopping_listUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: shopping_listUpdateManyWithWhereWithoutUsersInput | shopping_listUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: shopping_listScalarWhereInput | shopping_listScalarWhereInput[]
+  }
+
+  export type user_tagsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<user_tagsCreateWithoutUsersInput, user_tagsUncheckedCreateWithoutUsersInput> | user_tagsCreateWithoutUsersInput[] | user_tagsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutUsersInput | user_tagsCreateOrConnectWithoutUsersInput[]
+    upsert?: user_tagsUpsertWithWhereUniqueWithoutUsersInput | user_tagsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: user_tagsCreateManyUsersInputEnvelope
+    set?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    disconnect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    delete?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    update?: user_tagsUpdateWithWhereUniqueWithoutUsersInput | user_tagsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: user_tagsUpdateManyWithWhereWithoutUsersInput | user_tagsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: user_tagsScalarWhereInput | user_tagsScalarWhereInput[]
   }
 
   export type weekly_planUpdateManyWithoutUsersNestedInput = {
@@ -18631,6 +21098,20 @@ export namespace Prisma {
     update?: shopping_listUpdateWithWhereUniqueWithoutUsersInput | shopping_listUpdateWithWhereUniqueWithoutUsersInput[]
     updateMany?: shopping_listUpdateManyWithWhereWithoutUsersInput | shopping_listUpdateManyWithWhereWithoutUsersInput[]
     deleteMany?: shopping_listScalarWhereInput | shopping_listScalarWhereInput[]
+  }
+
+  export type user_tagsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<user_tagsCreateWithoutUsersInput, user_tagsUncheckedCreateWithoutUsersInput> | user_tagsCreateWithoutUsersInput[] | user_tagsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutUsersInput | user_tagsCreateOrConnectWithoutUsersInput[]
+    upsert?: user_tagsUpsertWithWhereUniqueWithoutUsersInput | user_tagsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: user_tagsCreateManyUsersInputEnvelope
+    set?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    disconnect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    delete?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    update?: user_tagsUpdateWithWhereUniqueWithoutUsersInput | user_tagsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: user_tagsUpdateManyWithWhereWithoutUsersInput | user_tagsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: user_tagsScalarWhereInput | user_tagsScalarWhereInput[]
   }
 
   export type weekly_planUncheckedUpdateManyWithoutUsersNestedInput = {
@@ -18771,6 +21252,76 @@ export namespace Prisma {
     upsert?: recipesUpsertWithoutWeekly_plan_itemInput
     connect?: recipesWhereUniqueInput
     update?: XOR<XOR<recipesUpdateToOneWithWhereWithoutWeekly_plan_itemInput, recipesUpdateWithoutWeekly_plan_itemInput>, recipesUncheckedUpdateWithoutWeekly_plan_itemInput>
+  }
+
+  export type user_tagsCreateNestedManyWithoutTagsInput = {
+    create?: XOR<user_tagsCreateWithoutTagsInput, user_tagsUncheckedCreateWithoutTagsInput> | user_tagsCreateWithoutTagsInput[] | user_tagsUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutTagsInput | user_tagsCreateOrConnectWithoutTagsInput[]
+    createMany?: user_tagsCreateManyTagsInputEnvelope
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+  }
+
+  export type user_tagsUncheckedCreateNestedManyWithoutTagsInput = {
+    create?: XOR<user_tagsCreateWithoutTagsInput, user_tagsUncheckedCreateWithoutTagsInput> | user_tagsCreateWithoutTagsInput[] | user_tagsUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutTagsInput | user_tagsCreateOrConnectWithoutTagsInput[]
+    createMany?: user_tagsCreateManyTagsInputEnvelope
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+  }
+
+  export type user_tagsUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<user_tagsCreateWithoutTagsInput, user_tagsUncheckedCreateWithoutTagsInput> | user_tagsCreateWithoutTagsInput[] | user_tagsUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutTagsInput | user_tagsCreateOrConnectWithoutTagsInput[]
+    upsert?: user_tagsUpsertWithWhereUniqueWithoutTagsInput | user_tagsUpsertWithWhereUniqueWithoutTagsInput[]
+    createMany?: user_tagsCreateManyTagsInputEnvelope
+    set?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    disconnect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    delete?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    update?: user_tagsUpdateWithWhereUniqueWithoutTagsInput | user_tagsUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: user_tagsUpdateManyWithWhereWithoutTagsInput | user_tagsUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: user_tagsScalarWhereInput | user_tagsScalarWhereInput[]
+  }
+
+  export type user_tagsUncheckedUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<user_tagsCreateWithoutTagsInput, user_tagsUncheckedCreateWithoutTagsInput> | user_tagsCreateWithoutTagsInput[] | user_tagsUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: user_tagsCreateOrConnectWithoutTagsInput | user_tagsCreateOrConnectWithoutTagsInput[]
+    upsert?: user_tagsUpsertWithWhereUniqueWithoutTagsInput | user_tagsUpsertWithWhereUniqueWithoutTagsInput[]
+    createMany?: user_tagsCreateManyTagsInputEnvelope
+    set?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    disconnect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    delete?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    connect?: user_tagsWhereUniqueInput | user_tagsWhereUniqueInput[]
+    update?: user_tagsUpdateWithWhereUniqueWithoutTagsInput | user_tagsUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: user_tagsUpdateManyWithWhereWithoutTagsInput | user_tagsUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: user_tagsScalarWhereInput | user_tagsScalarWhereInput[]
+  }
+
+  export type tagsCreateNestedOneWithoutUser_tagsInput = {
+    create?: XOR<tagsCreateWithoutUser_tagsInput, tagsUncheckedCreateWithoutUser_tagsInput>
+    connectOrCreate?: tagsCreateOrConnectWithoutUser_tagsInput
+    connect?: tagsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutUser_tagsInput = {
+    create?: XOR<usersCreateWithoutUser_tagsInput, usersUncheckedCreateWithoutUser_tagsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutUser_tagsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type tagsUpdateOneRequiredWithoutUser_tagsNestedInput = {
+    create?: XOR<tagsCreateWithoutUser_tagsInput, tagsUncheckedCreateWithoutUser_tagsInput>
+    connectOrCreate?: tagsCreateOrConnectWithoutUser_tagsInput
+    upsert?: tagsUpsertWithoutUser_tagsInput
+    connect?: tagsWhereUniqueInput
+    update?: XOR<XOR<tagsUpdateToOneWithWhereWithoutUser_tagsInput, tagsUpdateWithoutUser_tagsInput>, tagsUncheckedUpdateWithoutUser_tagsInput>
+  }
+
+  export type usersUpdateOneRequiredWithoutUser_tagsNestedInput = {
+    create?: XOR<usersCreateWithoutUser_tagsInput, usersUncheckedCreateWithoutUser_tagsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutUser_tagsInput
+    upsert?: usersUpsertWithoutUser_tagsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutUser_tagsInput, usersUpdateWithoutUser_tagsInput>, usersUncheckedUpdateWithoutUser_tagsInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -19135,10 +21686,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
   }
 
@@ -19147,10 +21701,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -19242,10 +21799,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
   }
 
@@ -19254,10 +21814,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -19456,10 +22019,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
   }
 
@@ -19468,10 +22034,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -19533,10 +22102,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
   }
 
@@ -19545,10 +22117,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -19618,10 +22193,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
   }
 
@@ -19630,10 +22208,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -19725,10 +22306,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
   }
 
@@ -19737,10 +22321,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -20171,10 +22758,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
   }
 
@@ -20183,10 +22773,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -20332,10 +22925,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
   }
 
@@ -20344,10 +22940,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -20406,10 +23005,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
   }
 
@@ -20418,10 +23020,13 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
     weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
   }
 
@@ -20501,10 +23106,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
   }
 
@@ -20513,10 +23121,13 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
     weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
@@ -20822,6 +23433,24 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type user_tagsCreateWithoutUsersInput = {
+    tags: tagsCreateNestedOneWithoutUser_tagsInput
+  }
+
+  export type user_tagsUncheckedCreateWithoutUsersInput = {
+    tag_id: string
+  }
+
+  export type user_tagsCreateOrConnectWithoutUsersInput = {
+    where: user_tagsWhereUniqueInput
+    create: XOR<user_tagsCreateWithoutUsersInput, user_tagsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type user_tagsCreateManyUsersInputEnvelope = {
+    data: user_tagsCreateManyUsersInput | user_tagsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
   export type weekly_planCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -20969,6 +23598,30 @@ export namespace Prisma {
     finalized?: BoolFilter<"shopping_list"> | boolean
   }
 
+  export type user_tagsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: user_tagsWhereUniqueInput
+    update: XOR<user_tagsUpdateWithoutUsersInput, user_tagsUncheckedUpdateWithoutUsersInput>
+    create: XOR<user_tagsCreateWithoutUsersInput, user_tagsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type user_tagsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: user_tagsWhereUniqueInput
+    data: XOR<user_tagsUpdateWithoutUsersInput, user_tagsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type user_tagsUpdateManyWithWhereWithoutUsersInput = {
+    where: user_tagsScalarWhereInput
+    data: XOR<user_tagsUpdateManyMutationInput, user_tagsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type user_tagsScalarWhereInput = {
+    AND?: user_tagsScalarWhereInput | user_tagsScalarWhereInput[]
+    OR?: user_tagsScalarWhereInput[]
+    NOT?: user_tagsScalarWhereInput | user_tagsScalarWhereInput[]
+    user_id?: UuidFilter<"user_tags"> | string
+    tag_id?: UuidFilter<"user_tags"> | string
+  }
+
   export type weekly_planUpsertWithWhereUniqueWithoutUsersInput = {
     where: weekly_planWhereUniqueInput
     update: XOR<weekly_planUpdateWithoutUsersInput, weekly_planUncheckedUpdateWithoutUsersInput>
@@ -21029,11 +23682,14 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsCreateNestedManyWithoutUsersInput
   }
 
   export type usersUncheckedCreateWithoutWeekly_planInput = {
@@ -21041,11 +23697,14 @@ export namespace Prisma {
     firebase_uid: string
     email?: string | null
     created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
     shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    user_tags?: user_tagsUncheckedCreateNestedManyWithoutUsersInput
   }
 
   export type usersCreateOrConnectWithoutWeekly_planInput = {
@@ -21109,11 +23768,14 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUpdateManyWithoutUsersNestedInput
   }
 
   export type usersUncheckedUpdateWithoutWeekly_planInput = {
@@ -21121,11 +23783,14 @@ export namespace Prisma {
     firebase_uid?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
     shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    user_tags?: user_tagsUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type weekly_plan_itemUpsertWithWhereUniqueWithoutWeekly_planInput = {
@@ -21322,6 +23987,152 @@ export namespace Prisma {
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUncheckedUpdateManyWithoutRecipesNestedInput
+  }
+
+  export type user_tagsCreateWithoutTagsInput = {
+    users: usersCreateNestedOneWithoutUser_tagsInput
+  }
+
+  export type user_tagsUncheckedCreateWithoutTagsInput = {
+    user_id: string
+  }
+
+  export type user_tagsCreateOrConnectWithoutTagsInput = {
+    where: user_tagsWhereUniqueInput
+    create: XOR<user_tagsCreateWithoutTagsInput, user_tagsUncheckedCreateWithoutTagsInput>
+  }
+
+  export type user_tagsCreateManyTagsInputEnvelope = {
+    data: user_tagsCreateManyTagsInput | user_tagsCreateManyTagsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type user_tagsUpsertWithWhereUniqueWithoutTagsInput = {
+    where: user_tagsWhereUniqueInput
+    update: XOR<user_tagsUpdateWithoutTagsInput, user_tagsUncheckedUpdateWithoutTagsInput>
+    create: XOR<user_tagsCreateWithoutTagsInput, user_tagsUncheckedCreateWithoutTagsInput>
+  }
+
+  export type user_tagsUpdateWithWhereUniqueWithoutTagsInput = {
+    where: user_tagsWhereUniqueInput
+    data: XOR<user_tagsUpdateWithoutTagsInput, user_tagsUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type user_tagsUpdateManyWithWhereWithoutTagsInput = {
+    where: user_tagsScalarWhereInput
+    data: XOR<user_tagsUpdateManyMutationInput, user_tagsUncheckedUpdateManyWithoutTagsInput>
+  }
+
+  export type tagsCreateWithoutUser_tagsInput = {
+    id?: string
+    name: string
+  }
+
+  export type tagsUncheckedCreateWithoutUser_tagsInput = {
+    id?: string
+    name: string
+  }
+
+  export type tagsCreateOrConnectWithoutUser_tagsInput = {
+    where: tagsWhereUniqueInput
+    create: XOR<tagsCreateWithoutUser_tagsInput, tagsUncheckedCreateWithoutUser_tagsInput>
+  }
+
+  export type usersCreateWithoutUser_tagsInput = {
+    id?: string
+    firebase_uid: string
+    email?: string | null
+    created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
+    favorites?: favoritesCreateNestedManyWithoutUsersInput
+    inventory?: inventoryCreateNestedManyWithoutUsersInput
+    ratings?: ratingsCreateNestedManyWithoutUsersInput
+    recipes?: recipesCreateNestedManyWithoutUsersInput
+    shopping_list?: shopping_listCreateNestedManyWithoutUsersInput
+    weekly_plan?: weekly_planCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutUser_tagsInput = {
+    id?: string
+    firebase_uid: string
+    email?: string | null
+    created_at?: Date | string
+    name?: string | null
+    avatar_url?: string | null
+    favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
+    inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
+    ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
+    recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
+    shopping_list?: shopping_listUncheckedCreateNestedManyWithoutUsersInput
+    weekly_plan?: weekly_planUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutUser_tagsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutUser_tagsInput, usersUncheckedCreateWithoutUser_tagsInput>
+  }
+
+  export type tagsUpsertWithoutUser_tagsInput = {
+    update: XOR<tagsUpdateWithoutUser_tagsInput, tagsUncheckedUpdateWithoutUser_tagsInput>
+    create: XOR<tagsCreateWithoutUser_tagsInput, tagsUncheckedCreateWithoutUser_tagsInput>
+    where?: tagsWhereInput
+  }
+
+  export type tagsUpdateToOneWithWhereWithoutUser_tagsInput = {
+    where?: tagsWhereInput
+    data: XOR<tagsUpdateWithoutUser_tagsInput, tagsUncheckedUpdateWithoutUser_tagsInput>
+  }
+
+  export type tagsUpdateWithoutUser_tagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type tagsUncheckedUpdateWithoutUser_tagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type usersUpsertWithoutUser_tagsInput = {
+    update: XOR<usersUpdateWithoutUser_tagsInput, usersUncheckedUpdateWithoutUser_tagsInput>
+    create: XOR<usersCreateWithoutUser_tagsInput, usersUncheckedCreateWithoutUser_tagsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutUser_tagsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutUser_tagsInput, usersUncheckedUpdateWithoutUser_tagsInput>
+  }
+
+  export type usersUpdateWithoutUser_tagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebase_uid?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    favorites?: favoritesUpdateManyWithoutUsersNestedInput
+    inventory?: inventoryUpdateManyWithoutUsersNestedInput
+    ratings?: ratingsUpdateManyWithoutUsersNestedInput
+    recipes?: recipesUpdateManyWithoutUsersNestedInput
+    shopping_list?: shopping_listUpdateManyWithoutUsersNestedInput
+    weekly_plan?: weekly_planUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutUser_tagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebase_uid?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
+    inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
+    ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
+    recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
+    shopping_list?: shopping_listUncheckedUpdateManyWithoutUsersNestedInput
+    weekly_plan?: weekly_planUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type inventoryCreateManyIngredientsInput = {
@@ -21644,6 +24455,10 @@ export namespace Prisma {
     finalized?: boolean
   }
 
+  export type user_tagsCreateManyUsersInput = {
+    tag_id: string
+  }
+
   export type weekly_planCreateManyUsersInput = {
     id?: string
     name: string
@@ -21819,6 +24634,18 @@ export namespace Prisma {
     finalized?: BoolFieldUpdateOperationsInput | boolean
   }
 
+  export type user_tagsUpdateWithoutUsersInput = {
+    tags?: tagsUpdateOneRequiredWithoutUser_tagsNestedInput
+  }
+
+  export type user_tagsUncheckedUpdateWithoutUsersInput = {
+    tag_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type user_tagsUncheckedUpdateManyWithoutUsersInput = {
+    tag_id?: StringFieldUpdateOperationsInput | string
+  }
+
   export type weekly_planUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -21904,6 +24731,22 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     meal_type?: StringFieldUpdateOperationsInput | string
     recipe_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type user_tagsCreateManyTagsInput = {
+    user_id: string
+  }
+
+  export type user_tagsUpdateWithoutTagsInput = {
+    users?: usersUpdateOneRequiredWithoutUser_tagsNestedInput
+  }
+
+  export type user_tagsUncheckedUpdateWithoutTagsInput = {
+    user_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type user_tagsUncheckedUpdateManyWithoutTagsInput = {
+    user_id?: StringFieldUpdateOperationsInput | string
   }
 
 
