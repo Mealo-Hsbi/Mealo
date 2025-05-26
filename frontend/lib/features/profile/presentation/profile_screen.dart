@@ -6,6 +6,10 @@ import 'pantry_screen.dart';
 import 'settings_screen.dart';
 
 const double kSectionSpacing = 8.0;
+const double kSectionPadding = 16.0;
+const double kChipHorizontalSpacing = 8.0;
+const double kChipRunSpacing = 6.0;
+const double kItemSpacing = 24.0;
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -18,7 +22,7 @@ class ProfileScreen extends StatelessWidget {
     'Vegan',
     'Gluten-free',
     'Low-carb',
-    'Protein-rich'
+    'Protein-rich',
   ];
   final int _recipesCount = 42;
   final int _rescuedCount = 128;
@@ -70,11 +74,11 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.symmetric(vertical: kItemSpacing),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Profile card & avatar
+            // Profile-Card & Avatar
             Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.topCenter,
@@ -89,7 +93,12 @@ class ProfileScreen extends StatelessWidget {
                       topRight: Radius.circular(24),
                     ),
                   ),
-                  padding: const EdgeInsets.fromLTRB(16, 64, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(
+                    kSectionPadding,
+                    64,
+                    kSectionPadding,
+                    kSectionPadding,
+                  ),
                   child: Column(
                     children: [
                       Text(
@@ -103,20 +112,20 @@ class ProfileScreen extends StatelessWidget {
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: Colors.grey[600]),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: kItemSpacing),
                       Wrap(
-                        spacing: 8,
-                        runSpacing: 6,
+                        spacing: kChipHorizontalSpacing,
+                        runSpacing: kChipRunSpacing,
                         alignment: WrapAlignment.center,
                         children: _tags.map((t) => TagChip(t)).toList(),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: kItemSpacing),
+                      // Stats row
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          StatItem('Recipes', _recipesCount),
-                          StatItem('Ingredients Saved', _rescuedCount),
-                          StatItem('Likes', _likesCount),
+                          Expanded(child: StatItem('Recipes', _recipesCount)),
+                          Expanded(child: StatItem('Ingredients Saved', _rescuedCount)),
+                          Expanded(child: StatItem('Likes', _likesCount)),
                         ],
                       ),
                     ],
@@ -134,7 +143,7 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
 
-            // Achievements section
+            // Achievements
             ProfileSection(
               title: 'Achievements',
               action: TextButton(
@@ -144,36 +153,38 @@ class ProfileScreen extends StatelessWidget {
                 child: const Text('View All'),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: achievements.map((a) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(a['icon'] as IconData, size: 28, color: primary),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${a['value']}',
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        a['label'] as String,
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(color: Colors.grey[600]),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                  return Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(a['icon'] as IconData, size: 28, color: primary),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${a['value']}',
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          a['label'] as String,
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[600]),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   );
                 }).toList(),
               ),
             ),
 
-            // My Pantry section
+            // My Pantry
             ProfileSection(
               title: 'My Pantry',
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: kSectionPadding),
                 leading: const Icon(Icons.kitchen, size: 32),
                 title: const Text('You currently have 7 items'),
                 trailing: const Icon(Icons.chevron_right),
@@ -182,11 +193,10 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            // My Recipes section
+            // My Recipes
             ProfileSection(
               title: 'My Recipes',
-              action:
-                  TextButton(onPressed: () {}, child: const Text('View All')),
+              action: TextButton(onPressed: () {}, child: const Text('View All')),
               child: SizedBox(
                 height: 140,
                 child: ListView.builder(
@@ -226,7 +236,7 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-/// Full-width, white, no radius (except on profile card), spacing via kSectionSpacing
+/// Full-width, white background, equal vertical margin
 class ProfileSection extends StatelessWidget {
   final String title;
   final Widget? action;
@@ -243,8 +253,8 @@ class ProfileSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: kSectionSpacing),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: kSectionSpacing),
+      padding: const EdgeInsets.all(kSectionPadding),
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +288,8 @@ class StatItem extends StatelessWidget {
       children: [
         Text(
           '$value',
-          style: t.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style:
+              t.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(label, style: t.textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
@@ -289,14 +300,16 @@ class StatItem extends StatelessWidget {
 
 class TagChip extends StatelessWidget {
   final String tag;
-
   const TagChip(this.tag, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final p = Theme.of(context).colorScheme.primary;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: kSectionPadding / 2,
+        vertical: 6,
+      ),
       decoration: BoxDecoration(
         color: p.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
