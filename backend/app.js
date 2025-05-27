@@ -1,21 +1,17 @@
-// app.js
-
-const express      = require('express');
-const userRoutes   = require('./app/routes/user.routes');
-const mediaRoutes  = require('./app/routes/media.routes');
-require('./app/firebase'); // Firebase-Admin initialisiert
-
-// Versions-Info aus package.json
-const { version }  = require('./package.json');
-// Commit-SHA muss beim Deployment als ENV_VAR gesetzt werden
-const COMMIT_SHA   = process.env.COMMIT_SHA || 'dev';
+const express = require('express');
+const profileRoutes = require('./app/routes/profile.routes');
+const mediaRoutes   = require('./app/routes/media.routes');
+const userRoutes    = require('./app/routes/user.routes'); // bleibt für Registrierung
 
 const app = express();
 app.use(express.json());
 
-// Endpoints
-app.use('/api/users', userRoutes);
-app.use('/api/media', mediaRoutes);
+app.use('/api', mediaRoutes);
+app.use('/api', userRoutes);
+app.use('/api', profileRoutes);
+
+module.exports = app;
+
 
 // Health-Check mit Versions- und Commit-Angabe
 app.get('/health', (req, res) => {

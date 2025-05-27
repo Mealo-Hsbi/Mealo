@@ -18,15 +18,18 @@ router.post('/register', async (req, res, next) => {
     const idToken = authHeader.split(' ')[1];
     const decoded = await admin.auth().verifyIdToken(idToken);
 
-    const { name, avatar_url } = req.body;
+    const { name } = req.body;
+    const PLACEHOLDER_KEY = 'profile-pictures/profile_placeholder.png'; 
+    const avatarKey     =  PLACEHOLDER_KEY;
+
     const user = await prisma.users.upsert({
       where: { firebase_uid: decoded.uid },
-      update: { name, avatar_url },
+      update: { name, avatar_url: avatarKey },
       create: {
         firebase_uid: decoded.uid,
-        email       : decoded.email,
-        name        : name,
-        avatar_url  : avatar_url,
+        email      : decoded.email,
+        name       : name,
+        avatar_url : avatarKey,
       },
     });
 

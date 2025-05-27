@@ -15,7 +15,7 @@ class RecipePreviewItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
+      width: 140, // Breiter für bessere Lesbarkeit
       margin: EdgeInsets.only(right: isLast ? 0 : 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,12 +23,12 @@ class RecipePreviewItem extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              Uri.encodeFull(imageUrl),
-              width: 120,
+              imageUrl,
+              width: 140,
               height: 80,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                width: 120,
+                width: 140,
                 height: 80,
                 color: Colors.grey[200],
                 child: const Icon(Icons.broken_image, color: Colors.grey),
@@ -39,7 +39,8 @@ class RecipePreviewItem extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.bodyMedium,
-            overflow: TextOverflow.ellipsis,
+            maxLines: 2, // Neu: zwei Zeilen ermöglichen
+            overflow: TextOverflow.ellipsis, // Ellipsis, falls länger als 2 Zeilen
           ),
         ],
       ),
