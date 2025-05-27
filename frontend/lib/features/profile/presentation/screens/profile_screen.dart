@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../services/api_client.dart';
 import '../../data/datasources/profile_remote_data_source.dart';
@@ -17,6 +16,8 @@ import '../widgets/tag_chip.dart';
 import '../screens/achievements_overview_screen.dart';
 import '../screens/pantry_screen.dart';
 import '../screens/settings_screen.dart';
+// Navigation zu deinem Parallax-Scroll-Screen
+import 'package:frontend/features/recipeList/recipe_list_screen.dart';
 
 const double kSectionSpacing = 8.0;
 const double kSectionPadding = 16.0;
@@ -36,14 +37,13 @@ class ProfileScreen extends StatelessWidget {
           GetProfile(repo),
           UploadAvatar(repo),
         );
-        vm.loadProfile(); 
+        vm.loadProfile();
         return vm;
       },
       child: Consumer<ProfileViewModel>(
         builder: (ctx, vm, _) {
           final theme = Theme.of(ctx);
 
-          // Loading
           if (vm.isLoading && vm.profile == null) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
@@ -51,15 +51,11 @@ class ProfileScreen extends StatelessWidget {
           }
 
           final profile = vm.profile!;
-
-          // Achievements-Daten
           final achievements = [
-            {'icon': Icons.book,   'value': profile.recipesCount,   'label': 'Recipes'},
-            {'icon': Icons.star,   'value': profile.likesCount,     'label': 'Likes'},
-            {'icon': Icons.kitchen,'value': profile.favoritesCount, 'label': 'Favorites'},
+            {'icon': Icons.book,    'value': profile.recipesCount,   'label': 'Recipes'},
+            {'icon': Icons.star,    'value': profile.likesCount,     'label': 'Likes'},
+            {'icon': Icons.kitchen, 'value': profile.favoritesCount, 'label': 'Favorites'},
           ];
-
-          // Drei neueste Rezepte
           final recent = profile.recentRecipes.take(3).toList();
 
           return Scaffold(
@@ -103,20 +99,20 @@ class ProfileScreen extends StatelessWidget {
                             Text(
                               profile.name,
                               style: theme.textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               profile.email,
                               style: theme.textTheme.bodyMedium
-                                ?.copyWith(color: Colors.grey[600]),
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                             const SizedBox(height: kSectionSpacing),
                             Wrap(
                               spacing: kSectionSpacing,
                               children: profile.tags
-                                .map((t) => TagChip(t))
-                                .toList(),
+                                  .map((t) => TagChip(t))
+                                  .toList(),
                             ),
                             const SizedBox(height: kSectionSpacing),
                             Row(
@@ -143,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
 
-                  // Achievements (Icons + Werte)
+                  // Achievements
                   ProfileSection(
                     title: 'Achievements',
                     action: TextButton(
@@ -162,13 +158,13 @@ class ProfileScreen extends StatelessWidget {
                             Text(
                               '${a['value']}',
                               style: theme.textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               a['label'] as String,
                               style: theme.textTheme.bodySmall
-                                ?.copyWith(color: Colors.grey[600]),
+                                  ?.copyWith(color: Colors.grey[600]),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -190,23 +186,28 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // Drei neueste Rezepte
+                  // Recent Recipes mit "View All"
                   ProfileSection(
-                    title: 'Recent Recipes',
-                    child: SizedBox(
-                      height: 140,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: recent.length,
-                        itemBuilder: (ctx, i) {
-                          final r = recent[i];
-                          return RecipePreviewItem(
-                            imageUrl: r.imageUrl,
-                            title: r.title,
-                            isLast: i == recent.length - 1,
-                          );
-                        },
+                    title: 'My Recipes',
+                    action: TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                        _createSlideRoute(const RecipeListScreen()),
                       ),
+                      child: const Text('View All'),
+                    ),
+                    child: GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 3 / 4,
+                      children: recent.map((r) {
+                        return RecipePreviewItem(
+                          imageUrl: r.imageUrl,
+                          title: r.title,
+                        );
+                      }).toList(),
                     ),
                   ),
                 ],
@@ -223,7 +224,7 @@ class ProfileScreen extends StatelessWidget {
       pageBuilder: (_, anim, __) => page,
       transitionsBuilder: (_, anim, __, child) => SlideTransition(
         position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-          .animate(CurvedAnimation(parent: anim, curve: Curves.easeInOut)),
+            .animate(CurvedAnimation(parent: anim, curve: Curves.easeInOut)),
         child: child,
       ),
     );
