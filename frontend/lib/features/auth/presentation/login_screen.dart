@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _error;
 
   Future<void> _loginWithEmail() async {
+    if (!mounted) return;
     setState(() {
       _loadingEmail = true;
       _error        = null;
@@ -28,12 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text.trim(),
       );
-      // Hier weiterleiten in deine Home-Route…
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
       });
     } finally {
+      if (!mounted) return;
       setState(() {
         _loadingEmail = false;
       });
@@ -41,23 +45,33 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginWithGoogle() async {
+    if (!mounted) return;
     setState(() {
       _loadingGoogle = true;
       _error         = null;
     });
     try {
-      // UPDATED: Aufruf der neuen Methode
       await _repo.signInWithGoogleAndSyncDb();
-      // Hier weiterleiten in deine Home-Route…
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
       });
     } finally {
+      if (!mounted) return;
       setState(() {
         _loadingGoogle = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passCtrl.dispose();
+    super.dispose();
   }
 
   @override
