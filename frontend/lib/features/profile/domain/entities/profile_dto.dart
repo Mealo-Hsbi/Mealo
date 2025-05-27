@@ -1,3 +1,5 @@
+// lib/features/profile/domain/entities/profile_dto.dart
+
 import 'package:flutter/foundation.dart'; // für mapEquals
 
 class RecipePreviewDto {
@@ -31,6 +33,51 @@ class RecipePreviewDto {
   int get hashCode => Object.hash(imageUrl, title);
 }
 
+class AchievementDto {
+  final String key;
+  final String title;
+  final String description;
+  final String? icon;
+
+  AchievementDto({
+    required this.key,
+    required this.title,
+    required this.description,
+    this.icon,
+  });
+
+  factory AchievementDto.fromJson(Map<String, dynamic> json) {
+    return AchievementDto(
+      key: json['key'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      icon: json['icon'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'key': key,
+      'title': title,
+      'description': description,
+      'icon': icon,
+    };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AchievementDto) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        icon == other.icon;
+  }
+
+  @override
+  int get hashCode => Object.hash(key, title, description, icon);
+}
+
 class ProfileDto {
   final String id;
   final String name;
@@ -41,6 +88,7 @@ class ProfileDto {
   final int likesCount;
   final String avatarUrl;
   final List<RecipePreviewDto> recentRecipes;
+  final List<AchievementDto> achievements;
 
   ProfileDto({
     required this.id,
@@ -52,6 +100,7 @@ class ProfileDto {
     required this.likesCount,
     required this.avatarUrl,
     required this.recentRecipes,
+    required this.achievements,
   });
 
   factory ProfileDto.fromJson(Map<String, dynamic> json) {
@@ -65,7 +114,10 @@ class ProfileDto {
       likesCount: json['likesCount'] as int,
       avatarUrl: json['avatarUrl'] as String,
       recentRecipes: (json['recentRecipes'] as List)
-          .map((e) => RecipePreviewDto.fromJson(e))
+          .map((e) => RecipePreviewDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      achievements: (json['achievements'] as List)
+          .map((e) => AchievementDto.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -80,7 +132,10 @@ class ProfileDto {
       'favoritesCount': favoritesCount,
       'likesCount': likesCount,
       'avatarUrl': avatarUrl,
-      'recentRecipes': recentRecipes.map((e) => e.toJson()).toList(),
+      'recentRecipes':
+          recentRecipes.map((e) => e.toJson()).toList(),
+      'achievements':
+          achievements.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -94,6 +149,7 @@ class ProfileDto {
     int? likesCount,
     String? avatarUrl,
     List<RecipePreviewDto>? recentRecipes,
+    List<AchievementDto>? achievements,
   }) {
     return ProfileDto(
       id: id ?? this.id,
@@ -105,6 +161,7 @@ class ProfileDto {
       likesCount: likesCount ?? this.likesCount,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       recentRecipes: recentRecipes ?? this.recentRecipes,
+      achievements: achievements ?? this.achievements,
     );
   }
 

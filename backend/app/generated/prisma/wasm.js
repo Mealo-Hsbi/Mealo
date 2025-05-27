@@ -249,6 +249,21 @@ exports.Prisma.User_tagsScalarFieldEnum = {
   tag_id: 'tag_id'
 };
 
+exports.Prisma.AchievementScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  icon: 'icon',
+  created_at: 'created_at'
+};
+
+exports.Prisma.User_achievementScalarFieldEnum = {
+  user_id: 'user_id',
+  achievement_id: 'achievement_id',
+  unlocked_at: 'unlocked_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -279,7 +294,9 @@ exports.Prisma.ModelName = {
   weekly_plan: 'weekly_plan',
   weekly_plan_item: 'weekly_plan_item',
   tags: 'tags',
-  user_tags: 'user_tags'
+  user_tags: 'user_tags',
+  achievement: 'achievement',
+  user_achievement: 'user_achievement'
 };
 
 /**
