@@ -32,7 +32,7 @@ steps:
       # vorheriges ENV entfernen, da es nun als Secret kommt
       - --remove-env-vars=GOOGLE_APPLICATION_CREDENTIALS
       # Secret-Manager: als ENV injizieren
-      - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=openai-api-key:latest
+      - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest
       # IAM Service Account für Cloud Run
       - --service-account=1095476512586-compute@developer.gserviceaccount.com
       - --quiet
