@@ -17,6 +17,7 @@ steps:
       - europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
 
   # 3) Deploy
+# 3) Deploy
   - id: 'deploy'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -29,13 +30,16 @@ steps:
       - --region=europe-west3
       - --platform=managed
       - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
-      # Set environment variables for the paths to the mounted secrets.
-      # The application will read these env vars to find the secret files.
-      - --set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/secrets/gcs/media-uploader-key.json,GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json
-      # Mount the secrets as files. The format is destination_path=secret_name:version.
-      # Crucially, the string BEFORE the '=' is the path inside the container.
-      # The string AFTER the '=' is the SECRET_NAME:VERSION from Secret Manager.
-      - --update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest,DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest
+      # Only set BUCKET_NAME and GCS_KEY_FILE here.
+      # GCS_KEY_FILE still needs to point to the mounted file.
+      - --set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/secrets/gcs/media-uploader-key.json
+      # Mount secrets.
+      # IMPORTANT: We will NOT mount firebase-service-account to a file path
+      # AND set GOOGLE_APPLICATION_CREDENTIALS to that path simultaneously.
+      # Instead, we will try to pass the content directly.
+      # Database URL and OpenAI API Key are fine as they are.
+      # For Firebase, we will let gcloud handle GOOGLE_APPLICATION_CREDENTIALS as an env var.
+      - --update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest
       - --service-account=1095476512586-compute@developer.gserviceaccount.com
       - --quiet
 
