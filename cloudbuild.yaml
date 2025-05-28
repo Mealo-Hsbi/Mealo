@@ -29,19 +29,19 @@ steps:
       - '--region=europe-west3'
       - '--platform=managed'
       - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-      # Normale Umgebungsvariablen
-      - '--set-env-vars=BUCKET_NAME=mealo-media'
-      # Nur ENV-Vars, die keine Dateipfade sind
-      - '--update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest' # <-- OPENAI_API_KEY hinzugefügt, nur ENV-Vars hier
+      # Injektion der Secrets als Umgebungsvariablen (die keine Dateipfade sind)
+      # Hier werden DATABASE_URL und OPENAI_API_KEY als Umgebungsvariablen gesetzt.
+      - '--update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest'
       # Secret Volumes für Schlüsseldateien
-      # Stellen Sie sicher, dass diese Secrets (firebase-service-account, media-uploader-key)
-      # den Inhalt der jeweiligen JSON-Dateien enthalten.
+      # Stellen Sie sicher, dass diese Secrets den Inhalt der jeweiligen JSON-Dateien enthalten.
       - '--add-volume=name=firebase-sa-volume,type=secret,secret=firebase-service-account'
-      - '--add-volume-mount=volume=firebase-sa-volume,mount-path=/app/certs/firebase-service-account.json' # <-- Beispielpfad im Container
-      - '--add-volume=name=gcs-key-volume,type=secret,secret=media-uploader-key' # <-- "media-uploader-key" aus Ihrer Abbildung
-      - '--add-volume-mount=volume=gcs-key-volume,mount-path=/app/certs/media-uploader-key.json' # <-- Beispielpfad im Container
-      # Setzen der Umgebungsvariablen auf die gemounteten Pfade
-      - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/app/certs/firebase-service-account.json,GCS_KEY_FILE=/app/certs/media-uploader-key.json,BUCKET_NAME=mealo-media'
+      - '--add-volume-mount=volume=firebase-sa-volume,mount-path=/app/certs/firebase-service-account.json'
+      - '--add-volume=name=gcs-key-volume,type=secret,secret=media-uploader-key' # Verwendet den Secret-Namen aus Ihrer Abbildung
+      - '--add-volume-mount=volume=gcs-key-volume,mount-path=/app/certs/media-uploader-key.json'
+      # Setzen aller anderen Umgebungsvariablen und der Pfade zu den gemounteten Secret-Dateien.
+      # Alle --set-env-vars Argumente werden zu einem zusammengefasst, um Duplikate zu vermeiden.
+      - '--set-env-vars=BUCKET_NAME=mealo-media,GOOGLE_APPLICATION_CREDENTIALS=/app/certs/firebase-service-account.json,GCS_KEY_FILE=/app/certs/media-uploader-key.json'
+      # Service-Account für Cloud Run
       - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
       - '--quiet'
 
