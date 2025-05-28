@@ -29,19 +29,14 @@ steps:
       - '--region=europe-west3'
       - '--platform=managed'
       - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-      # Entfernt alle bisherigen Secrets vollständig
+      # Entfernt alle bisherigen Secrets und setzt neue
       - '--clear-secrets'
-      # Setzt GOOGLE_APPLICATION_CREDENTIALS und BUCKET_NAME als Literal-Env-Vars
       - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json,BUCKET_NAME=mealo-media'
-      # Mountet Secrets neu (Datei-Mount für Firebase-Key, plus Secret-Env-Vars für andere Keys)
-      - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest,DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=openai-api-key:latest'
+      # Mountet alle Secrets (Datei und Env) neu
+      - '--set-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest,DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=openai-api-key:latest'
       - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
       - '--quiet'
 
 # Nur Cloud Logging
 options:
   logging: CLOUD_LOGGING_ONLY
-
-# Bild-Tag, auf das Cloud Build wartet
-images:
-  - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
