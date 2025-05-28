@@ -22,7 +22,7 @@ exports.recognizeImages = async (req, res) => {
         try {
             // Hier werden die geparsten Dateiobjekte an den Service übergeben
             const ingredients = await imageRecognitionService.processImages(req.files);
-
+            console.log('Recognized ingredients:', ingredients);
             res.status(200).json(ingredients);
         } catch (error) {
             console.error('Error in image recognition controller:', error);
