@@ -1,59 +1,51 @@
-// backend/app/services/vision.service.js
-require('dotenv').config();
-const fs    = require('fs');
-const path  = require('path');
-const sharp = require('sharp');
-const OpenAI = require('openai');
+// backend/app/services/vision.service.js (AKTUALISIERT)
+const sharp = require('sharp'); // Sicherstellen, dass sharp importiert ist
+const openai = require('../../config/openai'); // Annahme: OpenAI-Client ist hier initialisiert
 
-// Sicherstellen, dass der API-Key gesetzt ist
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('Bitte setze OPENAI_API_KEY in deiner .env-Datei.');
-}
+// detectIngredients erhält nun einen Buffer, nicht einen Pfad
+async function detectIngredients(imageBuffer) { // GEÄNDERT: imagePath -> imageBuffer
+    // 1) Bild mit sharp bearbeiten (Buffer -> Buffer)
+    // Das resize/compress ist immer noch nützlich, um die Datenmenge für GPT zu reduzieren
+    const processedBuffer = await sharp(imageBuffer) // Nutze den übergebenen Buffer
+        .resize({ width: 512, withoutEnlargement: true })
+        .jpeg({ quality: 70 })
+        .toBuffer();
 
-// OpenAI-Client initialisieren (v4 SDK)
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    // 2) Base64-String
+    const b64 = processedBuffer.toString('base64');
 
-/**
- * Erkennt Zutaten in einem Bild mithilfe von GPT-4o-mini.
- * Das Bild wird automatisch auf max. 512px Breite skaliert,
- * JPEG-komprimiert (Quality 70) und dann als Base64 kodiert.
- * @param {string} imagePath - Pfad zur lokalen Bilddatei
- * @returns {Promise<Object>} - JSON-Objekt mit ingredients-Array
- */
-async function detectIngredients(imagePath) {
-  // 1) Bild mit sharp einlesen, skalieren und komprimieren
-  const buffer = await sharp(imagePath)
-    .resize({ width: 512, withoutEnlargement: true })
-    .jpeg({ quality: 70 })
-    .toBuffer();
-
-  // 2) Base64-String
-  const b64 = buffer.toString('base64');
-
-  // 3) Minimaler Prompt, JSON-Only
-  const systemPrompt = `Analysiere das Foto, erkenne sichtbare Zutaten und gib ausschließlich diese JSON-Struktur zurück:
+    // 3) Minimaler Prompt, JSON-Only
+    const systemPrompt = `Analysiere das Foto, erkenne sichtbare Zutaten und gib ausschließlich diese JSON-Struktur zurück:
 {"ingredients":[{"name":string,"confidence":float,"quantity":int,"unit":string},...]}`;
-  const userMessage = `data:image/jpeg;base64,${b64}`;
+    
+    // Wichtig: ChatGPT Vision benötigt das MIME-Type Präfix im Data URI
+    // Annahme: Alle Bilder, die hier ankommen, sind JPEGs nach der Sharp-Verarbeitung
+    const userMessage = `data:image/jpeg;base64,${b64}`; 
 
-  // 4) GPT-4o-mini Aufruf
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: 0,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userMessage }
-    ]
-  });
+    // 4) GPT-4o-mini Aufruf
+    const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        temperature: 0,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { 
+              role: 'user', 
+              content: [ // content ist ein Array für Vision-Prompts
+                { type: 'text', text: 'Bitte erkenne alle Zutaten in diesem Bild und gib sie als JSON zurück, wie im System-Prompt beschrieben.' }, // Zusätzlicher Text-Prompt
+                { type: 'image_url', image_url: { url: userMessage } } // Bild als Data URL
+              ]
+            }
+        ]
+    });
 
-  // 5) Antwort parsen
-
-
-  const raw = response.choices[0].message.content.trim();
-  try {
-    return JSON.parse(raw);
-  } catch (err) {
-    throw new Error(`JSON Parsing Error: ${err.message}\nAntwort war:\n${raw}`);
-  }
+    // 5) Antwort parsen
+    const raw = response.choices[0].message.content.trim();
+    try {
+        // Die Antwort sollte JSON sein, das direkt geparst werden kann
+        return JSON.parse(raw); 
+    } catch (err) {
+        throw new Error(`JSON Parsing Error from OpenAI response: ${err.message}\nRaw response was:\n${raw}`);
+    }
 }
 
-module.exports = { detectIngredients };
+module.exports = { detectIngredients }; // Sicherstellen, dass exportiert wird

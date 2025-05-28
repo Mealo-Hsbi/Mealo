@@ -5,37 +5,57 @@ class ImageRecognitionError extends Error {
   }
 }
 
-/**
- * Processes the uploaded image files to recognize ingredients.
- * This is a simulated implementation for now, returning an array of strings.
- * @param {Array<Object>} imageFiles - Array of image file objects (from multer, with buffer).
- * @returns {Promise<Array<string>>} - A promise that resolves to an array of recognized ingredient names (strings).
- */
+// backend/app/services/imageRecognition.service.js (AKTUALISIERT)
+
+// Importiere die neue detectIngredients Funktion
+const { detectIngredients } = require('./vision.service'); // Pfad anpassen, falls nötig
+
+// Diese Funktion verarbeitet eine Liste von hochgeladenen Bilddateien (von Multer)
 exports.processImages = async (imageFiles) => {
-  // Simulate a delay to mimic actual image processing
-  await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate 3 seconds processing time
+    if (!imageFiles || imageFiles.length === 0) {
+        return [];
+    }
 
-  // --- Start of Simulated Logic ---
-  // You can uncomment the following lines to simulate an error response
-  // const shouldSimulateError = Math.random() < 0.3; // 30% chance to simulate an error
-  // if (shouldSimulateError) {
-  //   console.error("Simulating an image recognition error.");
-  //   throw new ImageRecognitionError("Simulated error: Could not recognize ingredients.");
-  // }
-  // --- End of Simulated Logic ---
+    const allRecognizedIngredients = [];
 
-  console.log(`Processing ${imageFiles.length} images... (simulated)`);
+    for (const file of imageFiles) {
+        // Multer stellt den Bildinhalt als Buffer in file.buffer bereit
+        const imageBuffer = file.buffer; 
 
-  // Simulate recognized ingredient names as strings (now in English)
-  const recognizedIngredientNames = [
-    'Tomato',
-    'Mozzarella',
-    'Basil',
-    'Olive Oil',
-    'Salt',
-    'Black Pepper',
-    'Garlic', // Added another one
-  ];
+        try {
+            // Rufe die detectIngredients Funktion mit dem Buffer auf
+            const result = await detectIngredients(imageBuffer);
+            
+            // Angenommen, detectIngredients gibt ein Objekt der Form {"ingredients": [...]} zurück
+            if (result && Array.isArray(result.ingredients)) {
+                // Hier extrahieren wir nur die Namen der Zutaten aus der ChatGPT-Antwort
+                // Du könntest hier auch weitere Felder (confidence, quantity, unit) speichern,
+                // wenn deine Frontend-Ingredients-Struktur das vorsieht.
+                const ingredientNames = result.ingredients.map(item => item.name);
+                allRecognizedIngredients.push(...ingredientNames);
+            } else {
+                console.warn('ChatGPT did not return ingredients in the expected format for a file.', result);
+            }
+        } catch (error) {
+            console.error(`Error processing image ${file.originalname}:`, error.message);
+            // Je nachdem, wie du mit Fehlern umgehen willst:
+            // - Den Fehler weiterwerfen, um den gesamten Request fehlschlagen zu lassen
+            // - Oder den Fehler loggen und mit den erfolgreich erkannten Zutaten fortfahren
+            // Fürs Erste loggen wir nur und fahren fort.
+        }
+    }
 
-  return recognizedIngredientNames;
+    // Optional: Duplikate entfernen, wenn du eine Liste einzigartiger Zutaten willst
+    const uniqueRecognizedIngredients = [...new Set(allRecognizedIngredients)];
+    
+    // Rückgabe einer Liste von String-Namen, wie vom Frontend erwartet
+    return uniqueRecognizedIngredients; 
 };
+
+// Falls du eine eigene Error-Klasse hast, wie im Controller kommentiert:
+// class ImageRecognitionError extends Error {
+//     constructor(message) {
+//         super(message);
+//         this.name = 'ImageRecognitionError';
+//     }
+// }
