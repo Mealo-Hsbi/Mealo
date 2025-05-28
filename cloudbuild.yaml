@@ -29,12 +29,18 @@ steps:
       - --region=europe-west3
       - --platform=managed
       - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
-      # Entferne alte ENV-Variablen
-      - --remove-env-vars=GOOGLE_APPLICATION_CREDENTIALS
-      # Entferne alle früheren Secret-Mounts (Env und Volumes)
-      - --clear-secrets
-      # Injektion nur der beiden gewünschten Secrets
-      - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest
+      # Injektion der gewünschten Secrets als Umgebungsvariablen.
+      # Da DATABASE_URL bereits ein Secret ist, muss es hier über --update-secrets übergeben werden.
+      # Stellen Sie sicher, dass 'mealo-database-url' der korrekte Name des Secrets im Secret Manager ist.
+      - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,DATABASE_URL=mealo-database-url:latest
+      # Fügen Sie ein Volume für GCS_KEY_FILE hinzu und mounten Sie es.
+      # Ersetzen Sie 'gcs-media-uploader-key' durch den tatsächlichen Namen Ihres Secrets im Secret Manager.
+      # Dies setzt voraus, dass der INHALT der Datei media-uploader-key.json im Secret Manager gespeichert ist.
+      - --add-volume=name=gcs-key-volume,secret=gcs-media-uploader-key
+      - --add-volume-mount=volume=gcs-key-volume,path=/app/certs/media-uploader-key.json # Pfad im Container, wo die Datei sein soll
+      # Setzen anderer Umgebungsvariablen, die keine Secrets sind (z.B. BUCKET_NAME)
+      # und weisen Sie GCS_KEY_FILE auf den gemounteten Pfad.
+      - --set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/app/certs/media-uploader-key.json
       # Service-Account für Cloud Run
       - --service-account=1095476512586-compute@developer.gserviceaccount.com
       - --quiet
