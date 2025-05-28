@@ -7,12 +7,15 @@ import 'package:frontend/features/auth/presentation/auth_gate.dart';
 import 'package:frontend/features/auth/presentation/login_screen.dart';
 import 'package:frontend/features/auth/presentation/register_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:frontend/providers/current_tab_provider.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:frontend/core/routes/app_router.dart';
 import 'package:frontend/core/config/app_config.dart';
 import 'package:frontend/core/config/environment.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/providers/selected_ingredients_provider.dart';
 
 
 // Eine neue Funktion zur Initialisierung von App-Services
@@ -46,7 +49,16 @@ Future<void> _initializeAppServices() async {
 void main() {
   // Rufe die Initialisierungsfunktion auf und starte die App, sobald sie abgeschlossen ist
   _initializeAppServices().then((_) {
-    runApp(const MyApp());
+    // runApp(const MyApp());
+    runApp(
+      MultiProvider( // Nutze MultiProvider, um mehrere Provider bereitzustellen
+        providers: [
+          ChangeNotifierProvider(create: (context) => SelectedIngredientsProvider()),
+          ChangeNotifierProvider(create: (context) => CurrentTabProvider()), // NEU: Dein neuer Provider
+        ],
+        child: const MyApp(),
+      ),
+    );
   });
 }
 

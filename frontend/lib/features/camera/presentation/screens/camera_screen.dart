@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // <--- HIER: services.dart importieren
 import 'package:camera/camera.dart';
 import 'package:frontend/common/models/ingredient.dart';
+import 'package:frontend/core/routes/app_router.dart';
 import 'package:frontend/features/camera/presentation/widgets/camera_controls.dart';
 import 'package:frontend/features/camera/presentation/widgets/camera_view.dart';
 import 'package:frontend/features/camera/presentation/widgets/thumbnail_bar.dart';
 import 'package:frontend/features/camera/presentation/screens/ingredient_review_screen.dart';
+import 'package:frontend/providers/current_tab_provider.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,6 +20,8 @@ import 'package:frontend/features/camera/presentation/screens/ingredient_review_
 import 'package:frontend/features/camera/domain/usecases/process_images_use_case.dart'; // Dein Use Case
 import 'package:frontend/features/camera/data/repositories/image_recognition_repository_impl.dart'; // Die Implementierung deines Repositories
 import 'package:frontend/features/camera/data/datasources/image_recognition_api_data_source.dart'; // Deine DataSource
+import 'package:frontend/providers/selected_ingredients_provider.dart';
+import 'package:provider/provider.dart';
 
 class CameraScreen extends StatefulWidget {
   final bool isVisible;
@@ -287,15 +291,21 @@ Future<List<String>> _uploadAndProcessImages(List<XFile> images) async {
     );
   }
 
+  // Methode umbenannt und angepasst
   void _handleProcessingSuccess(List<Ingredient> ingredients) {
     if (mounted) {
-      // Wichtig: rootNavigator: true, um den Dialog-Kontext zu schließen
+      // 1. Lade-Dialog schließen (vom rootNavigator aus)
       Navigator.of(context, rootNavigator: true).pop();
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => IngredientReviewScreen(ingredients: ingredients),
-        ),
-      );
+
+      // 2. Provider mit den erkannten Zutaten aktualisieren
+      context.read<SelectedIngredientsProvider>().setIngredients(ingredients);
+
+      // 3. Den aktuellen Tab im CurrentTabProvider auf den Search-Tab setzen (Index 1)
+      // UND das Flag setzen, dass zum SearchScreen navigiert werden soll
+      context.read<CurrentTabProvider>().setCurrentIndex(1, navigateToSearch: true); // HIER IST DIE ÄNDERUNG
+
+      // 4. Den internen Navigations-Stack des Kamera-Tabs zurücksetzen
+      _resetScannedImages();
     }
   }
 

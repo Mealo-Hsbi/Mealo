@@ -5,6 +5,8 @@ import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/utils/string_similarity_helper.dart';
 import 'package:frontend/common/widgets/ingredientChips/ingredient_chip_row.dart';
 import 'package:frontend/common/widgets/search/search_header.dart';
+import 'package:frontend/providers/selected_ingredients_provider.dart';
+import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -77,8 +79,29 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    // Erst nach dem ersten Frame ausführen, um den Context sicher zu haben
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
+
+      // NEU: Zutaten aus dem Provider lesen
+      final selectedIngredientsProvider = context.read<SelectedIngredientsProvider>();
+      final ingredientsFromProvider = selectedIngredientsProvider.ingredients;
+
+      if (ingredientsFromProvider.isNotEmpty) {
+        setState(() {
+          for (var ingredient in ingredientsFromProvider) {
+            if (!selectedIngredients.contains(ingredient)) {
+              selectedIngredients.add(ingredient);
+            }
+          }
+        });
+        // WICHTIG: Zutaten im Provider zurücksetzen, damit sie nicht erneut geladen werden
+        // wenn der SearchScreen ein weiteres Mal aufgebaut wird.
+        selectedIngredientsProvider.clearIngredients();
+      }
+
+      // Aktualisiere den Cache für die neu hinzugefügten Zutaten
+      _updateCacheForIngredients(selectedIngredients);
     });
   }
 

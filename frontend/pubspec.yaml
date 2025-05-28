@@ -50,6 +50,7 @@ dependencies:
   dio: ^5.8.0+1
   dotenv: ^4.2.0
   flutter_dotenv: ^5.2.1
+  provider: ^6.1.5
 
 dev_dependencies:
   flutter_test:
