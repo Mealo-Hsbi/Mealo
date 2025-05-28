@@ -29,18 +29,15 @@ steps:
       - '--region=europe-west3'
       - '--platform=managed'
       - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-      # Injektion der Secrets als Umgebungsvariablen (die keine Dateipfade sind)
-      # Hier werden DATABASE_URL und OPENAI_API_KEY als Umgebungsvariablen gesetzt.
-      - '--update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest'
-      # Secret Volumes für Schlüsseldateien
-      # Stellen Sie sicher, dass diese Secrets den Inhalt der jeweiligen JSON-Dateien enthalten.
-      - '--add-volume=name=firebase-sa-volume,type=secret,secret=firebase-service-account'
-      - '--add-volume-mount=volume=firebase-sa-volume,mount-path=/app/certs/firebase-service-account.json'
+      # Alle Secrets als Umgebungsvariablen injizieren.
+      # GOOGLE_APPLICATION_CREDENTIALS ist hier enthalten, da es bereits als Secret konfiguriert ist.
+      - '--update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest'
+      # Nur das GCS Key File wird als Secret Volume gemountet, da es einen Dateipfad darstellt.
       - '--add-volume=name=gcs-key-volume,type=secret,secret=media-uploader-key' # Verwendet den Secret-Namen aus Ihrer Abbildung
       - '--add-volume-mount=volume=gcs-key-volume,mount-path=/app/certs/media-uploader-key.json'
-      # Setzen aller anderen Umgebungsvariablen und der Pfade zu den gemounteten Secret-Dateien.
-      # Alle --set-env-vars Argumente werden zu einem zusammengefasst, um Duplikate zu vermeiden.
-      - '--set-env-vars=BUCKET_NAME=mealo-media,GOOGLE_APPLICATION_CREDENTIALS=/app/certs/firebase-service-account.json,GCS_KEY_FILE=/app/certs/media-uploader-key.json'
+      # Setzen aller anderen Umgebungsvariablen und des Pfades zur gemounteten GCS Secret-Datei.
+      # GOOGLE_APPLICATION_CREDENTIALS wird NICHT hier gesetzt.
+      - '--set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/app/certs/media-uploader-key.json'
       # Service-Account für Cloud Run
       - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
       - '--quiet'
