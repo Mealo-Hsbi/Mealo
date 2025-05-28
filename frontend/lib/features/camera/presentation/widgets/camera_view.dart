@@ -28,6 +28,9 @@ class CameraView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colourScheme = theme.colorScheme;
+
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
       opacity: cameraOpacity,
@@ -56,7 +59,7 @@ class CameraView extends StatelessWidget {
                 ),
               ),
             )
-          : Container(color: Colors.black), // Beachte: Diese Farbe wird jetzt vom CameraScreen gesteuert
+          : Container(color: theme.colorScheme.surface), // Beachte: Diese Farbe wird jetzt vom CameraScreen gesteuert
     );
   }
 }

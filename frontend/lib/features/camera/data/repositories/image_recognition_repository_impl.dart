@@ -36,7 +36,7 @@ class ImageRecognitionRepositoryImpl implements ImageRecognitionRepository {
     for (final recognizedName in recognizedStrings) {
       // Find a matching ingredient in allIngredients, ignoring case
       final matchingIngredient = allIngredients.cast<Ingredient?>().firstWhere( // Cast to Ingredient? for null-safety with orElse: null
-        (ing) => ing != null && ing.name.toLowerCase() == recognizedName.toLowerCase(),
+        (ing) => ing != null && ing.id.toLowerCase() == recognizedName.toLowerCase(),
         orElse: () => null, // If no match, return null
       );
 

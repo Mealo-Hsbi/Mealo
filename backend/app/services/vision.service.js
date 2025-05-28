@@ -24,8 +24,8 @@ async function detectIngredients(imageBuffer) { // GEÄNDERT: imagePath -> image
 
     // 3) Minimaler Prompt, JSON-Only
     const systemPrompt = `Analyze the image, identify visible ingredients, and return *only* a JSON object:
-    {"ingredients":[{"name":string,"confidence":float,"quantity":number,"unit":string},...]}`; // 'number' for quantity as 'int' isn't a native JSON type
-
+      {"ingredients":[{"name":string,"confidence":float,"quantity":number,"unit":string},...]}.
+      IMPORTANT: For the 'name' field, always use the singular form of the ingredient (e.g., "Tomato" instead of "Tomatos", "Potato" instead of "Potatoes").`;
     // Assuming image is JPEG after Sharp processing and base64 encoded
     const userMessage = `data:image/jpeg;base64,${b64}`; 
 
@@ -56,9 +56,7 @@ async function detectIngredients(imageBuffer) { // GEÄNDERT: imagePath -> image
         raw = raw.substring(0, raw.length - 3); // Entferne '```'
     }
     raw = raw.trim(); // Erneutes Trimmen, falls Leerzeichen/Newlines übrig bleiben
-
     console.log('Raw response from OpenAI:', JSON.parse(raw)); // Debugging-Ausgabe
-
     try {
         return JSON.parse(raw);
     } catch (err) {

@@ -144,9 +144,9 @@ final List<Ingredient> allIngredients = [
     imageUrl: 'assets/images/ingredients/corn.webp',
   ),
   Ingredient(
-    id: 'green_peas',
+    id: 'green_pea',
     name: 'Green Peas',
-    imageUrl: 'assets/images/ingredients/green_peas.webp',
+    imageUrl: 'assets/images/ingredients/green_pea.webp',
   ),
   Ingredient(
     id: 'eggplant',
@@ -384,14 +384,14 @@ final List<Ingredient> allIngredients = [
     imageUrl: 'assets/images/ingredients/cod.webp',
   ),
   Ingredient(
-    id: 'mussels',
+    id: 'mussel',
     name: 'Mussels',
-    imageUrl: 'assets/images/ingredients/mussels.webp',
+    imageUrl: 'assets/images/ingredients/mussel.webp',
   ),
   Ingredient(
-    id: 'scallops',
+    id: 'scallop',
     name: 'Scallops',
-    imageUrl: 'assets/images/ingredients/scallops.webp',
+    imageUrl: 'assets/images/ingredients/scallop.webp',
   ),
   Ingredient(
     id: 'crab',
@@ -419,7 +419,7 @@ final List<Ingredient> allIngredients = [
     imageUrl: 'assets/images/ingredients/anchovy.webp',
   ),
   Ingredient(
-    id: 'clams',
+    id: 'clam',
     name: 'Clams',
     imageUrl: 'assets/images/ingredients/clams.webp',
   ),
