@@ -23,3 +23,4 @@ EXPOSE 8080
 
 # 8. Start-Kommando
 CMD ["node", "server.js"]
+
