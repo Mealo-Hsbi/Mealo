@@ -1,5 +1,5 @@
 steps:
-  # 1) Build das Docker-Image aus ./backend
+  # 1) Build the image (from ./backend) and tag it
   - id: 'build'
     name: 'gcr.io/cloud-builders/docker'
     dir: 'backend'
@@ -9,14 +9,14 @@ steps:
       - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
       - '.'
 
-  # 2) Push in Artifact Registry
+  # 2) Push the image up to Artifact Registry
   - id: 'push'
     name: 'gcr.io/cloud-builders/docker'
     args:
       - push
       - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
 
-  # 3) Deploy zu Cloud Run
+  # 3) Deploy to Cloud Run, mount Firebase-Secret und injiziere OpenAI-Key
   - id: 'deploy'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -29,10 +29,8 @@ steps:
       - --region=europe-west3
       - --platform=managed
       - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
-      # statische Env-Var für Firebase-Credentials
-      - --set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json
-      # Secret-Manager: Firebase-Secret mounten, OPENAI_API_KEY injizieren
-      - --update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest
+      # Secrets als ENV-Variablen setzen:
+      - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=openai-api-key:latest
       - --service-account=1095476512586-compute@developer.gserviceaccount.com
       - --quiet
 
