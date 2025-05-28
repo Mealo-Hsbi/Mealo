@@ -1,50 +1,54 @@
 steps:
-  # 1) Build the image (from ./backend) und taggen
+  # 1) Build the Docker image from ./backend
   - id: 'build'
     name: 'gcr.io/cloud-builders/docker'
     dir: 'backend'
     args:
-      - build
+      - 'build'
       - '-t'
       - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
       - '.'
 
-  # 2) Push the image to Artifact Registry
+  # 2) Push the image up to Artifact Registry
   - id: 'push'
     name: 'gcr.io/cloud-builders/docker'
     args:
-      - push
+      - 'push'
       - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
 
-  # 3) Deploy zu Cloud Run, mit Secret-Injection
+  # 3) Deploy to Cloud Run
   - id: 'deploy'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: 'gcloud'
     args:
-      - beta
-      - run
-      - deploy
-      - mealo
-      - --project=$PROJECT_ID
-      - --region=europe-west3
-      - --platform=managed
-      - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
-      # Injektion der gewünschten Secrets als Umgebungsvariablen.
-      - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,DATABASE_URL=mealo-database-url:latest
-      # Fügen Sie ein Volume für GCS_KEY_FILE hinzu und mounten Sie es.
-      - --add-volume=name=gcs-key-volume,type=secret,secret=gcs-media-uploader-key
-      # Korrektur: 'path' durch 'mount-path' ersetzen
-      - --add-volume-mount=volume=gcs-key-volume,mount-path=/app/certs/media-uploader-key.json # <-- Hier 'path' durch 'mount-path' ersetzt
-      # Setzen anderer Umgebungsvariablen, die keine Secrets sind
-      - --set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/app/certs/media-uploader-key.json
-      # Service-Account für Cloud Run
-      - --service-account=1095476512586-compute@developer.gserviceaccount.com
-      - --quiet
+      - 'beta'
+      - 'run'
+      - 'deploy'
+      - 'mealo'
+      - '--project=$PROJECT_ID'
+      - '--region=europe-west3'
+      - '--platform=managed'
+      - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+      # Normale Umgebungsvariablen
+      - '--set-env-vars=BUCKET_NAME=mealo-media'
+      # Nur ENV-Vars, die keine Dateipfade sind
+      - '--update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest' # <-- OPENAI_API_KEY hinzugefügt, nur ENV-Vars hier
+      # Secret Volumes für Schlüsseldateien
+      # Stellen Sie sicher, dass diese Secrets (firebase-service-account, media-uploader-key)
+      # den Inhalt der jeweiligen JSON-Dateien enthalten.
+      - '--add-volume=name=firebase-sa-volume,type=secret,secret=firebase-service-account'
+      - '--add-volume-mount=volume=firebase-sa-volume,mount-path=/app/certs/firebase-service-account.json' # <-- Beispielpfad im Container
+      - '--add-volume=name=gcs-key-volume,type=secret,secret=media-uploader-key' # <-- "media-uploader-key" aus Ihrer Abbildung
+      - '--add-volume-mount=volume=gcs-key-volume,mount-path=/app/certs/media-uploader-key.json' # <-- Beispielpfad im Container
+      # Setzen der Umgebungsvariablen auf die gemounteten Pfade
+      - '--set-env-vars=GOOGLE_APPLICATION_CREDENTIALS=/app/certs/firebase-service-account.json,GCS_KEY_FILE=/app/certs/media-uploader-key.json,BUCKET_NAME=mealo-media'
+      - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
+      - '--quiet'
 
-# Nur Cloud Logging
+# Only Cloud Logging
 options:
   logging: CLOUD_LOGGING_ONLY
 
-# Artefakt-Registry
+# Tell Cloud Build to expect this image tag
 images:
   - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
