@@ -32,7 +32,7 @@ steps:
       # Nur BUCKET_NAME als Literal setzen
       - '--set-env-vars=BUCKET_NAME=mealo-media'
       # Secrets mounten inkl. Firebase, GCS, DATABASE_URL und OPENAI_API_KEY
-      - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest,DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest'
+      - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest,DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=openai-api-key:latest'
       - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
       - '--quiet'
 
