@@ -32,9 +32,9 @@ steps:
       # Injektion der gewünschten Secrets als Umgebungsvariablen.
       - --update-secrets=GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,DATABASE_URL=mealo-database-url:latest
       # Fügen Sie ein Volume für GCS_KEY_FILE hinzu und mounten Sie es.
-      # Der 'type=secret' muss hier hinzugefügt werden.
-      - --add-volume=name=gcs-key-volume,type=secret,secret=gcs-media-uploader-key # <-- Hier 'type=secret' hinzugefügt
-      - --add-volume-mount=volume=gcs-key-volume,path=/app/certs/media-uploader-key.json
+      - --add-volume=name=gcs-key-volume,type=secret,secret=gcs-media-uploader-key
+      # Korrektur: 'path' durch 'mount-path' ersetzen
+      - --add-volume-mount=volume=gcs-key-volume,mount-path=/app/certs/media-uploader-key.json # <-- Hier 'path' durch 'mount-path' ersetzt
       # Setzen anderer Umgebungsvariablen, die keine Secrets sind
       - --set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/app/certs/media-uploader-key.json
       # Service-Account für Cloud Run
