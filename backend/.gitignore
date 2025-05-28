@@ -3,3 +3,4 @@ node_modules
 .env
 # Firebase Service Account
 /certs/serviceAccountKey.json
+/certs/media-uploader-key.json
