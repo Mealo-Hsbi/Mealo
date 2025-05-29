@@ -1,5 +1,5 @@
 abstract class ApiKeys {
-  static const spoonacular = 'c5b944ee55c24e429049366d4d0238b3'; // Alle Nullen am ende sind falsch (damit der key nicht verbraucht wird)
+  static const spoonacular = 'c5b944ee55c24e429049366d4d0238b300000000000'; // Alle Nullen am ende sind falsch (damit der key nicht verbraucht wird)
 
   static const spoonacularKeyList = [ // TODO: remove this
     'c5b944ee55c24e429049366d4d0238b3',

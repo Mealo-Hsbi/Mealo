@@ -18,7 +18,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:frontend/features/camera/presentation/screens/ingredient_review_screen.dart'; // Dein Ziel-Screen
 import 'package:frontend/features/camera/domain/usecases/process_images_use_case.dart'; // Dein Use Case
-import 'package:frontend/features/camera/data/repositories/image_recognition_repository_impl.dart'; // Die Implementierung deines Repositories
+import 'package:frontend/features/camera/data/image_recognition_repository_impl.dart'; // Die Implementierung deines Repositories
 import 'package:frontend/features/camera/data/datasources/image_recognition_api_data_source.dart'; // Deine DataSource
 import 'package:frontend/providers/selected_ingredients_provider.dart';
 import 'package:provider/provider.dart';

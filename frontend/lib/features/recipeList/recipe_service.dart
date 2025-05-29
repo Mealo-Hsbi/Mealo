@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:frontend/core/config/app_config.dart';
 
-import 'recipe.dart';
+import '../../common/models/recipe.dart';
 
 class RecipeService {
   static Future<List<Recipe>> fetchRandomRecipes({int number = 10}) async {

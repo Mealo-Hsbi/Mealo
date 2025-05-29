@@ -1,7 +1,7 @@
 // lib/features/explore/exploreScreen.dart (Aktualisiere diesen File)
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // NEU: Provider importieren
-import 'package:frontend/features/search/search_screen.dart';
+import 'package:frontend/features/search/presentation/screens/search_screen.dart';
 import 'package:frontend/providers/current_tab_provider.dart'; // NEU: CurrentTabProvider importieren
 
 class ExploreScreen extends StatefulWidget { // GEÄNDERT: StatefulWidget statt StatelessWidget

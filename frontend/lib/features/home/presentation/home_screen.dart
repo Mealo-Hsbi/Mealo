@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/recipeList/parallax_recipes.dart';
-import 'package:frontend/features/recipeList/recipe.dart';
+import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/features/recipeList/recipe_service.dart';
 
 class HomeScreen extends StatelessWidget {

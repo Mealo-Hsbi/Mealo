@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/recipeList/recipe.dart';
+import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/features/recipeList/recipe_detail_screen.dart';
 
 class ParallaxRecipes extends StatelessWidget {
@@ -12,19 +12,20 @@ class ParallaxRecipes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
+    // return SingleChildScrollView(
+      // child: Column(
+      return Column(
         children: [
           // for (final recipe in locations)
           for (final recipe in recipes)
             RecipeItem(
               imageUrl: recipe.imageUrl,
               name: recipe.name,
-              country: recipe.place,
+              country: recipe.place ?? '',
             ),
         ],
-      ),
-    );
+      );
+    // );
   }
 }
 
