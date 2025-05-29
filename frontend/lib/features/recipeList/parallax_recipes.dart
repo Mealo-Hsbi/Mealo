@@ -35,12 +35,16 @@ class RecipeItem extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.name,
-    required this.country,
+    required this.country, // Bleibt für den Ort (Place)
+    this.readyInMinutes, // NEU: Optionale Zubereitungszeit
+    this.servings,       // NEU: Optionale Portionen
   });
 
   final String imageUrl;
   final String name;
   final String country;
+  final int? readyInMinutes; // NEU: Kann null sein
+  final int? servings;       // NEU: Kann null sein
   final GlobalKey _backgroundImageKey = GlobalKey();
 
   @override
@@ -63,7 +67,7 @@ class RecipeItem extends StatelessWidget {
               children: [
                 _buildParallaxBackground(context),
                 _buildGradient(),
-                _buildTitleAndSubtitle(),
+                _buildTitleAndSubtitle(), // Diese Methode wird angepasst
               ],
             ),
           ),
@@ -90,7 +94,7 @@ class RecipeItem extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
+            colors: [Colors.transparent, Colors.black.withOpacity(0.7)], // withValues zu withOpacity geändert
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             stops: const [0.6, 0.95],
@@ -103,6 +107,7 @@ class RecipeItem extends StatelessWidget {
   Widget _buildTitleAndSubtitle() {
     return Positioned(
       left: 20,
+      right: 20,
       bottom: 20,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -113,13 +118,28 @@ class RecipeItem extends StatelessWidget {
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold,              
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis, // Damit der Text nicht überläuft
           ),
-          Text(
-            country,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
+          // Bestehende Länder-Anzeige (Ort)
+          // Text(
+          //   country,
+          //   style: const TextStyle(color: Colors.white, fontSize: 14),
+          // ),
+          // NEU: Anzeige für Zubereitungszeit
+          if (readyInMinutes != null)
+            Text(
+              'Prep Time: $readyInMinutes Min.',
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          // NEU: Anzeige für Portionen
+          // if (servings != null)
+          //   Text(
+          //     'Portionen: $servings',
+          //     style: const TextStyle(color: Colors.white, fontSize: 14),
+          //   ),
         ],
       ),
     );

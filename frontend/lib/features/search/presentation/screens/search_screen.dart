@@ -292,7 +292,10 @@ class _SearchScreenState extends State<SearchScreen> {
                               return RecipeItem(
                                 imageUrl: recipe.imageUrl,
                                 name: recipe.name,
-                                country: recipe.place ?? '', // Sicherstellen, dass 'place' vorhanden ist
+                                // country: recipe.place ?? '', // Sicherstellen, dass 'place' vorhanden ist
+                                country: '', // Sicherstellen, dass 'place' vorhanden ist
+                                readyInMinutes: recipe.readyInMinutes, // Optional
+                                servings: recipe.servings, // Optional
                               );
                             },
                           ),
