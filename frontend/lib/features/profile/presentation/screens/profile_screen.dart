@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,9 +18,10 @@ import '../screens/pantry_screen.dart';
 import '../screens/settings_screen.dart';
 import 'package:frontend/features/recipeList/recipe_list_screen.dart';
 
-const double kSectionSpacing = 8.0;
+const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
-const double kItemSpacing = 24.0;
+const double kHeaderHeight = 240.0;
+const double kAvatarRadius = 48.0;
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -48,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
           final achievements = profile.achievements.take(3).toList();
 
           return Scaffold(
-            backgroundColor: Colors.grey.shade100,
+            backgroundColor: Colors.grey.shade100, // ✅ grau für Abgrenzung
             appBar: AppBar(
               title: const Text('Profile'),
               actions: [
@@ -61,107 +63,135 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
             body: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: kItemSpacing),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Header mit Avatar
-                  Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 48),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  // 🔝 Headerbild
+                  SizedBox(
+                    height: kHeaderHeight,
+                    width: double.infinity,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (profile.avatarUrl != null)
+                          Image.network(profile.avatarUrl!, fit: BoxFit.cover),
+                        BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                          child: Container(color: Colors.black.withOpacity(0.2)),
                         ),
-                        padding: const EdgeInsets.fromLTRB(
-                          kSectionPadding, 64, kSectionPadding, kSectionPadding),
-                        child: Column(
+                      ],
+                    ),
+                  ),
+
+                  // 👤 Profilkarte mit Avatar
+                  Transform.translate(
+                    offset: Offset(0, -kAvatarRadius),
+                    child: Column(
+                      children: [
+                        Stack(
+                          clipBehavior: Clip.none,
+                          alignment: Alignment.topCenter,
                           children: [
-                            Text(profile.name,
-                              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text(profile.email,
-                              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
-                            const SizedBox(height: kSectionSpacing),
-                            Wrap(
-                              spacing: kSectionSpacing,
-                              children: profile.tags.map((t) => TagChip(t)).toList(),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.fromLTRB(
+                                kSectionPadding, kAvatarRadius + kSectionSpacing,
+                                kSectionPadding, kSectionPadding),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surface, // ✅ weiß
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(profile.name,
+                                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 4),
+                                  Text(profile.email,
+                                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+                                  const SizedBox(height: kSectionSpacing),
+                                  Wrap(
+                                    spacing: kSectionSpacing,
+                                    children: profile.tags.map((t) => TagChip(t)).toList(),
+                                  ),
+                                  const SizedBox(height: kSectionSpacing),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      StatItem('Recipes', profile.recipesCount),
+                                      StatItem('Likes', profile.likesCount),
+                                      StatItem('Favorites', profile.favoritesCount),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: kSectionSpacing),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                StatItem('Recipes', profile.recipesCount),
-                                StatItem('Likes', profile.likesCount),
-                                StatItem('Favorites', profile.favoritesCount),
-                              ],
+                            Positioned(
+                              top: -kAvatarRadius,
+                              child: AvatarWidget(
+                                url: profile.avatarUrl,
+                                loading: vm.isLoading,
+                                onTap: vm.pickAndUploadAvatar,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        child: AvatarWidget(
-                          url: profile.avatarUrl,
-                          loading: vm.isLoading,
-                          onTap: vm.pickAndUploadAvatar,
+
+                        const SizedBox(height: kSectionSpacing),
+
+                        // 🍽️ My Recipes
+                        ProfileSection(
+                          title: 'My Recipes',
+                          action: TextButton(
+                            onPressed: () => Navigator.of(context).push(
+                                _createSlideRoute(const RecipeListScreen())),
+                            child: const Text('View All'),
+                          ),
+                          child: GridView.count(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 3 / 4,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: recent.map((r) => RecipePreviewItem(
+                              imageUrl: r.imageUrl,
+                              title: r.title,
+                            )).toList(),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
 
-                  // Achievements (als Cards)
-                  ProfileSection(
-                    title: 'Achievements',
-                    action: TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        _createSlideRoute(const AchievementsOverviewScreen())),
-                      child: const Text('View All'),
-                    ),
-                    child: GridView.count(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: achievements.map((a) => AchievementCard(achievement: a)).toList(),
-                    ),
-                  ),
+                        // 🧺 My Pantry
+                        ProfileSection(
+                          title: 'My Pantry',
+                          child: ListTile(
+                            leading: const Icon(Icons.kitchen, size: 32),
+                            title: const Text('You have X items'),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () => Navigator.of(context).push(
+                                _createSlideRoute(const PantryScreen())),
+                          ),
+                        ),
 
-                  // Pantry
-                  ProfileSection(
-                    title: 'My Pantry',
-                    child: ListTile(
-                      leading: const Icon(Icons.kitchen, size: 32),
-                      title: const Text('You have X items'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.of(context).push(
-                        _createSlideRoute(const PantryScreen())),
-                    ),
-                  ),
-
-                  // Recipes (as Cards)
-                  ProfileSection(
-                    title: 'My Recipes',
-                    action: TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        _createSlideRoute(const RecipeListScreen())),
-                      child: const Text('View All'),
-                    ),
-                    child: GridView.count(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 3 / 4,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: recent.map((r) => RecipePreviewItem(
-                        imageUrl: r.imageUrl,
-                        title: r.title,
-                      )).toList(),
+                        // 🏆 Achievements (letzte Section)
+                        ProfileSection(
+                          title: 'Achievements',
+                          action: TextButton(
+                            onPressed: () => Navigator.of(context).push(
+                                _createSlideRoute(const AchievementsOverviewScreen())),
+                            child: const Text('View All'),
+                          ),
+                          child: GridView.count(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: achievements.map((a) => AchievementCard(achievement: a)).toList(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -178,7 +208,7 @@ class ProfileScreen extends StatelessWidget {
       pageBuilder: (_, anim, __) => page,
       transitionsBuilder: (_, anim, __, child) => SlideTransition(
         position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-          .animate(CurvedAnimation(parent: anim, curve: Curves.easeInOut)),
+            .animate(CurvedAnimation(parent: anim, curve: Curves.easeInOut)),
         child: child,
       ),
     );
@@ -198,7 +228,7 @@ class ProfileSection extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: kSectionSpacing),
       padding: const EdgeInsets.all(kSectionPadding),
-      color: Theme.of(context).colorScheme.surface,
+      color: Theme.of(context).colorScheme.surface, // ✅ weißer Hintergrund
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
