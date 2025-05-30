@@ -39,6 +39,10 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
+router.post('/login', (req, res) => {
+  res.status(200).json({ token: 'fake-jwt-token' });
+});
+
 // Ab hier gelten alle Routen nur, wenn authMiddleware durchgelaufen ist
 router.use(authMiddleware);
 
