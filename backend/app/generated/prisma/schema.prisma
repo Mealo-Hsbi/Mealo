@@ -22,7 +22,7 @@ model favorites {
 
 model ingredients {
   id                 String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name               String
+  name               String               @unique(map: "unique_ingredient_name")
   category           String?
   shelf_life_days    Int?
   calories           Int?

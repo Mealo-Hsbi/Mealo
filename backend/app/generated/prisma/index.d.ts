@@ -19672,10 +19672,10 @@ export namespace Prisma {
 
   export type ingredientsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    name?: string
     AND?: ingredientsWhereInput | ingredientsWhereInput[]
     OR?: ingredientsWhereInput[]
     NOT?: ingredientsWhereInput | ingredientsWhereInput[]
-    name?: StringFilter<"ingredients"> | string
     category?: StringNullableFilter<"ingredients"> | string | null
     shelf_life_days?: IntNullableFilter<"ingredients"> | number | null
     calories?: IntNullableFilter<"ingredients"> | number | null
@@ -19685,7 +19685,7 @@ export namespace Prisma {
     inventory?: InventoryListRelationFilter
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     shopping_list_item?: Shopping_list_itemListRelationFilter
-  }, "id">
+  }, "id" | "name">
 
   export type ingredientsOrderByWithAggregationInput = {
     id?: SortOrder

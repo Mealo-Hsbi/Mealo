@@ -10,10 +10,11 @@ async function fetchProfile(firebaseUid) {
   const user = await prisma.users.findUnique({
     where: { firebase_uid: firebaseUid },
     include: {
-      user_tags:     { include: { tags: true } },
-      recipes:       { orderBy: { created_at: 'desc' }, take: 3 },
-      favorites:     true,
-      ratings:       true,
+      user_tags:  { include: { tags: true } },
+      recipes:    { orderBy: { created_at: 'desc' }, take: 3 },
+      favorites:  true,
+      ratings:    true,
+      inventory:  true, // <- korrektes Laden der Pantry
     },
   });
   if (!user) throw new Error('User nicht gefunden');
@@ -22,6 +23,7 @@ async function fetchProfile(firebaseUid) {
   const recipesCount   = user.recipes.length;
   const favoritesCount = user.favorites.length;
   const likesCount     = user.ratings.length;
+  const pantryCount    = user.inventory.length;
 
   // 3) Signed URL für Avatar holen
   const avatarUrl = user.avatar_url
@@ -43,7 +45,7 @@ async function fetchProfile(firebaseUid) {
     where: { user_id: user.id },
     include: { achievement: true },
   });
-  // Shuffle & take 3
+
   const randomThree = unlocked
     .map((ua) => ua.achievement)
     .sort(() => Math.random() - 0.5)
@@ -64,9 +66,10 @@ async function fetchProfile(firebaseUid) {
     recipesCount,
     favoritesCount,
     likesCount,
+    pantryCount,
     avatarUrl,
     recentRecipes,
-    achievements:     randomThree,   // Neu: drei zufällige Achievements
+    achievements:     randomThree,
   };
 }
 

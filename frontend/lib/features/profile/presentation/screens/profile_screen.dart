@@ -165,7 +165,7 @@ class ProfileScreen extends StatelessWidget {
                           title: 'My Pantry',
                           child: ListTile(
                             leading: const Icon(Icons.kitchen, size: 32),
-                            title: const Text('You have X items'),
+                            title: Text('You have ${profile.pantryCount} items'),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () => Navigator.of(context).push(
                                 _createSlideRoute(const PantryScreen())),

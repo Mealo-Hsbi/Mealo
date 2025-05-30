@@ -89,6 +89,7 @@ class ProfileDto {
   final String avatarUrl;
   final List<RecipePreviewDto> recentRecipes;
   final List<AchievementDto> achievements;
+  final int pantryCount;
 
   ProfileDto({
     required this.id,
@@ -101,6 +102,7 @@ class ProfileDto {
     required this.avatarUrl,
     required this.recentRecipes,
     required this.achievements,
+    required this.pantryCount,
   });
 
   factory ProfileDto.fromJson(Map<String, dynamic> json) {
@@ -111,6 +113,7 @@ class ProfileDto {
       tags: List<String>.from(json['tags'] as List),
       recipesCount: json['recipesCount'] as int,
       favoritesCount: json['favoritesCount'] as int,
+      pantryCount: json['pantryCount'] as int,
       likesCount: json['likesCount'] as int,
       avatarUrl: json['avatarUrl'] as String,
       recentRecipes: (json['recentRecipes'] as List)
@@ -130,6 +133,7 @@ class ProfileDto {
       'tags': tags,
       'recipesCount': recipesCount,
       'favoritesCount': favoritesCount,
+      'pantryCount': pantryCount,
       'likesCount': likesCount,
       'avatarUrl': avatarUrl,
       'recentRecipes':
@@ -160,6 +164,7 @@ class ProfileDto {
       favoritesCount: favoritesCount ?? this.favoritesCount,
       likesCount: likesCount ?? this.likesCount,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      pantryCount: pantryCount ?? this.pantryCount,
       recentRecipes: recentRecipes ?? this.recentRecipes,
       achievements: achievements ?? this.achievements,
     );
