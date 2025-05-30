@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 class AvatarWidget extends StatelessWidget {
   final String? url;
   final bool loading;
-  final VoidCallback onTap;
 
   const AvatarWidget({
     Key? key,
     required this.url,
     required this.loading,
-    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -18,13 +16,10 @@ class AvatarWidget extends StatelessWidget {
     if (loading) {
       return const CircularProgressIndicator();
     }
-    return GestureDetector(
-      onTap: onTap,
-      child: CircleAvatar(
-        radius: 48,
-        backgroundImage: url != null ? NetworkImage(url!) : null,
-        child: url == null ? const Icon(Icons.camera_alt) : null,
-      ),
+    return CircleAvatar(
+      radius: 48,
+      backgroundImage: url != null ? NetworkImage(url!) : null,
+      child: url == null ? const Icon(Icons.person) : null,
     );
   }
 }

@@ -131,7 +131,6 @@ class ProfileScreen extends StatelessWidget {
                               child: AvatarWidget(
                                 url: profile.avatarUrl,
                                 loading: vm.isLoading,
-                                onTap: vm.pickAndUploadAvatar,
                               ),
                             ),
                           ],
