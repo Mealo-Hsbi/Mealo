@@ -50,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
           final achievements = profile.achievements.take(3).toList();
 
           return Scaffold(
-            backgroundColor: Colors.grey.shade100, // ✅ grau für Abgrenzung
+            backgroundColor: Colors.grey.shade100,
             appBar: AppBar(
               title: const Text('Profile'),
               actions: [
@@ -98,7 +98,7 @@ class ProfileScreen extends StatelessWidget {
                                 kSectionPadding, kAvatarRadius + kSectionSpacing,
                                 kSectionPadding, kSectionPadding),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.surface, // ✅ weiß
+                                color: theme.colorScheme.surface,
                                 borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(24),
                                 ),
@@ -107,18 +107,19 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   Text(profile.name,
                                       style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 4),
                                   const SizedBox(height: kSectionSpacing),
                                   Wrap(
                                     spacing: kSectionSpacing,
                                     children: profile.tags.take(3).map((t) => TagChip(t)).toList(),
                                   ),
-                                  const SizedBox(height: kSectionSpacing),
+                                  const SizedBox(height: 16),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       StatItem('Recipes', profile.recipesCount),
+                                      const SizedBox(width: 24),
                                       StatItem('Likes', profile.likesCount),
+                                      const SizedBox(width: 24),
                                       StatItem('Favorites', profile.favoritesCount),
                                     ],
                                   ),
@@ -226,7 +227,7 @@ class ProfileSection extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: kSectionSpacing),
       padding: const EdgeInsets.all(kSectionPadding),
-      color: Theme.of(context).colorScheme.surface, // ✅ weißer Hintergrund
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
