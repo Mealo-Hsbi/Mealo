@@ -25,4 +25,3 @@ ENV GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase/serviceAccountKey.json
 
 # 8. Start-Kommando
 CMD ["node", "server.js"]
-
