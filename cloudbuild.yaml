@@ -1,45 +1,50 @@
 steps:
-  # 1) Build the Docker image from ./backend
+  # 1) Build
   - id: 'build'
     name: 'gcr.io/cloud-builders/docker'
     dir: 'backend'
     args:
-      - 'build'
-      - '-t'
-      - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-      - '.'
+      - build
+      - -t
+      - europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
+      - .
 
-  # 2) Push the image up to Artifact Registry
+  # 2) Push
   - id: 'push'
     name: 'gcr.io/cloud-builders/docker'
     args:
-      - 'push'
-      - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+      - push
+      - europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
 
-  # 3) Deploy to Cloud Run
+  # 3) Deploy
+# 3) Deploy
   - id: 'deploy'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
+    entrypoint: gcloud
     args:
-      - 'beta'
-      - 'run'
-      - 'deploy'
-      - 'mealo'
-      - '--project=$PROJECT_ID'
-      - '--region=europe-west3'
-      - '--platform=managed'
-      - '--image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
-      # Entferne alte Umgebungsvariable falls noch gesetzt
-      - '--remove-env-vars=GOOGLE_APPLICATION_CREDENTIALS'
-      # Setze statische Umgebungsvariablen
-      - '--set-env-vars=BUCKET_NAME=mealo-media'
-      # Mount alle Secrets: Firebase, GCS, Datenbank-URL, OpenAI-Key
-      - '--update-secrets=/secrets/firebase/serviceAccountKey.json=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest,DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest'
-      - '--service-account=1095476512586-compute@developer.gserviceaccount.com'
-      - '--quiet'
+      - beta
+      - run
+      - deploy
+      - mealo
+      - --project=$PROJECT_ID
+      - --region=europe-west3
+      - --platform=managed
+      - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
+      # Only set BUCKET_NAME and GCS_KEY_FILE here.
+      # GCS_KEY_FILE still needs to point to the mounted file.
+      - --set-env-vars=BUCKET_NAME=mealo-media,GCS_KEY_FILE=/secrets/gcs/media-uploader-key.json
+      # Mount secrets.
+      # IMPORTANT: We will NOT mount firebase-service-account to a file path
+      # AND set GOOGLE_APPLICATION_CREDENTIALS to that path simultaneously.
+      # Instead, we will try to pass the content directly.
+      # Database URL and OpenAI API Key are fine as they are.
+      # For Firebase, we will let gcloud handle GOOGLE_APPLICATION_CREDENTIALS as an env var.
+      - --update-secrets=DATABASE_URL=DATABASE_URL:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account:latest,/secrets/gcs/media-uploader-key.json=media-uploader-key:latest
+      - --service-account=1095476512586-compute@developer.gserviceaccount.com
+      - --quiet
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 images:
-  - 'europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA'
+  - europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/mealo/mealo:$COMMIT_SHA
