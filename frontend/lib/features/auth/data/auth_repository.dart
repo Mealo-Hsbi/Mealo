@@ -7,24 +7,29 @@ import '../domain/user_model.dart';
 class AuthRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
-  final ApiClient _api = ApiClient();
+  final ApiClient _api;
 
+  /// Hauptkonstruktor mit Dependency Injection (empfohlen für Tests)
   AuthRepository({
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
+    ApiClient? apiClient,
   })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+        _googleSignIn = googleSignIn ?? GoogleSignIn(),
+        _api = apiClient ?? ApiClient();
 
-  /// Für Tests, z. B. AuthRepository.forAuth(mockAuth)
+  /// Alternativ-Konstruktor für Tests mit nur FirebaseAuth
   factory AuthRepository.forAuth(FirebaseAuth auth) =>
       AuthRepository(firebaseAuth: auth);
 
+  /// Stream für Benutzerstatusänderungen
   Stream<UserModel?> get user {
     return _firebaseAuth
         .authStateChanges()
         .map((u) => u == null ? null : UserModel.fromFirebase(u));
   }
 
+  /// Registrierung mit E-Mail und Passwort
   Future<void> signUp({
     required String email,
     required String password,
@@ -35,6 +40,7 @@ class AuthRepository {
     );
   }
 
+  /// Anmeldung mit E-Mail und Passwort
   Future<void> signIn({
     required String email,
     required String password,
@@ -45,12 +51,13 @@ class AuthRepository {
     );
   }
 
+  /// Abmelden (Firebase + Google)
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
     await _googleSignIn.signOut();
   }
 
-  /// Nach E-Mail/Passwort-Registrierung: lege den User in der eigenen DB an
+  /// Nutzer nach Registrierung in der eigenen DB speichern
   Future<void> createUserInDb({required String name, String? avatarUrl}) async {
     final user = _firebaseAuth.currentUser;
     if (user == null) {
@@ -59,6 +66,7 @@ class AuthRepository {
         message: 'Kein angemeldeter User gefunden.',
       );
     }
+
     final idToken = await user.getIdToken();
     await _api.post<Map<String, dynamic>>(
       '/users/register',
@@ -72,11 +80,10 @@ class AuthRepository {
     );
   }
 
-  /// Google Sign-In + Upsert in eigener DB, speichert nur den Vornamen
+  /// Google Sign-In + Nutzer-Sync in DB (Upsert)
   Future<void> signInWithGoogleAndSyncDb() async {
-    // 1) Google OAuth Flow
     final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return; // Abbruch durch User
+    if (googleUser == null) return; // Abbruch durch Nutzer
 
     final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
@@ -84,9 +91,8 @@ class AuthRepository {
       idToken: googleAuth.idToken,
     );
 
-    // 2) Firebase Auth
     final userCred = await _firebaseAuth.signInWithCredential(credential);
-    final user     = userCred.user;
+    final user = userCred.user;
     if (user == null) {
       throw FirebaseAuthException(
         code: 'google_sign_in_failed',
@@ -94,18 +100,14 @@ class AuthRepository {
       );
     }
 
-    // 3) Vornamen extrahieren
-    final fullName  = user.displayName?.trim() ?? '';
+    final fullName = user.displayName?.trim() ?? '';
     final firstName = fullName.isNotEmpty ? fullName.split(' ').first : '';
 
-    // 4) ID-Token holen
     final idToken = await user.getIdToken();
-
-    // 5) Upsert in der eigenen DB (Register-/Upsert-Route)
     await _api.post<Map<String, dynamic>>(
       '/users/register',
       data: {
-        'name'      : firstName,
+        'name': firstName,
         'avatar_url': user.photoURL,
       },
       options: Options(headers: {

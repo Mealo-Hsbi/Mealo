@@ -90,6 +90,7 @@ flutter:
     - assets/icons/
     - .env.dev
     - .env.prod
+    - .env.test
 
 flutter_launcher_icons:
     android: true
