@@ -6,16 +6,23 @@ class TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = Theme.of(context).colorScheme.primary;
+    final color = Theme.of(context).colorScheme.primary;
+
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8, vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: p.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        color: color.withOpacity(0.12),
+        border: Border.all(color: color.withOpacity(0.4)),
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(tag, style: TextStyle(color: p)),
+      child: Text(
+        tag,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
+        ),
+      ),
     );
   }
 }

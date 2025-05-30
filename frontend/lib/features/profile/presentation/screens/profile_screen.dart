@@ -108,12 +108,10 @@ class ProfileScreen extends StatelessWidget {
                                   Text(profile.name,
                                       style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                                   const SizedBox(height: 4),
-                                  Text(profile.email,
-                                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
                                   const SizedBox(height: kSectionSpacing),
                                   Wrap(
                                     spacing: kSectionSpacing,
-                                    children: profile.tags.map((t) => TagChip(t)).toList(),
+                                    children: profile.tags.take(3).map((t) => TagChip(t)).toList(),
                                   ),
                                   const SizedBox(height: kSectionSpacing),
                                   Row(
