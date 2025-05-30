@@ -6,6 +6,28 @@ jest.mock("../app/firebase", () => ({
   }),
 }));
 
+jest.mock("../app/generated/prisma", () => {
+  return {
+    PrismaClient: jest.fn().mockImplementation(() => ({
+      users: {
+        findUnique: jest.fn().mockResolvedValue({
+          firebase_uid: "u1",
+          email: "alice@example.com",
+        }),
+        upsert: jest.fn().mockResolvedValue({
+          firebase_uid: "abc123",
+          email: "foo@bar.com",
+          name: "Test User",
+          avatar_url: "profile-pictures/profile_placeholder.png"
+        }),
+        create: jest.fn().mockResolvedValue({}),
+        delete: jest.fn().mockResolvedValue({}),
+      },
+      $disconnect: jest.fn(), // ✅ wichtig für afterAll
+    })),
+  };
+});
+
 const request = require("supertest");
 const express = require("express");
 
