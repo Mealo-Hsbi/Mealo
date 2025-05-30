@@ -50,6 +50,8 @@ dependencies:
   dio: ^5.8.0+1
   dotenv: ^4.2.0
   flutter_dotenv: ^5.2.1
+  provider: ^6.1.5
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +90,7 @@ flutter:
     - assets/icons/
     - .env.dev
     - .env.prod
+    - .env.test
 
 flutter_launcher_icons:
     android: true

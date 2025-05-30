@@ -3,7 +3,7 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/favorites/presentation/favorites_screen.dart';
 import '../../features/explore/exploreScreen.dart';
 import '../../features/camera/camera_screen.dart';
-import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 List<Widget> getAppTabs(int currentIndex) {
   return [
@@ -11,7 +11,7 @@ List<Widget> getAppTabs(int currentIndex) {
     const ExploreScreen(),
     CameraScreen(isVisible: currentIndex == 2),
     const FavoritesScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 }
 
