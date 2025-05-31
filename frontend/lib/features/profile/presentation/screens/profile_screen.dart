@@ -16,7 +16,7 @@ import '../widgets/achievement_card.dart';
 import '../screens/achievements_overview_screen.dart';
 import '../screens/pantry_screen.dart';
 import '../screens/settings_screen.dart';
-import 'package:frontend/features/recipeList/recipe_list_screen.dart';
+import './profile_recipe_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
@@ -143,7 +143,7 @@ class ProfileScreen extends StatelessWidget {
                           title: 'My Recipes',
                           action: TextButton(
                             onPressed: () => Navigator.of(context).push(
-                                _createSlideRoute(const RecipeListScreen())),
+                                _createSlideRoute(const ProfileRecipesScreen())),
                             child: const Text('View All'),
                           ),
                           child: GridView.count(
