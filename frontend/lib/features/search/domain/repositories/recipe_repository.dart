@@ -1,23 +1,20 @@
 // lib/features/search/domain/repositories/recipe_repository.dart
 
-import 'package:frontend/common/models/ingredient.dart';
-import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/common/models/recipe_details.dart'; // Für zukünftige Details
+import 'package:frontend/common/models/recipe.dart'; // Your domain entity
+import 'package:frontend/common/models/recipe_details.dart';
 
-/// Abstrakte Klasse, die den Vertrag für die Rezeptdaten-Operationen definiert.
-/// Die Domain-Schicht (z.B. Usecases oder UI) wird nur dieses Interface kennen.
 abstract class RecipeRepository {
-  /// Sucht nach Rezepten basierend auf einem Suchbegriff und ausgewählten Zutaten.
-  /// Gibt eine Liste von grundlegenden Rezept-Objekten zurück.
-  Future<List<Recipe>> searchRecipes({
+  // This method should *return* domain entities (Recipe)
+  // but it will internally deal with RecipeModel from the data source.
+  Future<List<Recipe>> searchRecipes({ // Return type remains List<Recipe> here
     required String query,
-    List<Ingredient>? selectedIngredients,
-    Map<String, dynamic>? filters,
-    String? sortBy,
-    String? sortDirection,
+    required List<String> ingredients,
+    int offset,
+    int number,
+    // Map<String, dynamic>? filters,
+    // String? sortBy,
+    // String? sortDirection,
   });
 
-  /// Ruft detaillierte Informationen für ein spezifisches Rezept ab.
-  /// Gibt ein detailliertes Rezept-Objekt zurück.
   Future<RecipeDetails> getRecipeDetails(int recipeId);
 }

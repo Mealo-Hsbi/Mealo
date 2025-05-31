@@ -5,7 +5,8 @@ const router = express.Router();
 const userRoutes = require('./user.routes');
 const imageRecognitionRoutes = require('./imageRecognition.routes');
 const visionRoutes = require('./vision.routes');
-const recipeRoutes = require('./recipe.routes');
+const recipeRoutes = require('./recipe.Routes');
+
 
 // Mount individual route files
 router.use('/users', userRoutes);

@@ -2,49 +2,31 @@
 
 import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/features/search/domain/repositories/recipe_repository.dart'; // Wichtig: Das abstrakte Repository-Interface!
+import 'package:frontend/features/search/domain/repositories/recipe_repository.dart';
 
-/// Ein Usecase, der für die Logik der Rezeptsuche verantwortlich ist.
-/// Er interagiert mit dem [RecipeRepository], um Rezepte zu suchen.
 class SearchRecipes {
-  final RecipeRepository repository; // Abhängigkeit zum abstrakten Repository
+  final RecipeRepository _repository;
 
-  SearchRecipes(this.repository);
+  SearchRecipes(this._repository);
 
-  /// Führt die Rezeptsuche aus.
-  ///
-  /// [query]: Der Hauptsuchbegriff (z.B. "chicken pasta").
-  /// [selectedIngredients]: Eine Liste von Zutaten, die im Rezept enthalten sein sollen.
-  /// [filters]: Optionale Filter (z.B. {'minCalories': 300, 'diet': 'vegetarian'}).
-  /// [sortBy]: Feld, nach dem sortiert werden soll (z.B. 'calories').
-  /// [sortDirection]: Sortierrichtung ('asc' oder 'desc').
-  ///
-  /// Gibt eine Future zurück, die eine Liste von [Recipe]-Objekten enthält.
-  Future<List<Recipe>> call({ // Die 'call'-Methode macht die Instanz direkt aufrufbar
+  Future<List<Recipe>> call({
     required String query,
-    List<Ingredient>? selectedIngredients,
-    Map<String, dynamic>? filters,
-    String? sortBy,
-    String? sortDirection,
+    required List<Ingredient> selectedIngredients,
+    int offset = 0, // NEW: Add offset with a default value of 0
+    int number = 10, // NEW: Add number (limit) with a default value of 10
+    // Add other optional parameters like filters, sortBy, sortDirection here if your API supports them
+    // Map<String, dynamic>? filters,
+    // String? sortBy,
+    // String? sortDirection,
   }) async {
-    // Hier könnte weitere Geschäftslogik stehen, BEVOR das Repository aufgerufen wird.
-    // Z.B. Validierungen, Logik zur Kombination von Query und Zutaten, etc.
-    // Für unser Beispiel rufen wir das Repository direkt auf.
-
-    // Wenn der Query leer ist und keine Zutaten ausgewählt sind,
-    // können wir hier entscheiden, keine Suche durchzuführen und eine leere Liste zurückzugeben.
-    // Das ist eine Geschäftsregel, die im Usecase sitzt.
-    if (query.isEmpty && (selectedIngredients == null || selectedIngredients.isEmpty)) {
-      return [];
-    }
-
-    // Übergibt die Anfrage an das Repository
-    return await repository.searchRecipes(
+    return _repository.searchRecipes(
       query: query,
-      selectedIngredients: selectedIngredients,
-      filters: filters,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
+      ingredients: selectedIngredients.map((i) => i.name).toList(),
+      offset: offset, // Pass offset to the repository
+      number: number, // Pass number to the repository
+      // filters: filters,
+      // sortBy: sortBy,
+      // sortDirection: sortDirection,
     );
   }
 }

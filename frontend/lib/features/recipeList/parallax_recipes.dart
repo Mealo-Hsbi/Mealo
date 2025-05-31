@@ -84,9 +84,48 @@ class RecipeItem extends StatelessWidget {
         backgroundImageKey: _backgroundImageKey,
       ),
       children: [
-        Image.network(imageUrl, key: _backgroundImageKey, fit: BoxFit.cover),
+        // Image.network(imageUrl, key: _backgroundImageKey, fit: BoxFit.cover),
+        _buildRecipeImageWidget(imageUrl, _backgroundImageKey), // Hier wird das Bild geladen
       ],
     );
+  }
+
+  Widget _buildRecipeImageWidget(String imageUrl, GlobalKey imageKey) {
+    // Entscheidet, welches Bild angezeigt wird: das von der URL oder ein Platzhalter
+    if (imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        key: imageKey, // Wichtig: Den Key hier übergeben
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback: Wenn das Bild nicht geladen werden kann, zeige ein lokales Asset.
+          return Image.asset(
+            'assets/images/placeholder_image.png', // Stelle sicher, dass dieses Asset existiert
+            key: imageKey, // Auch hier den Key übergeben
+            fit: BoxFit.cover,
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          // Optional: Ladeindikator während des Ladens
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  : null,
+              color: Colors.white, // Optional: Farbe anpassen
+            ),
+          );
+        },
+      );
+    } else {
+      // Fallback: Wenn die URL leer ist, zeige ein anderes lokales Asset
+      return Image.asset(
+        'assets/images/no_image_available.png', // Stelle sicher, dass dieses Asset existiert
+        key: imageKey, // Auch hier den Key übergeben
+        fit: BoxFit.cover,
+      );
+    }
   }
   
   Widget _buildGradient() {
