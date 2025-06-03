@@ -7,31 +7,28 @@ import 'package:flutter/services.dart';
 import 'package:frontend/features/recipeList/parallax_recipes.dart';
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
 import 'package:provider/provider.dart';
-import 'package:dio/dio.dart'; // For Dio instance, if not globally managed
+import 'package:dio/dio.dart';
 
 // Imports for models and data
 import 'package:frontend/common/data/ingredients.dart';
 import 'package:frontend/common/models/ingredient.dart';
-import 'package:frontend/common/models/recipe.dart'; // Base Recipe Model
+import 'package:frontend/common/models/recipe.dart';
 
 // Imports for widgets
 import 'package:frontend/common/widgets/ingredientChips/ingredient_chip_row.dart';
 import 'package:frontend/common/widgets/search/search_header.dart';
 
 // Imports for architecture components
-import 'package:frontend/services/api_client.dart'; // Your Dio ApiClient
+import 'package:frontend/services/api_client.dart';
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';
-import 'package:frontend/features/search/domain/repositories/recipe_repository.dart'; // The abstract interface
-import 'package:frontend/features/search/domain/usecases/search_recipes.dart'; // Your Usecase
+import 'package:frontend/features/search/domain/repositories/recipe_repository.dart';
+import 'package:frontend/features/search/domain/usecases/search_recipes.dart';
 
 // Provider
 import 'package:frontend/providers/selected_ingredients_provider.dart';
 
-// Imports for String-Similarity (existing)
+// Imports for String-Similarity
 import 'package:frontend/common/utils/string_similarity_helper.dart';
-
-// TODO: Create this screen to display details
-// import 'package:frontend/features/recipe_details/presentation/screens/recipe_detail_screen.dart';
 
 
 class SearchScreen extends StatefulWidget {
@@ -49,43 +46,50 @@ class _SearchScreenState extends State<SearchScreen> {
   final Map<String, bool> _imageAvailabilityCache = {};
   List<Ingredient> filteredIngredientSuggestions = [];
 
-  // NEW: ScrollController for pagination
   final ScrollController _scrollController = ScrollController();
 
-  // Usecase for recipe search
   late SearchRecipes _searchRecipesUsecase;
-  // TODO: Add a Usecase for fetching recipe details, e.g.
-  // late GetRecipeDetails _getRecipeDetailsUsecase;
 
   List<Recipe> _searchResults = [];
   bool _isLoading = false;
-  bool _isFetchingMore = false; // NEW: Flag to prevent multiple concurrent loadMore calls
+  bool _isFetchingMore = false;
   String? _errorMessage;
 
-  Timer? _debounceTimer; // Debounce-Timer for the search input
-  final Duration _debounceDuration = const Duration(milliseconds: 400); // 400ms debounce
+  Timer? _debounceTimer;
+  final Duration _debounceDuration = const Duration(milliseconds: 400);
 
-  // NEW: Pagination state
-  int _offset = 0; // Start index for fetching results
-  final int _number = 10; // Number of recipes to fetch per request (items per page)
-  bool _hasMore = true; // Flag to indicate if there are more results to load
+  int _offset = 0;
+  final int _number = 10;
+  bool _hasMore = true;
+
+  // NEU: Definition der Sortieroptionen
+  // Key: Interner Wert für die Logik/Backend
+  // Value: Map mit 'name' (Anzeige) und 'icon'
+  final Map<String, Map<String, dynamic>> _sortOptions = {
+    'relevance': {'name': 'Relevance', 'icon': Icons.sort},
+    'name_asc': {'name': 'Name (A-Z)', 'icon': Icons.sort_by_alpha},
+    'name_desc': {'name': 'Name (Z-A)', 'icon': Icons.sort_by_alpha},
+    'readyInMinutes_asc': {'name': 'Preparation Time (shortest first)', 'icon': Icons.access_time},
+    'readyInMinutes_desc': {'name': 'Preparation Time (longest first)', 'icon': Icons.access_time},
+    // 'matchingIngredients_desc': {'name': 'Matching Ingredients (most first)', 'icon': Icons.check_circle_outline}, // Für später
+    // 'rating_desc': {'name': 'Rating (highest first)', 'icon': Icons.star}, // Für später
+  };
+
+  // NEU: Aktuell ausgewählte Sortieroption
+  String _currentSortOption = 'relevance'; // Standard-Sortierung
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize architecture components
     final ApiClient apiClient = ApiClient();
     final RecipeApiDataSource recipeApiDataSource = RecipeApiDataSourceImpl(apiClient);
     final RecipeRepository recipeRepository = RecipeRepositoryImpl(recipeApiDataSource);
     _searchRecipesUsecase = SearchRecipes(recipeRepository);
-    // _getRecipeDetailsUsecase = GetRecipeDetails(recipeRepository); // Initialize your detail usecase here
 
-    // Add PostFrameCallback to set focus after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
 
-      // Read ingredients from the provider
       final selectedIngredientsProvider = context.read<SelectedIngredientsProvider>();
       final ingredientsFromProvider = selectedIngredientsProvider.ingredients;
 
@@ -97,20 +101,14 @@ class _SearchScreenState extends State<SearchScreen> {
             }
           }
         });
-        selectedIngredientsProvider.clearIngredients(); // Reset ingredients in the provider
+        selectedIngredientsProvider.clearIngredients();
       }
 
       _updateCacheForIngredients(selectedIngredients);
-
-      // Perform an initial search if ingredients are already selected
-      // or if the query is not empty (e.g., from a deep link or restoration)
-      // Call _performSearch with isInitialLoad: true
       _performSearch(isInitialLoad: true);
     });
 
-    // Add listener for scroll events
     _scrollController.addListener(() {
-      // Check if user scrolled to the bottom AND not currently loading/fetching AND has more data
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
           !_isLoading && !_isFetchingMore && _hasMore) {
         _loadMoreRecipes();
@@ -122,8 +120,8 @@ class _SearchScreenState extends State<SearchScreen> {
   void dispose() {
     _focusNode.dispose();
     _searchController.dispose();
-    _debounceTimer?.cancel(); // Cancel timer to prevent memory leaks
-    _scrollController.dispose(); // Dispose scroll controller
+    _debounceTimer?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -138,7 +136,7 @@ class _SearchScreenState extends State<SearchScreen> {
             });
           }
         });
-        _imageAvailabilityCache[imageUrl] = false; // Don't show for now
+        _imageAvailabilityCache[imageUrl] = false;
       }
     }
   }
@@ -155,7 +153,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void toggleIngredient(Ingredient ingredient) {
     setState(() {
-      bool isAdding = !selectedIngredients.contains(ingredient); // Check if adding
+      bool isAdding = !selectedIngredients.contains(ingredient);
 
       if (isAdding) {
         selectedIngredients.add(ingredient);
@@ -164,12 +162,8 @@ class _SearchScreenState extends State<SearchScreen> {
         filteredIngredientSuggestions = [];
       } else {
         selectedIngredients.remove(ingredient);
-        // NEW: When removing, we keep the search query
-        // This means _searchController.clear() and query = '' are NOT called.
       }
-      
-      // Regardless of adding or removing, perform a new search, resetting pagination
-      _performSearch(isInitialLoad: true); 
+      _performSearch(isInitialLoad: true);
     });
   }
 
@@ -179,21 +173,14 @@ class _SearchScreenState extends State<SearchScreen> {
       _updateFilteredSuggestions();
     });
 
-    // Cancel any existing timer to reset the debounce
     _debounceTimer?.cancel();
-    // Start a new timer. The search will only execute if no new input comes within _debounceDuration.
     _debounceTimer = Timer(_debounceDuration, () {
-      _performSearch(isInitialLoad: true); // Always perform a new search, resetting pagination
+      _performSearch(isInitialLoad: true);
     });
   }
 
-  // Method to execute the recipe search via the usecase
-  // isInitialLoad is true for new searches (text input, ingredient toggle, initial load)
-  // isInitialLoad is false for "load more" pagination calls
   Future<void> _performSearch({bool isInitialLoad = false}) async {
-    // If it's an initial load, clear results and reset pagination state
     if (isInitialLoad) {
-      // Don't execute if neither query nor ingredients are present and it's a fresh load
       if (query.isEmpty && selectedIngredients.isEmpty) {
         setState(() {
           _searchResults = [];
@@ -208,78 +195,129 @@ class _SearchScreenState extends State<SearchScreen> {
 
       setState(() {
         _isLoading = true;
-        _errorMessage = null; // Reset error before each new search
-        _searchResults = []; // Clear results for a new search
-        _offset = 0; // Reset offset
-        _hasMore = true; // Assume there are more results for a new search
+        _errorMessage = null;
+        _searchResults = [];
+        _offset = 0;
+        _hasMore = true;
       });
     } else {
-      // For load more, set fetching flag
       setState(() {
         _isFetchingMore = true;
-        _errorMessage = null; // Clear error for subsequent fetch
+        _errorMessage = null;
       });
+    }
+
+    // NEU: Sortierparameter extrahieren
+    String? sortBy;
+    String? sortDirection;
+    if (_currentSortOption != 'relevance') {
+      final parts = _currentSortOption.split('_');
+      sortBy = parts[0];
+      sortDirection = parts[1];
     }
 
     try {
       final results = await _searchRecipesUsecase.call(
         query: query,
         selectedIngredients: selectedIngredients,
-        offset: _offset, // Pass offset
-        number: _number, // Pass number of results (limit)
-        // Filters and sorting can be added here later
-        // filters: {'diet': 'vegetarian'},
-        // sortBy: 'calories',
-        // sortDirection: 'desc',
+        offset: _offset,
+        number: _number,
+        sortBy: sortBy, // NEU: Sortierparameter übergeben
+        sortDirection: sortDirection, // NEU: Sortierparameter übergeben
       );
 
       setState(() {
         if (isInitialLoad) {
-          _searchResults = results; // Set results for initial load
+          _searchResults = results;
         } else {
-          _searchResults.addAll(results); // Add new results for lazy loading
+          _searchResults.addAll(results);
         }
         
         _isLoading = false;
         _isFetchingMore = false;
-        // Check if fewer results than requested, means no more data
         _hasMore = results.length == _number;
-        // If results.length < _number, it means we've hit the end of the available recipes.
-        // If results.length == 0 and it's an initial load, _hasMore should be false.
         if (isInitialLoad && results.isEmpty) {
           _hasMore = false;
         }
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error fetching recipes: ${e.toString()}'; // Updated error message
+        _errorMessage = 'Error fetching recipes: ${e.toString()}';
         _isLoading = false;
         _isFetchingMore = false;
       });
-      print('Error during recipe search: $e'); // For debugging in the console
+      print('Error during recipe search: $e');
     }
   }
 
-  // NEW: Method to load more recipes
   Future<void> _loadMoreRecipes() async {
-    if (_isFetchingMore || !_hasMore) return; // Prevent multiple calls or if no more data
+    if (_isFetchingMore || !_hasMore) return;
 
     setState(() {
-      _offset += _number; // Increment offset before fetching
+      _offset += _number;
     });
 
-    await _performSearch(isInitialLoad: false); // Fetch more results
+    await _performSearch(isInitialLoad: false);
   }
 
-  // Helper method to check local image asset availability
   Future<bool> _canLoadImage(String? path) async {
-    if (path == null || !path.startsWith('assets/')) return false; // Only check local assets
+    if (path == null || !path.startsWith('assets/')) return false;
     try {
       await rootBundle.load(path);
       return true;
     } catch (_) {
       return false;
     }
+  }
+
+  // NEU: Methode zum Anzeigen der Sortieroptionen als ModalBottomSheet
+  void _showSortOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Column( // Column statt Wrap für bessere Kontrolle und Scrollbarkeit
+            mainAxisSize: MainAxisSize.min, // Wichtig: Größe an Inhalt anpassen
+            children: _sortOptions.entries.map((entry) {
+              final optionKey = entry.key;
+              final optionData = entry.value;
+              final optionName = optionData['name'] as String;
+              final optionIcon = optionData['icon'] as IconData;
+
+              return ListTile(
+                leading: Icon(optionIcon),
+                title: Text(
+                  optionName,
+                  style: TextStyle(
+                    fontWeight: _currentSortOption == optionKey ? FontWeight.bold : FontWeight.normal,
+                    color: _currentSortOption == optionKey ? Theme.of(context).primaryColor : null,
+                  ),
+                ),
+                trailing: _currentSortOption == optionKey
+                    ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+                    : null,
+                onTap: () {
+                  setState(() {
+                    _currentSortOption = optionKey;
+                  });
+                  Navigator.pop(context); // BottomSheet schließen
+                  _performSearch(isInitialLoad: true); // Neue Suche mit Sortierung
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  // NEU: Hilfsmethode, um das richtige Icon für die Sortierung zu bekommen
+  IconData _getSortIcon() {
+    final optionData = _sortOptions[_currentSortOption];
+    if (optionData != null && optionData.containsKey('icon')) {
+      return optionData['icon'] as IconData;
+    }
+    return Icons.sort; // Standard-Icon, falls nichts gefunden wird
   }
 
   @override
@@ -293,6 +331,12 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: _searchController,
             focusNode: _focusNode,
             onChanged: _onSearchChanged,
+            trailingAction: IconButton(
+              icon: Icon(_getSortIcon()), // Dynamisches Icon
+              onPressed: () {
+                _showSortOptions(context);
+              },
+            ),
           ),
 
           if (selectedIngredients.isNotEmpty)
@@ -305,7 +349,7 @@ class _SearchScreenState extends State<SearchScreen> {
               showBackground: true,
             ),
 
-          if (filteredIngredientSuggestions.isNotEmpty && query.isNotEmpty) // Only show if query is not empty
+          if (filteredIngredientSuggestions.isNotEmpty && query.isNotEmpty)
             IngredientChipScroller(
               ingredients: filteredIngredientSuggestions,
               selected: false,
@@ -314,16 +358,15 @@ class _SearchScreenState extends State<SearchScreen> {
               imageAvailabilityCache: _imageAvailabilityCache,
             ),
 
-          // Display search results or loading/error states
           Expanded(
-            child: _isLoading && _searchResults.isEmpty && query.isEmpty && selectedIngredients.isEmpty // Only show full screen loader on initial empty search
-                ? const Center(child: CircularProgressIndicator()) // Loading indicator
+            child: _isLoading && _searchResults.isEmpty && query.isEmpty && selectedIngredients.isEmpty
+                ? const Center(child: CircularProgressIndicator())
                 : _errorMessage != null
-                    ? Center(child: Text(_errorMessage!, textAlign: TextAlign.center)) // Error message
+                    ? Center(child: Text(_errorMessage!, textAlign: TextAlign.center))
                     : _searchResults.isEmpty && !_isLoading && query.isEmpty && selectedIngredients.isEmpty
                         ? const Center(
                             child: Text(
-                              'Start searching for recipes or select ingredients.', // Initial empty state text
+                              'Start searching for recipes or select ingredients.',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.grey),
                             ),
@@ -331,31 +374,30 @@ class _SearchScreenState extends State<SearchScreen> {
                         : _searchResults.isEmpty && !_isLoading && (query.isNotEmpty || selectedIngredients.isNotEmpty)
                             ? const Center(
                                 child: Text(
-                                  'No recipes found. Try different terms or ingredients.', // No results text for active search
+                                  'No recipes found. Try different terms or ingredients.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(color: Colors.grey),
                                 ),
                               )
                             : ListView.builder(
-                                controller: _scrollController, // Attach the ScrollController
-                                // Add 1 to itemCount if there's potentially more data to show a loading indicator at the bottom
+                                controller: _scrollController,
                                 itemCount: _searchResults.length + (_hasMore ? 1 : 0),
                                 itemBuilder: (context, index) {
-                                  // If it's the last item and _hasMore is true, show the loading indicator
                                   if (index == _searchResults.length) {
                                     return _isFetchingMore
                                         ? const Center(child: Padding(
                                             padding: EdgeInsets.all(8.0),
                                             child: CircularProgressIndicator(),
                                           ))
-                                        : const SizedBox.shrink(); // Hide indicator if no more data to fetch
+                                        : const SizedBox.shrink();
                                   }
                                   final recipe = _searchResults[index];
                                   return RecipeItem(
                                     imageUrl: recipe.imageUrl,
                                     name: recipe.name,
-                                    country: recipe.place ?? '', // Use recipe.place for country/origin
+                                    country: recipe.place ?? '',
                                     readyInMinutes: recipe.readyInMinutes,
+                                    servings: recipe.servings, // Stelle sicher, dass servings auch im RecipeModel/Recipe ist
                                   );
                                 },
                               ),

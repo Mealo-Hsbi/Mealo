@@ -1,11 +1,14 @@
 // controllers/recipeController.js
-const spoonacularService = require('../services/spoonacularService'); // Import the new service
+const spoonacularService = require('../services/spoonacularService');
 
 const searchRecipes = async (req, res) => {
+    // DIESER LOG MUSS ERSCHEINEN, WENN DIE ANFRAGE DIE CONTROLLER-FUNKTION ERREICHT!
+    console.log('[BACKEND DEBUG - CONTROLLER] Request received for /api/recipes/search');
+    console.log('[BACKEND DEBUG - CONTROLLER] Request body:', JSON.stringify(req.body, null, 2)); // Schön formatiert
+
     const { query, ingredients, offset, number, filters, sortBy, sortDirection } = req.body;
 
     try {
-        // Delegate the actual API call and processing to the service
         const recipes = await spoonacularService.searchSpoonacularRecipes({
             query,
             ingredients,
@@ -16,12 +19,12 @@ const searchRecipes = async (req, res) => {
             sortDirection
         });
 
-        return res.json(recipes); // Send the successful response
+        console.log('[BACKEND DEBUG - CONTROLLER] Successfully got recipes from service.');
+        return res.json(recipes);
 
     } catch (error) {
-        // Catch errors thrown by the service and send appropriate HTTP responses
-        console.error('Error in recipeController.searchRecipes:', error.message || error);
-        const statusCode = error.status || 500; // Use status from service error if available, else 500
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in controller:', error);
+        const statusCode = error.status || 500;
         const message = error.message || 'Internal server error';
         return res.status(statusCode).json({ message });
     }
