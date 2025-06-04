@@ -1,43 +1,76 @@
+// lib/features/recipeList/parallax_recipes.dart
+
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/features/recipeList/recipe_detail_screen.dart';
+import 'package:frontend/features/recipeList/recipe_detail_screen.dart'; // Ensure RecipeDetailScreen is imported
+import 'package:flutter/services.dart'; // Import for rootBundle in RecipeItem
 
-class ParallaxRecipes extends StatelessWidget {
+// Note: If RecipeItem and ParallaxFlowDelegate are in separate files,
+// you would import 'package:frontend/features/recipeList/recipe_item.dart'; here
+// and keep RecipeItem and ParallaxFlowDelegate in that separate file.
+// For simplicity in this answer, I'm keeping them together in this file.
+
+class ParallaxRecipes extends StatefulWidget {
   const ParallaxRecipes({
     super.key,
     required this.recipes,
-    required this.currentSortOption, // NEU: currentSortOption hier hinzufügen
+    this.currentSortOption,
+    required this.scrollController, // NOW REQUIRED: Receive the controller
+    required this.isLoadingMore, // NOW REQUIRED: Receive loading state
+    required this.hasMore, // NOW REQUIRED: Receive hasMore state
   });
 
   final List<Recipe> recipes;
-  final String currentSortOption; // NEU: currentSortOption als Property
+  final String? currentSortOption;
+  final ScrollController scrollController; // Store the received controller
+  final bool isLoadingMore;
+  final bool hasMore;
 
   @override
+  State<ParallaxRecipes> createState() => _ParallaxRecipesState();
+}
+
+class _ParallaxRecipesState extends State<ParallaxRecipes> {
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final recipe in recipes)
-          RecipeItem(
-            imageUrl: recipe.imageUrl,
-            name: recipe.name,
-            country: recipe.place ?? '',
-            readyInMinutes: recipe.readyInMinutes,
-            servings: recipe.servings,
-            // currentSortOption: currentSortOption, // <-- HIER WIRD ES WEITERGEGEBEN
-            // calories: recipe.calories, // NEU: Kalorien
-            // protein: recipe.protein,   // NEU: Protein
-            // fat: recipe.fat,         // NEU: Fett
-            // carbs: recipe.carbs,     // NEU: Kohlenhydrate
-            // sugar: recipe.sugar,     // NEU: Zucker
-            // healthScore: recipe.healthScore, // NEU: Healthiness Score
-            // matchingIngredientsCount: recipe.matchingIngredientsCount, // NEU: Zutaten-Zähler
-            // missingIngredientsCount: recipe.missingIngredientsCount,   // NEU: Zutaten-Zähler
-          ),
-      ],
+    // Use ListView.builder directly within ParallaxRecipes
+    return ListView.builder(
+      controller: widget.scrollController, // Attach the received controller
+      itemCount: widget.recipes.length + (widget.hasMore ? 1 : 0), // Add 1 for the loading indicator
+      itemBuilder: (context, index) {
+        if (index == widget.recipes.length) {
+          // This is the loading indicator at the end of the list
+          return widget.isLoadingMore
+              ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : const SizedBox.shrink(); // No more items, hide indicator
+        }
+
+        final recipe = widget.recipes[index];
+        return RecipeItem(
+          imageUrl: recipe.imageUrl,
+          name: recipe.name,
+          country: recipe.place ?? '',
+          readyInMinutes: recipe.readyInMinutes,
+          servings: recipe.servings,
+          currentSortOption: widget.currentSortOption,
+          calories: recipe.calories,
+          protein: recipe.protein,
+          fat: recipe.fat,
+          carbs: recipe.carbs,
+          sugar: recipe.sugar,
+          healthScore: recipe.healthScore,
+          matchingIngredientsCount: recipe.matchingIngredientsCount,
+          missingIngredientsCount: recipe.missingIngredientsCount,
+        );
+      },
     );
   }
 }
 
+// Keep RecipeItem and ParallaxFlowDelegate as they are (or move to recipe_item.dart)
 @immutable
 class RecipeItem extends StatelessWidget {
   RecipeItem({
@@ -47,15 +80,15 @@ class RecipeItem extends StatelessWidget {
     required this.country,
     this.readyInMinutes,
     this.servings,
-    this.currentSortOption, // Aktuelle Sortieroption
-    this.calories, // Kalorien
-    this.protein,  // Protein
-    this.fat,      // Fett
-    this.carbs,    // Kohlenhydrate
-    this.sugar,    // Zucker
-    this.healthScore, // Healthiness Score
-    this.matchingIngredientsCount, // Anzahl passender Zutaten
-    this.missingIngredientsCount,  // Anzahl fehlender Zutaten
+    this.currentSortOption,
+    this.calories,
+    this.protein,
+    this.fat,
+    this.carbs,
+    this.sugar,
+    this.healthScore,
+    this.matchingIngredientsCount,
+    this.missingIngredientsCount,
   });
 
   final String imageUrl;
@@ -105,11 +138,9 @@ class RecipeItem extends StatelessWidget {
   }
 
   Widget _buildParallaxBackground(BuildContext context) {
-    // ... (unverändert) ...
-    // Code für _buildParallaxBackground bleibt gleich
     return Flow(
       delegate: ParallaxFlowDelegate(
-        scrollable: Scrollable.of(context),
+        scrollable: Scrollable.of(context), // This will now correctly find the ListView.builder inside ParallaxRecipes
         listItemContext: context,
         backgroundImageKey: _backgroundImageKey,
       ),
@@ -148,8 +179,6 @@ class RecipeItem extends StatelessWidget {
   }
 
   Widget _buildGradient() {
-    // ... (unverändert) ...
-    // Code für _buildGradient bleibt gleich
     return Positioned.fill(
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -167,19 +196,11 @@ class RecipeItem extends StatelessWidget {
   Widget _buildTitleAndSubtitle() {
     String? secondaryInfoText;
 
-    // Bestimme den Text für die sekundäre Informationszeile basierend auf der Sortierung
-    // Zeige nur dann eine sekundäre Info, wenn sie nicht die Zubereitungszeit selbst ist
     if (currentSortOption != null && !currentSortOption!.startsWith('time_')) {
       switch (currentSortOption) {
         case 'relevance':
-          // Optional: Könntest hier z.B. Popularität oder eine andere Standardinfo anzeigen,
-          // falls du eine numerische Relevanz von Spoonacular bekämest.
-          // Für jetzt lassen wir es leer.
           break;
         case 'popularity_desc':
-          // Spoonacular hat keinen direkten "Popularity Score" in der Suche,
-          // aber wenn du ihn später über Details abrufst, könntest du ihn hier anzeigen.
-          // secondaryInfoText = 'Popularity: N/A'; // Beispiel
           break;
         case 'calories_asc':
         case 'calories_desc':
@@ -212,7 +233,7 @@ class RecipeItem extends StatelessWidget {
             secondaryInfoText = '${sugar!.toStringAsFixed(1)}g Zucker';
           }
           break;
-        // Für 'matchingIngredients_desc' kommt die Logik später, wenn das Backend die Zähler liefert
+        // For 'matchingIngredients_desc', logic will be added when backend provides counts
         // case 'matchingIngredients_desc':
         //   if (matchingIngredientsCount != null && missingIngredientsCount != null) {
         //     secondaryInfoText = '$matchingIngredientsCount / ${matchingIngredientsCount! + missingIngredientsCount!} Zutaten';
@@ -220,7 +241,6 @@ class RecipeItem extends StatelessWidget {
         //   break;
       }
     }
-
 
     return Positioned(
       left: 20,
@@ -240,18 +260,15 @@ class RecipeItem extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          // NEU: Row für Zubereitungszeit und sekundäre Info auf einer Zeile
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Verteilt den Platz
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Zubereitungszeit (immer, wenn verfügbar)
               if (readyInMinutes != null)
                 Text(
                   'Zubereitungszeit: $readyInMinutes Min.',
                   style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
-              
-              // Sekundäre Info (wenn vorhanden und nicht die Zubereitungszeit selbst)
+
               if (secondaryInfoText != null)
                 Text(
                   secondaryInfoText!,
@@ -259,22 +276,11 @@ class RecipeItem extends StatelessWidget {
                 ),
             ],
           ),
-          // Optional: Servings, wenn du es doch anzeigen willst
-          // if (servings != null)
-          //   Text(
-          //     'Portionen: $servings',
-          //     style: const TextStyle(color: Colors.white, fontSize: 14),
-          //   ),
         ],
       ),
     );
   }
 }
-
-// ... (ParallaxFlowDelegate bleibt unverändert) ...
-
-
-
 
 class ParallaxFlowDelegate extends FlowDelegate {
   ParallaxFlowDelegate({
@@ -294,7 +300,6 @@ class ParallaxFlowDelegate extends FlowDelegate {
 
   @override
   void paintChildren(FlowPaintingContext context) {
-    // Calculate the position of this list item within the viewport.
     final scrollableBox = scrollable.context.findRenderObject() as RenderBox;
     final listItemBox = listItemContext.findRenderObject() as RenderBox;
     final listItemOffset = listItemBox.localToGlobal(
@@ -302,20 +307,14 @@ class ParallaxFlowDelegate extends FlowDelegate {
       ancestor: scrollableBox,
     );
 
-    // Determine the percent position of this list item within the
-    // scrollable area.
     final viewportDimension = scrollable.position.viewportDimension;
     final scrollFraction = (listItemOffset.dy / viewportDimension).clamp(
       0.0,
       1.0,
     );
 
-    // Calculate the vertical alignment of the background
-    // based on the scroll percent.
     final verticalAlignment = Alignment(0.0, scrollFraction * 2 - 1);
 
-    // Convert the background alignment into a pixel offset for
-    // painting purposes.
     final backgroundSize =
         (backgroundImageKey.currentContext!.findRenderObject() as RenderBox)
             .size;
@@ -325,7 +324,6 @@ class ParallaxFlowDelegate extends FlowDelegate {
       Offset.zero & listItemSize,
     );
 
-    // Paint the background.
     context.paintChild(
       0,
       transform:

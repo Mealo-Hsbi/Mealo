@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:frontend/features/recipeList/parallax_recipes.dart';
+import 'package:frontend/features/recipeList/parallax_recipes.dart'; // KEEP THIS IMPORT
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
@@ -17,7 +17,6 @@ import 'package:frontend/common/models/recipe.dart';
 // Imports for widgets
 import 'package:frontend/common/widgets/ingredientChips/ingredient_chip_row.dart';
 import 'package:frontend/common/widgets/search/search_header.dart';
-// NEU: Importiere das neue Sortier-Widget
 import 'package:frontend/features/search/presentation/widgets/sort_options_bottom_sheet.dart';
 
 
@@ -49,7 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final Map<String, bool> _imageAvailabilityCache = {};
   List<Ingredient> filteredIngredientSuggestions = [];
 
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController(); // Keep this controller
 
   late SearchRecipes _searchRecipesUsecase;
 
@@ -65,7 +64,6 @@ class _SearchScreenState extends State<SearchScreen> {
   final int _number = 10;
   bool _hasMore = true;
 
-  // NEU: Aktuell ausgewählte Sortieroption (die Map _sortOptions ist jetzt im neuen Widget)
   String _currentSortOption = 'relevance'; // Standard-Sortierung
 
   @override
@@ -221,7 +219,7 @@ class _SearchScreenState extends State<SearchScreen> {
         } else {
           _searchResults.addAll(results);
         }
-        
+
         _isLoading = false;
         _isFetchingMore = false;
         _hasMore = results.length == _number;
@@ -259,12 +257,11 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  // NEU: Callback-Methode für die Sortierauswahl vom BottomSheet
   void _onSortOptionSelected(String selectedOption) {
     setState(() {
       _currentSortOption = selectedOption;
     });
-    _performSearch(isInitialLoad: true); // Führt eine neue Suche mit der ausgewählten Sortierung aus
+    _performSearch(isInitialLoad: true);
   }
 
   @override
@@ -279,7 +276,6 @@ class _SearchScreenState extends State<SearchScreen> {
             focusNode: _focusNode,
             onChanged: _onSearchChanged,
             trailingAction: IconButton(
-              // Nutze die statische Hilfsmethode aus dem neuen Widget
               icon: Icon(SortOptionsBottomSheet.getSortIcon(_currentSortOption)),
               onPressed: () {
                 showModalBottomSheet(
@@ -287,7 +283,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   builder: (BuildContext bc) {
                     return SortOptionsBottomSheet(
                       currentSortOption: _currentSortOption,
-                      onOptionSelected: _onSortOptionSelected, // Übergabe des Callbacks
+                      onOptionSelected: _onSortOptionSelected,
                     );
                   },
                 );
@@ -335,27 +331,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                   style: TextStyle(color: Colors.grey),
                                 ),
                               )
-                            : ListView.builder(
-                                controller: _scrollController,
-                                itemCount: _searchResults.length + (_hasMore ? 1 : 0),
-                                itemBuilder: (context, index) {
-                                  if (index == _searchResults.length) {
-                                    return _isFetchingMore
-                                        ? const Center(child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: CircularProgressIndicator(),
-                                          ))
-                                        : const SizedBox.shrink();
-                                  }
-                                  final recipe = _searchResults[index];
-                                  return RecipeItem(
-                                    imageUrl: recipe.imageUrl,
-                                    name: recipe.name,
-                                    country: recipe.place ?? '',
-                                    readyInMinutes: recipe.readyInMinutes,
-                                    servings: recipe.servings,
-                                  );
-                                },
+                            // Revert to using ParallaxRecipes here, but pass the scroll controller
+                            : ParallaxRecipes(
+                                recipes: _searchResults,
+                                currentSortOption: _currentSortOption,
+                                scrollController: _scrollController, // PASS THE SCROLL CONTROLLER
+                                isLoadingMore: _isFetchingMore, // Pass loading state for the footer
+                                hasMore: _hasMore, // Pass hasMore state for the footer
                               ),
           ),
         ],
