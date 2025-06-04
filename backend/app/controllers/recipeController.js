@@ -3,8 +3,6 @@ const spoonacularService = require('../services/spoonacularService');
 
 const searchRecipes = async (req, res) => {
     // DIESER LOG MUSS ERSCHEINEN, WENN DIE ANFRAGE DIE CONTROLLER-FUNKTION ERREICHT!
-    console.log('[BACKEND DEBUG - CONTROLLER] Request received for /api/recipes/search');
-    console.log('[BACKEND DEBUG - CONTROLLER] Request body:', JSON.stringify(req.body, null, 2)); // Schön formatiert
 
     const { query, ingredients, offset, number, filters, sortBy, sortDirection } = req.body;
 
@@ -19,7 +17,6 @@ const searchRecipes = async (req, res) => {
             sortDirection
         });
 
-        console.log('[BACKEND DEBUG - CONTROLLER] Successfully got recipes from service.');
         return res.json(recipes);
 
     } catch (error) {

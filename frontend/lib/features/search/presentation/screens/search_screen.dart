@@ -17,6 +17,9 @@ import 'package:frontend/common/models/recipe.dart';
 // Imports for widgets
 import 'package:frontend/common/widgets/ingredientChips/ingredient_chip_row.dart';
 import 'package:frontend/common/widgets/search/search_header.dart';
+// NEU: Importiere das neue Sortier-Widget
+import 'package:frontend/features/search/presentation/widgets/sort_options_bottom_sheet.dart';
+
 
 // Imports for architecture components
 import 'package:frontend/services/api_client.dart';
@@ -62,20 +65,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final int _number = 10;
   bool _hasMore = true;
 
-  // NEU: Definition der Sortieroptionen
-  // Key: Interner Wert für die Logik/Backend
-  // Value: Map mit 'name' (Anzeige) und 'icon'
-  final Map<String, Map<String, dynamic>> _sortOptions = {
-    'relevance': {'name': 'Relevance', 'icon': Icons.sort},
-    'name_asc': {'name': 'Name (A-Z)', 'icon': Icons.sort_by_alpha},
-    'name_desc': {'name': 'Name (Z-A)', 'icon': Icons.sort_by_alpha},
-    'readyInMinutes_asc': {'name': 'Preparation Time (shortest first)', 'icon': Icons.access_time},
-    'readyInMinutes_desc': {'name': 'Preparation Time (longest first)', 'icon': Icons.access_time},
-    // 'matchingIngredients_desc': {'name': 'Matching Ingredients (most first)', 'icon': Icons.check_circle_outline}, // Für später
-    // 'rating_desc': {'name': 'Rating (highest first)', 'icon': Icons.star}, // Für später
-  };
-
-  // NEU: Aktuell ausgewählte Sortieroption
+  // NEU: Aktuell ausgewählte Sortieroption (die Map _sortOptions ist jetzt im neuen Widget)
   String _currentSortOption = 'relevance'; // Standard-Sortierung
 
   @override
@@ -207,7 +197,6 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     }
 
-    // NEU: Sortierparameter extrahieren
     String? sortBy;
     String? sortDirection;
     if (_currentSortOption != 'relevance') {
@@ -222,8 +211,8 @@ class _SearchScreenState extends State<SearchScreen> {
         selectedIngredients: selectedIngredients,
         offset: _offset,
         number: _number,
-        sortBy: sortBy, // NEU: Sortierparameter übergeben
-        sortDirection: sortDirection, // NEU: Sortierparameter übergeben
+        sortBy: sortBy,
+        sortDirection: sortDirection,
       );
 
       setState(() {
@@ -270,54 +259,12 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  // NEU: Methode zum Anzeigen der Sortieroptionen als ModalBottomSheet
-  void _showSortOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return SafeArea(
-          child: Column( // Column statt Wrap für bessere Kontrolle und Scrollbarkeit
-            mainAxisSize: MainAxisSize.min, // Wichtig: Größe an Inhalt anpassen
-            children: _sortOptions.entries.map((entry) {
-              final optionKey = entry.key;
-              final optionData = entry.value;
-              final optionName = optionData['name'] as String;
-              final optionIcon = optionData['icon'] as IconData;
-
-              return ListTile(
-                leading: Icon(optionIcon),
-                title: Text(
-                  optionName,
-                  style: TextStyle(
-                    fontWeight: _currentSortOption == optionKey ? FontWeight.bold : FontWeight.normal,
-                    color: _currentSortOption == optionKey ? Theme.of(context).primaryColor : null,
-                  ),
-                ),
-                trailing: _currentSortOption == optionKey
-                    ? Icon(Icons.check, color: Theme.of(context).primaryColor)
-                    : null,
-                onTap: () {
-                  setState(() {
-                    _currentSortOption = optionKey;
-                  });
-                  Navigator.pop(context); // BottomSheet schließen
-                  _performSearch(isInitialLoad: true); // Neue Suche mit Sortierung
-                },
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  // NEU: Hilfsmethode, um das richtige Icon für die Sortierung zu bekommen
-  IconData _getSortIcon() {
-    final optionData = _sortOptions[_currentSortOption];
-    if (optionData != null && optionData.containsKey('icon')) {
-      return optionData['icon'] as IconData;
-    }
-    return Icons.sort; // Standard-Icon, falls nichts gefunden wird
+  // NEU: Callback-Methode für die Sortierauswahl vom BottomSheet
+  void _onSortOptionSelected(String selectedOption) {
+    setState(() {
+      _currentSortOption = selectedOption;
+    });
+    _performSearch(isInitialLoad: true); // Führt eine neue Suche mit der ausgewählten Sortierung aus
   }
 
   @override
@@ -332,9 +279,18 @@ class _SearchScreenState extends State<SearchScreen> {
             focusNode: _focusNode,
             onChanged: _onSearchChanged,
             trailingAction: IconButton(
-              icon: Icon(_getSortIcon()), // Dynamisches Icon
+              // Nutze die statische Hilfsmethode aus dem neuen Widget
+              icon: Icon(SortOptionsBottomSheet.getSortIcon(_currentSortOption)),
               onPressed: () {
-                _showSortOptions(context);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext bc) {
+                    return SortOptionsBottomSheet(
+                      currentSortOption: _currentSortOption,
+                      onOptionSelected: _onSortOptionSelected, // Übergabe des Callbacks
+                    );
+                  },
+                );
               },
             ),
           ),
@@ -397,7 +353,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     name: recipe.name,
                                     country: recipe.place ?? '',
                                     readyInMinutes: recipe.readyInMinutes,
-                                    servings: recipe.servings, // Stelle sicher, dass servings auch im RecipeModel/Recipe ist
+                                    servings: recipe.servings,
                                   );
                                 },
                               ),

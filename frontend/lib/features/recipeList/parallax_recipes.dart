@@ -6,26 +6,35 @@ class ParallaxRecipes extends StatelessWidget {
   const ParallaxRecipes({
     super.key,
     required this.recipes,
+    required this.currentSortOption, // NEU: currentSortOption hier hinzufügen
   });
 
   final List<Recipe> recipes;
+  final String currentSortOption; // NEU: currentSortOption als Property
 
   @override
   Widget build(BuildContext context) {
-    // return SingleChildScrollView(
-      // child: Column(
-      return Column(
-        children: [
-          // for (final recipe in locations)
-          for (final recipe in recipes)
-            RecipeItem(
-              imageUrl: recipe.imageUrl,
-              name: recipe.name,
-              country: recipe.place ?? '',
-            ),
-        ],
-      );
-    // );
+    return Column(
+      children: [
+        for (final recipe in recipes)
+          RecipeItem(
+            imageUrl: recipe.imageUrl,
+            name: recipe.name,
+            country: recipe.place ?? '',
+            readyInMinutes: recipe.readyInMinutes,
+            servings: recipe.servings,
+            // currentSortOption: currentSortOption, // <-- HIER WIRD ES WEITERGEGEBEN
+            // calories: recipe.calories, // NEU: Kalorien
+            // protein: recipe.protein,   // NEU: Protein
+            // fat: recipe.fat,         // NEU: Fett
+            // carbs: recipe.carbs,     // NEU: Kohlenhydrate
+            // sugar: recipe.sugar,     // NEU: Zucker
+            // healthScore: recipe.healthScore, // NEU: Healthiness Score
+            // matchingIngredientsCount: recipe.matchingIngredientsCount, // NEU: Zutaten-Zähler
+            // missingIngredientsCount: recipe.missingIngredientsCount,   // NEU: Zutaten-Zähler
+          ),
+      ],
+    );
   }
 }
 
@@ -35,16 +44,35 @@ class RecipeItem extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.name,
-    required this.country, // Bleibt für den Ort (Place)
-    this.readyInMinutes, // NEU: Optionale Zubereitungszeit
-    this.servings,       // NEU: Optionale Portionen
+    required this.country,
+    this.readyInMinutes,
+    this.servings,
+    this.currentSortOption, // Aktuelle Sortieroption
+    this.calories, // Kalorien
+    this.protein,  // Protein
+    this.fat,      // Fett
+    this.carbs,    // Kohlenhydrate
+    this.sugar,    // Zucker
+    this.healthScore, // Healthiness Score
+    this.matchingIngredientsCount, // Anzahl passender Zutaten
+    this.missingIngredientsCount,  // Anzahl fehlender Zutaten
   });
 
   final String imageUrl;
   final String name;
   final String country;
-  final int? readyInMinutes; // NEU: Kann null sein
-  final int? servings;       // NEU: Kann null sein
+  final int? readyInMinutes;
+  final int? servings;
+  final String? currentSortOption;
+  final int? calories;
+  final double? protein;
+  final double? fat;
+  final double? carbs;
+  final double? sugar;
+  final int? healthScore;
+  final int? matchingIngredientsCount;
+  final int? missingIngredientsCount;
+
   final GlobalKey _backgroundImageKey = GlobalKey();
 
   @override
@@ -67,7 +95,7 @@ class RecipeItem extends StatelessWidget {
               children: [
                 _buildParallaxBackground(context),
                 _buildGradient(),
-                _buildTitleAndSubtitle(), // Diese Methode wird angepasst
+                _buildTitleAndSubtitle(),
               ],
             ),
           ),
@@ -77,6 +105,8 @@ class RecipeItem extends StatelessWidget {
   }
 
   Widget _buildParallaxBackground(BuildContext context) {
+    // ... (unverändert) ...
+    // Code für _buildParallaxBackground bleibt gleich
     return Flow(
       delegate: ParallaxFlowDelegate(
         scrollable: Scrollable.of(context),
@@ -84,56 +114,47 @@ class RecipeItem extends StatelessWidget {
         backgroundImageKey: _backgroundImageKey,
       ),
       children: [
-        // Image.network(imageUrl, key: _backgroundImageKey, fit: BoxFit.cover),
-        _buildRecipeImageWidget(imageUrl, _backgroundImageKey), // Hier wird das Bild geladen
+        (imageUrl.isNotEmpty)
+            ? Image.network(
+                imageUrl,
+                key: _backgroundImageKey,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/placeholder_image.png',
+                    key: _backgroundImageKey,
+                    fit: BoxFit.cover,
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                          : null,
+                      color: Colors.white,
+                    ),
+                  );
+                },
+              )
+            : Image.asset(
+                'assets/no_image_available.png',
+                key: _backgroundImageKey,
+                fit: BoxFit.cover,
+              ),
       ],
     );
   }
 
-  Widget _buildRecipeImageWidget(String imageUrl, GlobalKey imageKey) {
-    // Entscheidet, welches Bild angezeigt wird: das von der URL oder ein Platzhalter
-    if (imageUrl.isNotEmpty) {
-      return Image.network(
-        imageUrl,
-        key: imageKey, // Wichtig: Den Key hier übergeben
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          // Fallback: Wenn das Bild nicht geladen werden kann, zeige ein lokales Asset.
-          return Image.asset(
-            'assets/images/placeholder_image.png', // Stelle sicher, dass dieses Asset existiert
-            key: imageKey, // Auch hier den Key übergeben
-            fit: BoxFit.cover,
-          );
-        },
-        loadingBuilder: (context, child, loadingProgress) {
-          // Optional: Ladeindikator während des Ladens
-          if (loadingProgress == null) return child;
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                  : null,
-              color: Colors.white, // Optional: Farbe anpassen
-            ),
-          );
-        },
-      );
-    } else {
-      // Fallback: Wenn die URL leer ist, zeige ein anderes lokales Asset
-      return Image.asset(
-        'assets/images/no_image_available.png', // Stelle sicher, dass dieses Asset existiert
-        key: imageKey, // Auch hier den Key übergeben
-        fit: BoxFit.cover,
-      );
-    }
-  }
-  
   Widget _buildGradient() {
+    // ... (unverändert) ...
+    // Code für _buildGradient bleibt gleich
     return Positioned.fill(
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.black.withOpacity(0.7)], // withValues zu withOpacity geändert
+            colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             stops: const [0.6, 0.95],
@@ -144,6 +165,63 @@ class RecipeItem extends StatelessWidget {
   }
 
   Widget _buildTitleAndSubtitle() {
+    String? secondaryInfoText;
+
+    // Bestimme den Text für die sekundäre Informationszeile basierend auf der Sortierung
+    // Zeige nur dann eine sekundäre Info, wenn sie nicht die Zubereitungszeit selbst ist
+    if (currentSortOption != null && !currentSortOption!.startsWith('time_')) {
+      switch (currentSortOption) {
+        case 'relevance':
+          // Optional: Könntest hier z.B. Popularität oder eine andere Standardinfo anzeigen,
+          // falls du eine numerische Relevanz von Spoonacular bekämest.
+          // Für jetzt lassen wir es leer.
+          break;
+        case 'popularity_desc':
+          // Spoonacular hat keinen direkten "Popularity Score" in der Suche,
+          // aber wenn du ihn später über Details abrufst, könntest du ihn hier anzeigen.
+          // secondaryInfoText = 'Popularity: N/A'; // Beispiel
+          break;
+        case 'calories_asc':
+        case 'calories_desc':
+          if (calories != null) {
+            secondaryInfoText = '${calories!.round()} kcal';
+          }
+          break;
+        case 'healthiness_desc':
+          if (healthScore != null) {
+            secondaryInfoText = 'Health Score: $healthScore';
+          }
+          break;
+        case 'protein_desc':
+          if (protein != null) {
+            secondaryInfoText = '${protein!.toStringAsFixed(1)}g Protein';
+          }
+          break;
+        case 'fat_desc':
+          if (fat != null) {
+            secondaryInfoText = '${fat!.toStringAsFixed(1)}g Fett';
+          }
+          break;
+        case 'carbs_desc':
+          if (carbs != null) {
+            secondaryInfoText = '${carbs!.toStringAsFixed(1)}g Kohlenhydrate';
+          }
+          break;
+        case 'sugar_desc':
+          if (sugar != null) {
+            secondaryInfoText = '${sugar!.toStringAsFixed(1)}g Zucker';
+          }
+          break;
+        // Für 'matchingIngredients_desc' kommt die Logik später, wenn das Backend die Zähler liefert
+        // case 'matchingIngredients_desc':
+        //   if (matchingIngredientsCount != null && missingIngredientsCount != null) {
+        //     secondaryInfoText = '$matchingIngredientsCount / ${matchingIngredientsCount! + missingIngredientsCount!} Zutaten';
+        //   }
+        //   break;
+      }
+    }
+
+
     return Positioned(
       left: 20,
       right: 20,
@@ -157,23 +235,31 @@ class RecipeItem extends StatelessWidget {
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
-              fontWeight: FontWeight.bold,              
+              fontWeight: FontWeight.bold,
             ),
             maxLines: 2,
-            overflow: TextOverflow.ellipsis, // Damit der Text nicht überläuft
+            overflow: TextOverflow.ellipsis,
           ),
-          // Bestehende Länder-Anzeige (Ort)
-          // Text(
-          //   country,
-          //   style: const TextStyle(color: Colors.white, fontSize: 14),
-          // ),
-          // NEU: Anzeige für Zubereitungszeit
-          if (readyInMinutes != null)
-            Text(
-              'Prep Time: $readyInMinutes Min.',
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          // NEU: Anzeige für Portionen
+          // NEU: Row für Zubereitungszeit und sekundäre Info auf einer Zeile
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Verteilt den Platz
+            children: [
+              // Zubereitungszeit (immer, wenn verfügbar)
+              if (readyInMinutes != null)
+                Text(
+                  'Zubereitungszeit: $readyInMinutes Min.',
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              
+              // Sekundäre Info (wenn vorhanden und nicht die Zubereitungszeit selbst)
+              if (secondaryInfoText != null)
+                Text(
+                  secondaryInfoText!,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+            ],
+          ),
+          // Optional: Servings, wenn du es doch anzeigen willst
           // if (servings != null)
           //   Text(
           //     'Portionen: $servings',
@@ -184,6 +270,9 @@ class RecipeItem extends StatelessWidget {
     );
   }
 }
+
+// ... (ParallaxFlowDelegate bleibt unverändert) ...
+
 
 
 
