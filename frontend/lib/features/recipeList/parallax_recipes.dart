@@ -50,6 +50,7 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
 
         final recipe = widget.recipes[index];
         return RecipeItem(
+          id: recipe.id,
           imageUrl: recipe.imageUrl,
           name: recipe.name,
           country: recipe.place ?? '',
@@ -75,9 +76,10 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
 class RecipeItem extends StatelessWidget {
   RecipeItem({
     super.key,
-    required this.imageUrl,
-    required this.name,
-    required this.country,
+    required this.id, // Bleibt bestehen
+    required this.imageUrl, // Wird jetzt übergeben
+    required this.name, // Wird jetzt übergeben
+    required this.country, // Wird jetzt übergeben
     this.readyInMinutes,
     this.servings,
     this.currentSortOption,
@@ -91,6 +93,7 @@ class RecipeItem extends StatelessWidget {
     this.missingIngredientsCount,
   });
 
+  final int id;
   final String imageUrl;
   final String name;
   final String country;
@@ -114,7 +117,14 @@ class RecipeItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => RecipeDetailScreen(name: name, imageUrl: imageUrl, place: country),
+            builder: (_) => RecipeDetailScreen(
+              recipeId: id,
+              initialImageUrl: imageUrl, // Neu: Initiales Bild
+              initialName: name,         // Neu: Initialer Name
+              initialPlace: country,     // Neu: Initialer Ort/Land
+              // Optional: Wenn du readyInMinutes auch sofort anzeigen willst
+              initialReadyInMinutes: readyInMinutes,
+            ),
           ),
         );
       },

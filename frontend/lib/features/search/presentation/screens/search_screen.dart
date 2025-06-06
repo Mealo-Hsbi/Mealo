@@ -349,6 +349,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   }
                                   final recipe = _searchResults[index];
                                   return RecipeItem(
+                                    id: recipe.id,
                                     imageUrl: recipe.imageUrl,
                                     name: recipe.name,
                                     country: recipe.place ?? '',

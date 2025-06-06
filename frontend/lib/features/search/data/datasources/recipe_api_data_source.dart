@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/common/models/recipe_details.dart';
 import 'package:frontend/services/api_client.dart';
@@ -84,7 +85,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
   @override
   Future<RecipeDetails> getRecipeDetails(int recipeId) async {
     try {
-      final String endpoint = '/api/recipes/$recipeId/details';
+      final String endpoint = '/recipes/$recipeId';
 
       final Response response = await _apiClient.get(
         endpoint,
@@ -94,8 +95,12 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
         ),
       );
 
+            debugPrint('DEBUG API Response for recipe ID $recipeId: ${response.data}');
+
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> json = response.data;
+        // DIESE ZEILE IST JETZT SEHR WICHTIG:
         return RecipeDetails.fromJson(json);
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
@@ -111,6 +116,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
         throw ServerException('Network error or server problem: ${e.message}');
       }
     } catch (e) {
+
       print('Unexpected error in RecipeApiDataSource.getRecipeDetails: $e');
       throw ServerException('An unexpected error occurred: ${e.toString()}');
     }

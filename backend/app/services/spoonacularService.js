@@ -7,6 +7,12 @@ const SPOONACULAR_RECIPE_INFO_BASE_URL = 'https://api.spoonacular.com/recipes';
 
 let currentKeyIndex = 0;
 
+const findNutrientValue = (nutrients, title) => {
+    if (!nutrients) return null;
+    const nutrient = nutrients.find(n => n.name === title);
+    return nutrient ? nutrient.amount : null;
+};
+
 const searchSpoonacularRecipes = async ({ query, ingredients, offset, number, filters, sortBy, sortDirection }) => {
     if (!spoonacularKeys || spoonacularKeys.length === 0) {
         throw new Error('Server configuration error: Spoonacular API keys are missing.');
@@ -72,11 +78,7 @@ const searchSpoonacularRecipes = async ({ query, ingredients, offset, number, fi
             }
 
             // Helper function to find a nutrient value
-            const findNutrientValue = (nutrients, title) => {
-                if (!nutrients) return null;
-                const nutrient = nutrients.find(n => n.name === title);
-                return nutrient ? nutrient.amount : null;
-            };
+
 
             const recipes = response.data.results.map(recipe => {
                 const nutrients = recipe.nutrition?.nutrients;
@@ -194,11 +196,9 @@ const getSpoonacularRecipeDetails = async (recipeId) => {
                 sugar: findNutrientValue(recipe.nutrition?.nutrients, 'Sugar'),
             };
 
-            console.log(`[BACKEND] Fetched recipe details for ID: ${recipeId}`);
             return mappedRecipeDetails;
 
         } catch (axiosError) {
-            console.error(`[BACKEND] Axios error fetching recipe details for ID ${recipeId}: ${axiosError.message}`);
             if (axiosError.response) {
                 if (axiosError.response.status === 402 || axiosError.response.status === 429) {
                     console.warn(`[BACKEND] Spoonacular API Key ${currentKey} exhausted or rate-limited. Trying next key.`);
