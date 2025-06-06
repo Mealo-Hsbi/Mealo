@@ -97,7 +97,7 @@ class RecipeItem extends StatelessWidget {
   final int? readyInMinutes;
   final int? servings;
   final String? currentSortOption;
-  final int? calories;
+  final double? calories;
   final double? protein;
   final double? fat;
   final double? carbs;
@@ -265,7 +265,7 @@ class RecipeItem extends StatelessWidget {
             children: [
               if (readyInMinutes != null)
                 Text(
-                  'Zubereitungszeit: $readyInMinutes Min.',
+                  'Prep Time: $readyInMinutes Min.',
                   style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
 

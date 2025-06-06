@@ -35,14 +35,53 @@ class SortOptionsBottomSheet extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: sortOptionsData.entries.map((entry) { // Zugriff auf die globale Map
+          children: sortOptionsData.entries.map((entry) {
             final optionKey = entry.key;
             final optionData = entry.value;
             final optionName = optionData['name'] as String;
             final optionIcon = optionData['icon'] as IconData;
 
+            Widget? arrowOverlay;
+            if (optionKey.endsWith('_asc')) {
+              arrowOverlay = const Positioned(
+                top: -4, // Etwas weiter nach oben
+                right: -4, // Etwas weiter nach rechts (mehr Abstand)
+                child: Icon(
+                  Icons.arrow_drop_up,
+                  size: 24,
+                  color: Colors.black,
+                ),
+              );
+            } else if (optionKey.endsWith('_desc')) {
+              arrowOverlay = const Positioned(
+                bottom: -4, // Etwas weiter nach unten
+                right: -4, // Etwas weiter nach rechts (mehr Abstand)
+                child: Icon(
+                  Icons.arrow_drop_down,
+                  size: 24,
+                  color: Colors.black,
+                ),
+              );
+            }
+
             return ListTile(
-              leading: Icon(optionIcon),
+              leading: SizedBox(
+                width: 36, // Größe des Platzhalters leicht erhöht, um mehr Raum zu geben
+                height: 36, // Größe des Platzhalters leicht erhöht
+                child: Stack(
+                  clipBehavior: Clip.none, // Erlaubt dem Pfeil, über die Grenzen des Stack hinauszugehen
+                  children: [
+                    // Haupt-Icon, leicht nach links und oben verschoben
+                    Positioned(
+                      left: 0,
+                      top: 6, // Angepasster Top-Wert
+                      child: Icon(optionIcon, size: 24),
+                    ),
+                    if (arrowOverlay != null)
+                      arrowOverlay,
+                  ],
+                ),
+              ),
               title: Text(
                 optionName,
                 style: TextStyle(
@@ -54,8 +93,8 @@ class SortOptionsBottomSheet extends StatelessWidget {
                   ? Icon(Icons.check, color: Theme.of(context).primaryColor)
                   : null,
               onTap: () {
-                onOptionSelected(optionKey); // Ruft den Callback auf
-                Navigator.pop(context); // Schließt das BottomSheet
+                onOptionSelected(optionKey);
+                Navigator.pop(context);
               },
             );
           }).toList(),
@@ -64,12 +103,11 @@ class SortOptionsBottomSheet extends StatelessWidget {
     );
   }
 
-  // Hilfsmethode, um das richtige Icon für den Button zu bekommen (kann auch hier sein)
   static IconData getSortIcon(String currentOption) {
     final optionData = sortOptionsData[currentOption];
     if (optionData != null && optionData.containsKey('icon')) {
       return optionData['icon'] as IconData;
     }
-    return Icons.sort; // Standard-Icon, falls nichts gefunden wird
+    return Icons.sort;
   }
 }
