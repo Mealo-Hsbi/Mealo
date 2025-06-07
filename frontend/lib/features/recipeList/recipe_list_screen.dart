@@ -28,7 +28,12 @@ class RecipeListScreen extends StatelessWidget {
             return const Center(child: Text('Keine Rezepte gefunden.'));
           }
           // ParallaxRecipes übernimmt hier das Scrollen
-          return ParallaxRecipes(recipes: recipes);
+          return ParallaxRecipes(
+            recipes: recipes,
+            scrollController: ScrollController(),
+            isLoadingMore: false,
+            hasMore: false,
+          );
         },
       ),
     );
