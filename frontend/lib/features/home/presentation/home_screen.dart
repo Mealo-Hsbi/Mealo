@@ -34,7 +34,8 @@ class HomeScreen extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text('Fehler: ${snapshot.error}'));
           } else {
-            return ParallaxRecipes(recipes: snapshot.data!);
+            return Center(child: Text('Homy Screen'));
+            // placeholder widget
           }
         },
       ),

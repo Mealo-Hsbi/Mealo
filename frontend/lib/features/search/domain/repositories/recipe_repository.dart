@@ -1,19 +1,17 @@
 // lib/features/search/domain/repositories/recipe_repository.dart
 
-import 'package:frontend/common/models/recipe.dart'; // Your domain entity
-import 'package:frontend/common/models/recipe_details.dart';
+import 'package:frontend/common/models/recipe.dart';
+import 'package:frontend/common/models/recipe/recipe_details.dart'; // Für getRecipeDetails
 
 abstract class RecipeRepository {
-  // This method should *return* domain entities (Recipe)
-  // but it will internally deal with RecipeModel from the data source.
-  Future<List<Recipe>> searchRecipes({ // Return type remains List<Recipe> here
+  Future<List<Recipe>> searchRecipes({
     required String query,
     required List<String> ingredients,
     int offset,
     int number,
+    String? sortBy, // NEU: Sortierparameter
+    String? sortDirection, // NEU: Sortierparameter
     // Map<String, dynamic>? filters,
-    // String? sortBy,
-    // String? sortDirection,
   });
 
   Future<RecipeDetails> getRecipeDetails(int recipeId);

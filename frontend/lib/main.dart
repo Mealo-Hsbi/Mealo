@@ -1,21 +1,25 @@
 // main.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Für SystemChrome
-import 'package:frontend/core/themes/app_theme.dart';
-import 'package:frontend/features/auth/presentation/auth_gate.dart';
+import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/features/auth/presentation/login_screen.dart';
 import 'package:frontend/features/auth/presentation/register_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:frontend/providers/current_tab_provider.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:frontend/core/routes/app_router.dart';
+
+import 'package:frontend/core/themes/app_theme.dart';
+import 'package:frontend/features/auth/presentation/auth_gate.dart';
+// import 'package:frontend/features/auth/presentation/login_screen.dart'; // Nicht direkt nötig, wenn über routes
+// import 'package:frontend/features/auth/presentation/register_screen.dart'; // Nicht direkt nötig, wenn über routes
+import 'package:frontend/core/routes/app_router.dart'; // AppNavigationShell ist hier
 import 'package:frontend/core/config/app_config.dart';
 import 'package:frontend/core/config/environment.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/providers/selected_ingredients_provider.dart';
+
+import 'package:frontend/core/providers/app_providers.dart'; // NEU: Importiere deine Provider-Konfiguration
+
+import 'firebase_options.dart';
 
 
 // Eine neue Funktion zur Initialisierung von App-Services
@@ -29,7 +33,7 @@ Future<void> _initializeAppServices() async {
   await FirebaseAnalytics.instance.logAppOpen();
 
   // Stellt sicher, dass die Flutter-Engine bereit ist, bevor native Services aufgerufen werden
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // Doppelt, aber schadet nicht. Erste ist für Firebase, zweite für Services.
 
   // Beschränkt die App auf den Hochformat-Modus
   await SystemChrome.setPreferredOrientations([
@@ -38,24 +42,17 @@ Future<void> _initializeAppServices() async {
   ]);
 
   // Setzt den Stil der System-UI-Overlays (z.B. Uhrzeit, Batterieanzeige).
-  // Dies kann auch pro Screen mit AnnotatedRegion<SystemUiOverlayStyle> überschrieben werden,
-  // aber hier setzt du einen globalen Standard.
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark); // Oder .light, je nach globalem Standard
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
 
   // Initialisiert die App-Konfiguration
-  AppConfig.init(Environment.dev);
+  AppConfig.init(Environment.dev); // Verwende Environment.dev für die Entwicklung
 }
 
 void main() {
-  // Rufe die Initialisierungsfunktion auf und starte die App, sobald sie abgeschlossen ist
   _initializeAppServices().then((_) {
-    // runApp(const MyApp());
     runApp(
-      MultiProvider( // Nutze MultiProvider, um mehrere Provider bereitzustellen
-        providers: [
-          ChangeNotifierProvider(create: (context) => SelectedIngredientsProvider()),
-          ChangeNotifierProvider(create: (context) => CurrentTabProvider()), // NEU: Dein neuer Provider
-        ],
+      MultiProvider(
+        providers: AppProviders.providers, // Hier kommt die saubere Liste von Providern her
         child: const MyApp(),
       ),
     );
@@ -75,11 +72,10 @@ class MyApp extends StatelessWidget {
       title: 'Mealo',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      // AuthGate entscheidet, ob Login oder Home gezeigt wird:
       home: const AuthGate(),
       routes: {
-        '/login': (_) => const LoginScreen(),
-        '/register': (_) => const RegisterScreen(),
+        '/login': (_) => const LoginScreen(), // Sicherstellen, dass diese Imports existieren
+        '/register': (_) => const RegisterScreen(), // Sicherstellen, dass diese Imports existieren
         '/home': (_) => const AppNavigationShell(),
       },
       navigatorObservers: [observer],
