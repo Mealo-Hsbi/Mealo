@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Für SystemNavigator.pop()
 import 'package:frontend/features/auth/presentation/auth_gate.dart';
 import 'package:frontend/core/routes/navigation_tabs.dart'; // Nur für appBottomNavigationBarItems
+import 'package:frontend/features/profile/presentation/screens/profile_screen.dart';
 import 'package:frontend/providers/current_tab_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,6 @@ import 'package:frontend/features/home/presentation/home_screen.dart';
 import 'package:frontend/features/favorites/presentation/favorites_screen.dart';
 import 'package:frontend/features/explore/exploreScreen.dart';
 import 'package:frontend/features/camera/presentation/screens/camera_screen.dart';
-import 'package:frontend/features/profile/presentation/profile_screen.dart';
 
 /// Der zentrale Router für named routes.
 class AppRouter {
