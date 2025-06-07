@@ -1,7 +1,7 @@
 // lib/features/search/domain/repositories/recipe_repository.dart
 
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/common/models/recipe_details.dart'; // Für getRecipeDetails
+import 'package:frontend/common/models/recipe/recipe_details.dart'; // Für getRecipeDetails
 
 abstract class RecipeRepository {
   Future<List<Recipe>> searchRecipes({

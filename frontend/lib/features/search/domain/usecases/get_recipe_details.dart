@@ -1,4 +1,4 @@
-import 'package:frontend/common/models/recipe_details.dart'; // Dein RecipeDetails Modell
+import 'package:frontend/common/models/recipe/recipe_details.dart'; // Dein RecipeDetails Modell
 import 'package:frontend/features/search/domain/repositories/recipe_repository.dart'; // Dein RecipeRepository
 
 class GetRecipeDetails {

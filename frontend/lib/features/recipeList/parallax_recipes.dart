@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/features/recipeList/recipe_detail_screen.dart'; // Ensure RecipeDetailScreen is imported
+import 'package:frontend/features/recipeList/presentation/screens/recipe_detail_screen.dart'; // Ensure RecipeDetailScreen is imported
 import 'package:flutter/services.dart'; // Import for rootBundle in RecipeItem
 
 // Note: If RecipeItem and ParallaxFlowDelegate are in separate files,

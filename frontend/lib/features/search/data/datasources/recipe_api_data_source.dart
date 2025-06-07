@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/common/models/recipe_details.dart';
+import 'package:frontend/common/models/recipe/recipe_details.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:frontend/core/error/exceptions.dart';
 import 'package:frontend/common/models/recipe_model.dart';

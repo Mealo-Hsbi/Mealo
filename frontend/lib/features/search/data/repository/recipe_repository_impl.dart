@@ -1,7 +1,7 @@
 // lib/features/search/data/repositories/recipe_repository_impl.dart
 
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/common/models/recipe_details.dart';
+import 'package:frontend/common/models/recipe/recipe_details.dart';
 import 'package:frontend/common/models/recipe_model.dart';
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';
 import 'package:frontend/features/search/domain/repositories/recipe_repository.dart';
