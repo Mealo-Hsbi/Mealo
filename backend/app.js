@@ -10,7 +10,12 @@ app.use('/api', allRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({
+    status:  'ok',
+    version,                // aus package.json
+    commit: COMMIT_SHA,     // aus ENV_VAR
+    now:    new Date().toISOString(),
+  });
 });
 
 module.exports = app;

@@ -218,7 +218,9 @@ exports.Prisma.UsersScalarFieldEnum = {
   id: 'id',
   firebase_uid: 'firebase_uid',
   email: 'email',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  name: 'name',
+  avatar_url: 'avatar_url'
 };
 
 exports.Prisma.Weekly_planScalarFieldEnum = {
@@ -235,6 +237,31 @@ exports.Prisma.Weekly_plan_itemScalarFieldEnum = {
   date: 'date',
   meal_type: 'meal_type',
   recipe_id: 'recipe_id'
+};
+
+exports.Prisma.TagsScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
+exports.Prisma.User_tagsScalarFieldEnum = {
+  user_id: 'user_id',
+  tag_id: 'tag_id'
+};
+
+exports.Prisma.AchievementScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  icon: 'icon',
+  created_at: 'created_at'
+};
+
+exports.Prisma.User_achievementScalarFieldEnum = {
+  user_id: 'user_id',
+  achievement_id: 'achievement_id',
+  unlocked_at: 'unlocked_at'
 };
 
 exports.Prisma.SortOrder = {
@@ -265,7 +292,11 @@ exports.Prisma.ModelName = {
   shopping_list_item: 'shopping_list_item',
   users: 'users',
   weekly_plan: 'weekly_plan',
-  weekly_plan_item: 'weekly_plan_item'
+  weekly_plan_item: 'weekly_plan_item',
+  tags: 'tags',
+  user_tags: 'user_tags',
+  achievement: 'achievement',
+  user_achievement: 'user_achievement'
 };
 
 /**

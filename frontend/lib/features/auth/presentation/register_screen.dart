@@ -12,19 +12,19 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _repo = AuthRepository();
-  final _firstNameCtrl = TextEditingController();
-  final _emailCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
+  final _firstNameCtrl   = TextEditingController();
+  final _emailCtrl       = TextEditingController();
+  final _passCtrl        = TextEditingController();
   final _confirmPassCtrl = TextEditingController();
 
-  bool _loading = false;
+  bool   _loading = false;
   String? _error;
 
   Future<void> _register() async {
     final firstName = _firstNameCtrl.text.trim();
-    final email = _emailCtrl.text.trim();
-    final pass = _passCtrl.text;
-    final confirm = _confirmPassCtrl.text;
+    final email     = _emailCtrl.text.trim();
+    final pass      = _passCtrl.text;
+    final confirm   = _confirmPassCtrl.text;
 
     if (firstName.isEmpty) {
       setState(() => _error = 'Bitte gib deinen Vornamen ein');
@@ -41,26 +41,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() {
       _loading = true;
-      _error = null;
+      _error   = null;
     });
 
     try {
-      // Registrierung via Firebase
+      // 1) Registrierung via Firebase
       await _repo.signUp(email: email, password: pass);
 
-      // DisplayName auf First Name setzen
+      // 2) DisplayName auf Vornamen setzen
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.updateDisplayName(firstName);
         await user.reload();
+
+        // 3) User-Record in eigener DB anlegen
+        await _repo.createUserInDb(
+          name: firstName,
+          avatarUrl: user.photoURL,
+        );
       }
 
-      // Zurück zum Login
+      // 4) Zurück zum Login
       Navigator.of(context).pop();
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
+      setState(() => _error = e.toString());
     } finally {
       setState(() => _loading = false);
     }
@@ -77,7 +81,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(flex: 2),
-
               Center(
                 child: Image.asset(
                   'assets/icons/app_icon.png',
@@ -85,13 +88,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-
               const Text(
                 "Create your account",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
-
               if (_error != null) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -101,7 +102,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ],
               const SizedBox(height: 24),
-
               TextField(
                 controller: _firstNameCtrl,
                 decoration: InputDecoration(
@@ -117,7 +117,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextField(
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
@@ -134,7 +133,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextField(
                 controller: _passCtrl,
                 obscureText: true,
@@ -151,7 +149,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-
               TextField(
                 controller: _confirmPassCtrl,
                 obscureText: true,
@@ -168,7 +165,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
@@ -194,14 +190,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                 ),
               ),
-
               const Spacer(flex: 3),
-
               Center(
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
+                  onTap: () => Navigator.of(context).pop(),
                   child: RichText(
                     text: TextSpan(
                       text: 'Already a member? ',
