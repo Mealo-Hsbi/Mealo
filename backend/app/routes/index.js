@@ -4,7 +4,7 @@ const router = express.Router();
 const userRoutes = require('./user.routes');
 const imageRecognitionRoutes = require('./imageRecognition.routes');
 const visionRoutes = require('./vision.routes');
-const recipeRoutes = require('./recipe.Routes');
+const recipeRoutes = require('./recipe.routes');
 const profileRoutes = require('./profile.routes');
 const mediaRoutes   = require('./media.routes');
 
