@@ -2,47 +2,59 @@
 
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/common/models/recipe/recipe_details.dart';
-import 'package:frontend/common/models/recipe_model.dart';
+import 'package:frontend/core/error/failures.dart';
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';
 import 'package:frontend/features/search/domain/repositories/recipe_repository.dart';
+import 'package:frontend/core/error/exceptions.dart';
 
 class RecipeRepositoryImpl implements RecipeRepository {
-  final RecipeApiDataSource _dataSource;
+  final RecipeApiDataSource remoteDataSource;
 
-  RecipeRepositoryImpl(this._dataSource);
+  RecipeRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<List<Recipe>> searchRecipes({
     required String query,
-    required List<String> ingredients,
+    List<String>? ingredients,
     int offset = 0,
     int number = 10,
-    String? sortBy, // NEU: Sortierparameter
-    String? sortDirection, // NEU: Sortierparameter
-    // Map<String, dynamic>? filters,
+    String? sortBy,
+    String? sortDirection,
+    Map<String, dynamic>? filters,
+    int? maxMissingIngredients, // **NEU:** Parameter entgegennehmen
   }) async {
     try {
-      final List<RecipeModel> recipeModels = await _dataSource.searchRecipes(
+      final remoteRecipes = await remoteDataSource.searchRecipes(
         query: query,
         ingredients: ingredients,
         offset: offset,
         number: number,
-        sortBy: sortBy, // NEU: An DataSource übergeben
-        sortDirection: sortDirection, // NEU: An DataSource übergeben
-        // filters: filters,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        filters: filters,
+        maxMissingIngredients: maxMissingIngredients, // **NEU:** An die Datasource weiterleiten
       );
-      return recipeModels.map((model) => model.toEntity()).toList();
+      // Die Datasource gibt bereits `List<Recipe>` zurück, daher keine weitere Konvertierung nötig.
+      return remoteRecipes;
+    } on ServerException catch (e) {
+      throw ServerFailure(message: e.message);
+    } on TimeoutException catch (e) {
+      throw TimeoutFailure(message: e.message);
     } catch (e) {
-      rethrow;
+      throw GeneralFailure(message: 'An unexpected error occurred: ${e.toString()}');
     }
   }
 
   @override
   Future<RecipeDetails> getRecipeDetails(int recipeId) async {
     try {
-      return await _dataSource.getRecipeDetails(recipeId);
+      return await remoteDataSource.getRecipeDetails(recipeId);
+    } on ServerException catch (e) {
+      throw ServerFailure(message: e.message);
+    } on TimeoutException catch (e) {
+      throw TimeoutFailure(message: e.message);
     } catch (e) {
-      rethrow;
+      throw GeneralFailure(message: 'An unexpected error occurred: ${e.toString()}');
     }
   }
 }

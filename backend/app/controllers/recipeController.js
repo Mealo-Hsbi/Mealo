@@ -5,7 +5,7 @@ const { searchSpoonacularRecipes, getSpoonacularRecipeDetails } = require('../se
 const searchRecipes = async (req, res) => {
     // DIESER LOG MUSS ERSCHEINEN, WENN DIE ANFRAGE DIE CONTROLLER-FUNKTION ERREICHT!
 
-    const { query, ingredients, offset, number, filters, sortBy, sortDirection } = req.body;
+    const { query, ingredients, offset, number, filters, sortBy, sortDirection, maxMissingIngredients } = req.body;
 
     try {
         const recipes = await searchSpoonacularRecipes({
@@ -15,7 +15,8 @@ const searchRecipes = async (req, res) => {
             number,
             filters,
             sortBy,
-            sortDirection
+            sortDirection,
+            maxMissingIngredients
         });
 
         return res.json(recipes);
