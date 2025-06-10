@@ -7,17 +7,23 @@ import 'package:flutter/services.dart'; // Für rootBundle
 import 'package:frontend/common/data/ingredients.dart'; // Für allIngredients
 import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/features/search/domain/usecases/search_recipes.dart';
+// **NEU:** Importiere beide spezifischen Use Cases
+import 'package:frontend/features/search/domain/usecases/search_recipes_by_query.dart';
+import 'package:frontend/features/search/domain/usecases/search_recipes_by_ingredients.dart';
 import 'package:frontend/common/utils/string_similarity_helper.dart';
-import 'package:frontend/core/error/failures.dart'; // NEU: Für Fehlerbehandlung
+import 'package:frontend/core/error/failures.dart'; // Für Fehlerbehandlung
 
 class SearchNotifier extends ChangeNotifier {
-  // **Korrektur:** Benannter Parameter im Konstruktor
-  final SearchRecipes _searchRecipesUsecase;
+  // **NEU:** Injektion beider spezifischer Use Cases
+  final SearchRecipesByQuery _searchRecipesByQueryUsecase;
+  final SearchRecipesByIngredients _searchRecipesByIngredientsUsecase;
 
-  // **Korrektur:** Konstruktor erwartet jetzt einen benannten Parameter
-  SearchNotifier({required SearchRecipes searchRecipesUsecase})
-      : _searchRecipesUsecase = searchRecipesUsecase;
+  // **NEU:** Konstruktor erwartet jetzt beide Use Cases
+  SearchNotifier({
+    required SearchRecipesByQuery searchRecipesByQueryUsecase,
+    required SearchRecipesByIngredients searchRecipesByIngredientsUsecase,
+  })  : _searchRecipesByQueryUsecase = searchRecipesByQueryUsecase,
+        _searchRecipesByIngredientsUsecase = searchRecipesByIngredientsUsecase;
 
   // --- State Variables ---
   String _query = '';
@@ -27,7 +33,7 @@ class SearchNotifier extends ChangeNotifier {
   bool _isLoading = false;
   bool _isFetchingMore = false;
   String? _errorMessage;
-  String _currentSortOption = 'relevance';
+  String _currentSortOption = 'relevance'; // Für Text-basierte Suche
   int _offset = 0;
   final int _number = 10;
   bool _hasMore = true;
@@ -35,7 +41,7 @@ class SearchNotifier extends ChangeNotifier {
   final Duration _debounceDuration = const Duration(milliseconds: 400);
   final Map<String, bool> _imageAvailabilityCache = {};
 
-  // **NEU:** Parameter für die maximale Anzahl fehlender Zutaten
+  // Parameter für die maximale Anzahl fehlender Zutaten (relevant für Zutatensuche)
   int _maxMissingIngredients = 2; // Standardwert, kann angepasst werden
 
 
@@ -50,8 +56,6 @@ class SearchNotifier extends ChangeNotifier {
   String get currentSortOption => _currentSortOption;
   bool get hasMore => _hasMore;
   Map<String, bool> get imageAvailabilityCache => _imageAvailabilityCache;
-
-  // **NEU:** Getter für maxMissingIngredients
   int get maxMissingIngredients => _maxMissingIngredients;
 
   // --- Init and Dispose Logic ---
@@ -60,6 +64,7 @@ class SearchNotifier extends ChangeNotifier {
       _selectedIngredients.addAll(initialSelectedIngredients.where((i) => !_selectedIngredients.contains(i)));
     }
     _updateCacheForIngredients(_selectedIngredients);
+    // Initialisiere die Suche basierend auf aktuellem Zustand (Query oder Zutaten)
     _performSearch(isInitialLoad: true);
   }
 
@@ -68,7 +73,6 @@ class SearchNotifier extends ChangeNotifier {
     _debounceTimer?.cancel();
     super.dispose();
   }
-
 
   // --- Business Logic Methods ---
   void _updateCacheForIngredients(List<Ingredient> ingredients) {
@@ -111,7 +115,9 @@ class SearchNotifier extends ChangeNotifier {
       _selectedIngredients.remove(ingredient);
     } else {
       _selectedIngredients.add(ingredient);
-      _query = '';
+      // Wenn eine Zutat hinzugefügt wird, sollte der Text-Query nicht gelöscht werden,
+      // wenn wir eine kombinierte Suche anstreben.
+      _query = ''; // Diese Zeile wurde entfernt oder auskommentiert
       _filteredIngredientSuggestions = [];
     }
     _performSearch(isInitialLoad: true);
@@ -120,38 +126,54 @@ class SearchNotifier extends ChangeNotifier {
 
   void onSearchChanged(String value) {
     _query = value;
+    // **WICHTIG:** Die problematische Zeile, die _selectedIngredients gelöscht hat, wurde entfernt.
+    // Das bedeutet, dass _selectedIngredients IMMER bestehen bleiben, wenn der Benutzer einen Query eingibt.
+    // Die Priorisierung der Suche erfolgt jetzt ausschließlich in _performSearch.
+
     _updateFilteredSuggestions();
 
     _debounceTimer?.cancel();
     _debounceTimer = Timer(_debounceDuration, () {
-      _performSearch(isInitialLoad: true);
+
+      if (_selectedIngredients.isEmpty) {
+        _performSearch(isInitialLoad: true);
+
+      }
     });
     notifyListeners();
   }
 
-  // **NEU:** Setter für maxMissingIngredients
   void setMaxMissingIngredients(int value) {
     if (_maxMissingIngredients != value) {
       _maxMissingIngredients = value;
       notifyListeners();
-      // Optional: Löse eine neue Suche aus, wenn sich der Wert ändert
-      _performSearch(isInitialLoad: true);
+      // Löse eine neue Suche aus, wenn sich der Wert ändert und Zutaten ausgewählt sind
+      if (_selectedIngredients.isNotEmpty) {
+        _performSearch(isInitialLoad: true);
+      }
     }
   }
 
+  /// Führt die eigentliche Suche basierend auf dem aktuellen Zustand (Query vs. Zutaten) durch.
+  /// Priorisiert Zutatensuche, wenn selectedIngredients vorhanden sind.
+  /// Andernfalls wird eine Query-Suche durchgeführt (sofern ein Query vorhanden ist).
   Future<void> _performSearch({bool isInitialLoad = false}) async {
-    if (isInitialLoad) {
-      if (_query.isEmpty && _selectedIngredients.isEmpty) {
-        _searchResults = [];
-        _errorMessage = null;
-        _isLoading = false;
-        _isFetchingMore = false;
-        _offset = 0;
-        _hasMore = true;
-        notifyListeners();
-        return;
-      }
+    final bool hasQuery = _query.isNotEmpty;
+    final bool hasIngredients = _selectedIngredients.isNotEmpty;
 
+    if (!hasQuery && !hasIngredients) {
+      // Keine Suchkriterien, Ergebnisse leeren und Zustand zurücksetzen
+      _searchResults = [];
+      _errorMessage = null;
+      _isLoading = false;
+      _isFetchingMore = false;
+      _offset = 0;
+      _hasMore = true;
+      notifyListeners();
+      return;
+    }
+
+    if (isInitialLoad) {
       _isLoading = true;
       _errorMessage = null;
       _searchResults = [];
@@ -164,27 +186,45 @@ class SearchNotifier extends ChangeNotifier {
       notifyListeners();
     }
 
-    String? sortBy;
-    String? sortDirection;
-    if (_currentSortOption != 'relevance') {
-      final parts = _currentSortOption.split('_');
-      sortBy = parts[0];
-      sortDirection = parts[1];
-    }
-
     try {
-      final results = await _searchRecipesUsecase.call(
-        query: _query,
-        // **Korrektur:** selectedIngredients als Liste von String-Namen übergeben
-        ingredients: _selectedIngredients.map((i) => i.name).toList(),
-        offset: _offset,
-        number: _number,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
-        // **NEU:** maxMissingIngredients hier übergeben
-        maxMissingIngredients: _maxMissingIngredients,
-        // filters: filters, // Falls Sie filters im Notifier verwenden, hier hinzufügen
-      );
+      List<Recipe> results = [];
+
+      // **Logik zur Priorisierung:**
+      // Wenn Zutaten ausgewählt sind, führe die Zutatensuche durch.
+      // Andernfalls, wenn ein Query vorhanden ist, führe die Query-Suche durch.
+      // (Beachte: Die Backend-Endpunkte unterstützen keine direkte Kombination aus Query UND Ingredients in einem Request)
+      if (hasIngredients) {
+        // --- Zutatensuche durchführen ---
+        debugPrint('Performing ingredient search with: ${_selectedIngredients.map((i) => i.name).toList()}');
+        results = await _searchRecipesByIngredientsUsecase.call(
+          ingredients: _selectedIngredients.map((i) => i.name).toList(), // Namen als String-Liste übergeben
+          offset: _offset,
+          number: _number,
+          maxMissingIngredients: _maxMissingIngredients,
+        );
+        // Hinweis: sortBy/sortDirection ist hier nicht anwendbar, da Spoonacular findByIngredients diese nicht unterstützt.
+        // Falls Sortierung dennoch gewünscht, müsste dies client-seitig erfolgen oder ein separater API-Endpunkt im Backend.
+      } else if (hasQuery) {
+        // --- Query-Suche durchführen (wenn keine Zutaten ausgewählt sind) ---
+        debugPrint('Performing query search with: $_query');
+        String? sortBy;
+        String? sortDirection;
+        if (_currentSortOption != 'relevance') {
+          final parts = _currentSortOption.split('_');
+          sortBy = parts[0];
+          sortDirection = parts[1];
+        }
+        results = await _searchRecipesByQueryUsecase.call(
+          query: _query,
+          offset: _offset,
+          number: _number,
+          sortBy: sortBy,
+          sortDirection: sortDirection,
+          // filters: filters, // Falls Sie filters im Notifier verwenden, hier hinzufügen
+        );
+      } else {
+        debugPrint('No valid search criteria (query or ingredients) provided.');
+      }
 
       if (isInitialLoad) {
         _searchResults = results;
@@ -194,9 +234,9 @@ class SearchNotifier extends ChangeNotifier {
 
       _isLoading = false;
       _isFetchingMore = false;
-      _hasMore = results.length == _number;
+      _hasMore = results.length == _number; // Annahme: _number ist die volle Seitenlänge
       if (isInitialLoad && results.isEmpty) {
-        _hasMore = false;
+        _hasMore = false; // Wenn keine Ergebnisse beim ersten Laden, gibt es auch keine weiteren
       }
       notifyListeners();
     } on Failure catch (e) { // Fängt die benutzerdefinierten Failure-Typen
@@ -223,7 +263,13 @@ class SearchNotifier extends ChangeNotifier {
 
   void onSortOptionSelected(String selectedOption) {
     _currentSortOption = selectedOption;
-    _performSearch(isInitialLoad: true);
+    // Sortierung nur auslösen, wenn eine Textsuche aktiv ist, da Zutatensuche dies nicht unterstützt
+    if (_query.isNotEmpty) {
+      _performSearch(isInitialLoad: true);
+    } else {
+      debugPrint('Sort option changed, but not applied because no query is active.');
+      // Optional: Client-seitige Sortierung, falls für Zutatensuche gewünscht
+    }
     notifyListeners();
   }
 }

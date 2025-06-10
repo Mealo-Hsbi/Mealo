@@ -33,6 +33,15 @@ class CacheException extends AppException {
   }
 }
 
+class ClientException extends AppException {
+  ClientException(String message, {int? statusCode}) : super(message, statusCode: statusCode);
+
+  @override
+  String toString() {
+    return 'ClientException: $message' + (statusCode != null ? ' (Status: $statusCode)' : '');
+  }
+}
+
 /// Exception thrown for network connectivity issues.
 class NetworkException extends AppException {
   NetworkException(String message) : super(message);

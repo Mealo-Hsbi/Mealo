@@ -1,25 +1,35 @@
 // lib/features/search/data/datasources/recipe_api_data_source.dart
 
-import 'dart:async'; // Bleibt
-import 'package:dio/dio.dart'; // Bleibt
-import 'package:flutter/material.dart'; // Bleibt (für debugPrint)
-import 'package:frontend/common/models/recipe.dart'; // WICHTIG: Recipe Entity
-import 'package:frontend/common/models/recipe/recipe_details.dart'; // Bleibt
-import 'package:frontend/services/api_client.dart'; // Bleibt
-import 'package:frontend/core/error/exceptions.dart'; // Bleibt
-import 'package:frontend/common/models/recipe_model.dart'; // WICHTIG: RecipeModel für Parsing
+import 'dart:async';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart'; // For debugPrint
+import 'package:frontend/common/models/recipe.dart'; // Recipe Entity
+import 'package:frontend/common/models/recipe/recipe_details.dart'; // RecipeDetails (for getRecipeDetails)
+import 'package:frontend/services/api_client.dart';
+import 'package:frontend/core/error/exceptions.dart';
+import 'package:frontend/common/models/recipe_model.dart'; // RecipeModel for parsing
 
 abstract class RecipeApiDataSource {
-  // ÄNDERUNG: Rückgabetyp ist jetzt List<Recipe> (die Domain Entity)
-  Future<List<Recipe>> searchRecipes({
+  // NEW: Separate method for text-based recipe search
+  Future<List<Recipe>> searchRecipesByQuery({
     required String query,
-    List<String>? ingredients,
     int offset,
     int number,
     String? sortBy,
     String? sortDirection,
     Map<String, dynamic>? filters,
-    int? maxMissingIngredients, // NEU: maxMissingIngredients hinzufügen
+    CancelToken? cancelToken, // Optional cancel token for request cancellation
+  });
+
+  // NEW: Separate method for ingredient-based recipe search
+  Future<List<Recipe>> searchRecipesByIngredients({
+    required List<String> ingredients, // Ingredients are required here
+    int offset,
+    int number,
+    int? maxMissingIngredients,
+    CancelToken? cancelToken, // Optional cancel token for request cancellation
+    // Note: sortBy/sortDirection (for nutrients) and filters are not directly supported by findByIngredients.
+    // If needed, the repository or use case would have to handle post-filtering/sorting.
   });
 
   Future<RecipeDetails> getRecipeDetails(int recipeId);
@@ -30,52 +40,48 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
 
   RecipeApiDataSourceImpl(this._apiClient);
 
+  // --- IMPLEMENTATION FOR searchRecipesByQuery ---
   @override
-  Future<List<Recipe>> searchRecipes({ // ÄNDERUNG: Rückgabetyp
+  Future<List<Recipe>> searchRecipesByQuery({
     required String query,
-    List<String>? ingredients,
     int offset = 0,
     int number = 10,
     String? sortBy,
     String? sortDirection,
     Map<String, dynamic>? filters,
-    int? maxMissingIngredients, // NEU: Parameter in der Implementierung
+    CancelToken? cancelToken, // Optional cancel token for request cancellation
   }) async {
     try {
-      final requestedData = {
+      final Map<String, dynamic> queryParams = {
         'query': query,
-        'ingredients': ingredients ?? [],
         'offset': offset,
         'number': number,
-        'sortBy': sortBy,
-        'sortDirection': sortDirection,
-        'filters': filters ?? {},
-        'maxMissingIngredients': maxMissingIngredients, // NEU: Hier in den Request Body aufnehmen
       };
 
-      final String endpoint = '/recipes/search'; // WICHTIG: Korrekter Backend-Endpoint, sollte '/recipe/search' sein (Sie hatten '/recipes/search' im alten Code, aber das Backend zeigt '/recipe/search'). Bitte verifizieren Sie dies.
+      // Add optional parameters if they exist
+      if (sortBy != null) queryParams['sortBy'] = sortBy;
+      if (sortDirection != null) queryParams['sortDirection'] = sortDirection;
+      if (filters != null) {
+        queryParams.addAll(filters); // Add filter parameters directly (e.g., minCalories)
+      }
 
-      final Response response = await _apiClient.post(
+      final String endpoint = '/recipes/search/query'; // **NEW: Correct backend endpoint for query search**
+
+      debugPrint('[Frontend Data] Calling GET $endpoint with params: $queryParams');
+
+      final Response response = await _apiClient.get(
         endpoint,
-        data: {
-          'query': query,
-          'ingredients': ingredients,
-          'offset': offset,
-          'number': number,
-          'sortBy': sortBy,
-          'sortDirection': sortDirection,
-          'filters': filters,
-          'maxMissingIngredients': maxMissingIngredients, // NEU: Hier in den Request Body aufnehmen
-        },
+        queryParameters: queryParams, // **Parameters sent as queryParameters for GET request**
         options: Options(
           sendTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 30),
         ),
+        cancelToken: cancelToken, // Pass the optional cancel token
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = response.data;
-        // ÄNDERUNG: Hier konvertieren wir von RecipeModel zu Recipe
+        // Map from JSON to RecipeModel, then to Recipe entity
         var result = jsonList.map((json) => RecipeModel.fromJson(json).toEntity()).toList();
         return result;
       } else {
@@ -87,20 +93,85 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
       }
       if (e.response != null) {
         final errorData = e.response!.data;
-        throw ServerException('Error during recipe search: ${errorData['message'] ?? e.message}');
+        throw ServerException('Error during query recipe search: ${errorData['message'] ?? e.message}');
       } else {
         throw ServerException('Network error or server problem: ${e.message}');
       }
     } catch (e) {
-      print('Unexpected error in RecipeApiDataSource.searchRecipes: $e');
+      debugPrint('Unexpected error in RecipeApiDataSource.searchRecipesByQuery: $e');
       throw ServerException('An unexpected error occurred: ${e.toString()}');
     }
   }
 
+  // --- IMPLEMENTATION FOR searchRecipesByIngredients ---
+  @override
+  Future<List<Recipe>> searchRecipesByIngredients({
+    required List<String> ingredients,
+    int offset = 0,
+    int number = 10,
+    int? maxMissingIngredients,
+    CancelToken? cancelToken, // Optional cancel token for request cancellation
+  }) async {
+    try {
+      if (ingredients.isEmpty) {
+        throw ClientException('Ingredients list cannot be empty for ingredient search.');
+      }
+
+      final Map<String, dynamic> queryParams = {
+        'ingredients': ingredients.join(','), // Join list to comma-separated string
+        'offset': offset,
+        'number': number,
+      };
+
+      if (maxMissingIngredients != null) {
+        queryParams['maxMissingIngredients'] = maxMissingIngredients;
+      }
+
+      final String endpoint = '/recipes/search/ingredients'; // **NEW: Correct backend endpoint for ingredient search**
+
+      debugPrint('[Frontend Data] Calling GET $endpoint with params: $queryParams');
+
+      final Response response = await _apiClient.get(
+        endpoint,
+        queryParameters: queryParams, // **Parameters sent as queryParameters for GET request**
+        options: Options(
+          sendTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+        cancelToken: cancelToken, // Use optional cancel token for request cancellation
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = response.data;
+        // Map from JSON to RecipeModel, then to Recipe entity
+        var result = jsonList.map((json) => RecipeModel.fromJson(json).toEntity()).toList();
+        return result;
+      } else {
+        throw ServerException('Unexpected status code: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+        throw TimeoutException('The connection to the server timed out. Please try again later.');
+      }
+      if (e.response != null) {
+        final errorData = e.response!.data;
+        throw ServerException('Error during ingredient recipe search: ${errorData['message'] ?? e.message}');
+      } else {
+        throw ServerException('Network error or server problem: ${e.message}');
+      }
+    } catch (e) {
+      debugPrint('Unexpected error in RecipeApiDataSource.searchRecipesByIngredients: $e');
+      throw ServerException('An unexpected error occurred: ${e.toString()}');
+    }
+  }
+
+  // --- IMPLEMENTATION FOR getRecipeDetails (remains mostly same, just check endpoint) ---
   @override
   Future<RecipeDetails> getRecipeDetails(int recipeId) async {
     try {
-      final String endpoint = '/recipes/$recipeId'; // WICHTIG: Korrekter Backend-Endpoint, sollte '/recipe/$recipeId' sein.
+      final String endpoint = '/recipes/$recipeId'; // **Confirmed: Correct backend endpoint**
+
+      debugPrint('[Frontend Data] Calling GET $endpoint');
 
       final Response response = await _apiClient.get(
         endpoint,
@@ -114,7 +185,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> json = response.data;
-        return RecipeDetails.fromJson(json); // Hier war der Typ schon korrekt
+        return RecipeDetails.fromJson(json);
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
@@ -129,7 +200,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
         throw ServerException('Network error or server problem: ${e.message}');
       }
     } catch (e) {
-      print('Unexpected error in RecipeApiDataSource.getRecipeDetails: $e');
+      debugPrint('Unexpected error in RecipeApiDataSource.getRecipeDetails: $e');
       throw ServerException('An unexpected error occurred: ${e.toString()}');
     }
   }

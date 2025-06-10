@@ -2,18 +2,25 @@
 
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/common/models/recipe/recipe_details.dart';
-import 'package:frontend/common/models/ingredient.dart'; // Falls hier Ingredient-Objekte übergeben werden
+import 'package:frontend/common/models/ingredient.dart'; // Keep if you use Ingredient objects elsewhere, otherwise can remove.
 
 abstract class RecipeRepository {
-  Future<List<Recipe>> searchRecipes({
+  // NEW: Method for text-based recipe search
+  Future<List<Recipe>> searchRecipesByQuery({
     required String query,
-    List<String>? ingredients, // Hier bleiben es Strings (Namen)
     int offset,
     int number,
     String? sortBy,
     String? sortDirection,
     Map<String, dynamic>? filters,
-    int? maxMissingIngredients, // **NEU:** Parameter hinzufügen
+  });
+
+  // NEW: Method for ingredient-based recipe search
+  Future<List<Recipe>> searchRecipesByIngredients({
+    required List<String> ingredients,
+    int offset,
+    int number,
+    int? maxMissingIngredients,
   });
 
   Future<RecipeDetails> getRecipeDetails(int recipeId);

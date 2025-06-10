@@ -2,14 +2,20 @@
 const express = require('express');
 const auth = require('../middleware/auth.middleware');
 const router = express.Router();
-const { searchRecipes, getRecipeDetails } = require('../controllers/recipeController'); // Import the controller
+// Importiere die neuen, spezifischen Controller-Funktionen
+const { getRecipesByQuery, getRecipesByIngredients, getRecipeDetails } = require('../controllers/recipeController');
 
 
-// api/recipes/search
-router.post('/search', auth, searchRecipes); // Map the route to the controller function
+// Route für die Textsuche (GET-Anfrage)
+// Beispiel-URL: GET /api/recipes/search/query?query=pasta&number=10
+router.get('/search/query', auth, getRecipesByQuery);
+
+// Route für die Zutatensuche (GET-Anfrage)
+// Beispiel-URL: GET /api/recipes/search/ingredients?ingredients=chicken,rice&maxMissingIngredients=2
+router.get('/search/ingredients', auth, getRecipesByIngredients);
+
+// Route für Rezeptdetails (bleibt unverändert)
+// Beispiel-URL: GET /api/recipes/12345
 router.get('/:id', auth, getRecipeDetails);
-// If you have a details route for recipes, it would also go here:
-// const recipeDetailsController = require('../controllers/recipeDetailsController');
-// router.get('/:id/details', recipeDetailsController.getRecipeDetails);
 
 module.exports = router;

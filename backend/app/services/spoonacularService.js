@@ -2,7 +2,8 @@
 const axios = require('axios');
 const { spoonacularKeys } = require('../config/apiKeys');
 
-const SPOONACULAR_SEARCH_BASE_URL = 'https://api.spoonacular.com/recipes/complexSearch';
+const SPOONACULAR_COMPLEX_SEARCH_BASE_URL = 'https://api.spoonacular.com/recipes/complexSearch';
+const SPOONACULAR_FIND_BY_INGREDIENTS_BASE_URL = 'https://api.spoonacular.com/recipes/findByIngredients';
 const SPOONACULAR_RECIPE_INFO_BASE_URL = 'https://api.spoonacular.com/recipes';
 
 let currentKeyIndex = 0;
@@ -13,225 +14,248 @@ const findNutrientValue = (nutrients, title) => {
     return nutrient ? nutrient.amount : null;
 };
 
-const searchSpoonacularRecipes = async ({
-    query,
-    ingredients, // Dies sind die vom Frontend ausgewählten Zutaten
-    offset,
-    number,
-    filters,
-    sortBy,
-    sortDirection,
-    maxMissingIngredients // NEU: Diesen Parameter vom Frontend erwarten
-}) => {
-    if (!spoonacularKeys || spoonacularKeys.length === 0) {
-        throw new Error('Server configuration error: Spoonacular API keys are missing.');
-    }
-
+// Helper function to handle API key rotation and Axios calls
+const makeSpoonacularApiCall = async (url, params) => {
     let retries = 0;
     const maxRetries = spoonacularKeys.length;
 
     while (retries < maxRetries) {
         currentKeyIndex = currentKeyIndex % spoonacularKeys.length;
         const currentKey = spoonacularKeys[currentKeyIndex];
+        params.apiKey = currentKey; // Assign current key to params
+
+        // Clean up undefined params before sending
+        Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
 
         try {
-            const spoonacularParams = {
-                apiKey: currentKey,
-                query: query,
-                // WICHTIG: Spoonacular erwartet 'includeIngredients' als Parametername,
-                // nicht 'ingredients'. Auch der Wert muss ein kommaseparierter String sein.
-                includeIngredients: ingredients && ingredients.length > 0 ? ingredients.join(',') : undefined,
-                offset: offset,
-                number: number,
-                addRecipeInformation: true,
-                addRecipeNutrition: true,
-                minCalories: filters?.minCalories,
-                maxCalories: filters?.maxCalories,
-                diet: filters?.diet,
-                intolerances: filters?.intolerances,
-                sort: sortBy,
-                sortDirection: sortDirection,
-                // maxMissingIngredients: maxMissingIngredients, // Spoonacular Parameter ist auch maxMissingIngredients
-                maxMissingIngredients: 10, // Spoonacular Parameter ist auch maxMissingIngredients
-                ranking: 1,
-            };
-
-            // Clean up undefined params
-            Object.keys(spoonacularParams).forEach(key => spoonacularParams[key] === undefined && delete spoonacularParams[key]);
-
-            // --- FÜGEN SIE HIER DIE LOGS HINZU ---
-            console.log('--- Backend Spoonacular Service Debug ---');
-            console.log('Received parameters from controller:');
-            console.log('  query:', query);
-            console.log('  ingredients:', ingredients); // Die Array-Form vom Controller
-            console.log('  maxMissingIngredients:', maxMissingIngredients);
-            console.log('Constructed Spoonacular parameters:');
-            console.log('  spoonacularParams:', spoonacularParams); // Die finalen Parameter, die gesendet werden
-            console.log('-------------------------------------');
-            // --- ENDE DER LOGS ---
-
-            let response;
-            try {
-                response = await axios.get(SPOONACULAR_SEARCH_BASE_URL, {
-                    params: spoonacularParams,
-                    timeout: 10000 // Timeout for the Axios call
-                });
-            } catch (axiosError) {
-                console.error(`[BACKEND DEBUG - SERVICE] Axios error during Spoonacular call: ${axiosError.message}`); // Debug print
-                if (axiosError.response) {
-                    console.error('[BACKEND DEBUG - SERVICE] Axios response error data:', axiosError.response.data); // Debug print
-                    console.error('[BACKEND DEBUG - SERVICE] Axios response status:', axiosError.response.status); // Debug print
-                    if (axiosError.response.status === 402 || axiosError.response.status === 429) {
-                        console.warn(`[BACKEND DEBUG - SERVICE] Spoonacular API Key ${currentKey} exhausted or rate-limited. Trying next key.`); // Debug print
-                        currentKeyIndex = (currentKeyIndex + 1) % spoonacularKeys.length;
-                        retries++;
-                        continue;
-                    }
-                } else if (axiosError.code === 'ECONNABORTED' || axiosError.code === 'ETIMEDOUT') {
-                    console.error('[BACKEND DEBUG - SERVICE] Axios Timeout/Connection error to Spoonacular.'); // Debug print
-                }
-                throw axiosError;
-            }
-
-            if (response.data && response.data.results && response.data.results.length > 0) {
-                // Hier könnten Sie auch ein Log hinzufügen, wenn Ergebnisse gefunden wurden
-                // console.log(`[BACKEND DEBUG - SERVICE] Found ${response.data.results.length} recipes from Spoonacular.`);
-            } else {
-                // console.log('[BACKEND DEBUG - SERVICE] No recipes found from Spoonacular for the given parameters.');
-            }
-
-            const findNutrientValue = (nutrients, name) => {
-                const nutrient = nutrients?.find(n => n.name === name);
-                return nutrient ? parseFloat(nutrient.amount.toFixed(2)) : undefined;
-            };
-
-            const recipes = response.data.results.map(recipe => {
-                const nutrients = recipe.nutrition?.nutrients;
-
-                return {
-                    id: recipe.id,
-                    name: recipe.title,
-                    imageUrl: recipe.image,
-                    imageType: recipe.imageType,
-                    servings: recipe.servings,
-                    readyInMinutes: recipe.readyInMinutes,
-                    place: recipe.sourceName,
-                    calories: findNutrientValue(nutrients, 'Calories'),
-                    protein: findNutrientValue(nutrients, 'Protein'),
-                    fat: findNutrientValue(nutrients, 'Fat'),
-                    carbs: findNutrientValue(nutrients, 'Carbohydrates'),
-                    sugar: findNutrientValue(nutrients, 'Sugar'),
-                    healthScore: recipe.healthScore,
-                    usedIngredientCount: recipe.usedIngredientCount,
-                    missedIngredientCount: recipe.missedIngredientCount,
-                    usedIngredients: recipe.usedIngredients,
-                    missedIngredients: recipe.missedIngredients,
-                };
+            const response = await axios.get(url, {
+                params: params,
+                timeout: 10000 // Timeout for the Axios call
             });
-
-            return recipes;
-
-        } catch (error) {
-            console.error(`[BACKEND DEBUG - SERVICE] Outer catch - Error in searchSpoonacularRecipes: ${error.message}`); // Debug print
-            const statusCode = error.response ? error.response.status : 500;
-            const errorMessage = error.response && error.response.data ? error.response.data : { message: 'Failed to search recipes from external API.' };
-            throw { status: statusCode, message: errorMessage.message || 'External API error' };
-        }
-    }
-
-    console.error('[BACKEND DEBUG - SERVICE] All Spoonacular API keys attempted and failed for this request.'); // Debug print
-    throw new Error('All Spoonacular API keys are currently unavailable or exhausted.');
-};
-
-const getSpoonacularRecipeDetails = async (recipeId) => {
-    // ... (bestehender Code, keine Änderungen nötig für dieses Problem) ...
-    if (!spoonacularKeys || spoonacularKeys.length === 0) {
-        throw new Error('Server configuration error: Spoonacular API keys are missing.');
-    }
-
-    let retries = 0;
-    const maxRetries = spoonacularKeys.length;
-
-    while (retries < maxRetries) {
-        currentKeyIndex = currentKeyIndex % spoonacularKeys.length;
-        const currentKey = spoonacularKeys[currentKeyIndex];
-
-        try {
-            const spoonacularParams = {
-                apiKey: currentKey,
-                includeNutrition: true, // Wichtig: Auch hier Nährwertinfos anfordern!
-            };
-
-            // Der Endpoint ist /recipes/{id}/information
-            const response = await axios.get(
-                `${SPOONACULAR_RECIPE_INFO_BASE_URL}/${recipeId}/information`,
-                {
-                    params: spoonacularParams,
-                    timeout: 10000 // Timeout für den Axios-Aufruf
-                }
-            );
-
-            const recipe = response.data; // Die Antwort ist direkt das Rezeptobjekt
-
-            // Hier kannst du die Daten mappen, falls nötig.
-            // Für den Anfang können wir sie fast 1:1 übernehmen.
-            // Später können wir hier Aufräumarbeiten (z.B. HTML-Tags entfernen) durchführen.
-            const mappedRecipeDetails = {
-                id: recipe.id,
-                title: recipe.title,
-                imageUrl: recipe.image,
-                sourceName: recipe.sourceName,
-                sourceUrl: recipe.sourceUrl, // Wichtig für den Link zum Originalrezept
-                readyInMinutes: recipe.readyInMinutes,
-                servings: recipe.servings,
-                summary: recipe.summary, // Enthält oft HTML
-                extendedIngredients: recipe.extendedIngredients ? recipe.extendedIngredients.map(ing => ({
-                    id: ing.id,
-                    aisle: ing.aisle,
-                    image: ing.image,
-                    consistency: ing.consistency,
-                    name: ing.name,
-                    original: ing.original, // Die vollständige Zeichenkette der Zutat
-                    amount: ing.amount,
-                    unit: ing.unit
-                })) : [],
-                analyzedInstructions: recipe.analyzedInstructions ? recipe.analyzedInstructions.map(instr => ({
-                    name: instr.name,
-                    steps: instr.steps.map(step => ({
-                        number: step.number,
-                        step: step.step, // Enthält oft HTML
-                        ingredients: step.ingredients ? step.ingredients.map(i => i.name) : [],
-                        equipment: step.equipment ? step.equipment.map(e => e.name) : []
-                    }))
-                })) : [],
-                healthScore: recipe.healthScore,
-                // Nährwerte direkt von der nutrition-Ebene mappen
-                calories: findNutrientValue(recipe.nutrition?.nutrients, 'Calories'),
-                protein: findNutrientValue(recipe.nutrition?.nutrients, 'Protein'),
-                fat: findNutrientValue(recipe.nutrition?.nutrients, 'Fat'),
-                carbs: findNutrientValue(recipe.nutrition?.nutrients, 'Carbohydrates'),
-                sugar: findNutrientValue(recipe.nutrition?.nutrients, 'Sugar'),
-            };
-
-            return mappedRecipeDetails;
-
+            return response;
         } catch (axiosError) {
+            console.error(`[BACKEND DEBUG - SERVICE] Axios error during Spoonacular call to ${url}: ${axiosError.message}`);
             if (axiosError.response) {
+                console.error('[BACKEND DEBUG - SERVICE] Axios response error data:', axiosError.response.data);
+                console.error('[BACKEND DEBUG - SERVICE] Axios response status:', axiosError.response.status);
                 if (axiosError.response.status === 402 || axiosError.response.status === 429) {
-                    console.warn(`[BACKEND] Spoonacular API Key ${currentKey} exhausted or rate-limited. Trying next key.`);
+                    console.warn(`[BACKEND DEBUG - SERVICE] Spoonacular API Key ${currentKey} exhausted or rate-limited. Trying next key.`);
                     currentKeyIndex = (currentKeyIndex + 1) % spoonacularKeys.length;
                     retries++;
-                    continue; // Erneuter Versuch mit dem nächsten Schlüssel
+                    continue; // Retry with next key
                 }
+            } else if (axiosError.code === 'ECONNABORTED' || axiosError.code === 'ETIMEDOUT') {
+                console.error('[BACKEND DEBUG - SERVICE] Axios Timeout/Connection error to Spoonacular.');
             }
-            throw axiosError; // Andere Fehler weitergeben
+            throw axiosError; // Re-throw other errors
         }
     }
     throw new Error('All Spoonacular API keys attempted and failed for this request.');
 };
 
 
+// 1. Funktion für die Textsuche (Query-basiert)
+const searchRecipesByQuery = async ({
+    query,
+    offset,
+    number,
+    filters,
+    sortBy,
+    sortDirection,
+}) => {
+    if (!spoonacularKeys || spoonacularKeys.length === 0) {
+        throw new Error('Server configuration error: Spoonacular API keys are missing.');
+    }
+    if (!query || query.trim().length === 0) {
+        throw { status: 400, message: 'Query parameter is required for text search.' };
+    }
+
+    const spoonacularParams = {
+        query: query,
+        offset: offset,
+        number: number,
+        addRecipeInformation: true, // Um servings, readyInMinutes etc. zu erhalten
+        addRecipeNutrition: true,    // Um Nährwerte zu erhalten
+        fillIngredients: true,       // Um used/missedIngredientCount zu erhalten
+        // ComplexSearch unterstützt ranking auch, aber der Fokus ist hier anders
+        // ranking: 1, // Optional: "Match best"
+    };
+
+    // Filter und Sortierung für ComplexSearch
+    if (filters?.minCalories) spoonacularParams.minCalories = filters.minCalories;
+    if (filters?.maxCalories) spoonacularParams.maxCalories = filters.maxCalories;
+    if (filters?.diet) spoonacularParams.diet = filters.diet;
+    if (filters?.intolerances) spoonacularParams.intolerances = filters.intolerances;
+
+    if (sortBy) spoonacularParams.sort = sortBy;
+    if (sortDirection) spoonacularParams.sortDirection = sortDirection;
+
+    console.log('--- Backend Spoonacular Service Debug (Query Search) ---');
+    console.log('Received parameters for query search:', { query, offset, number, filters, sortBy, sortDirection });
+    console.log('Constructed Spoonacular parameters:', spoonacularParams);
+    console.log('-----------------------------------------------------');
+
+    const response = await makeSpoonacularApiCall(SPOONACULAR_COMPLEX_SEARCH_BASE_URL, spoonacularParams);
+
+    const recipes = response.data.results.map(recipe => {
+        const nutrients = recipe.nutrition?.nutrients;
+        return {
+            id: recipe.id,
+            name: recipe.title,
+            imageUrl: recipe.image,
+            imageType: recipe.imageType,
+            servings: recipe.servings,
+            readyInMinutes: recipe.readyInMinutes,
+            place: recipe.sourceName,
+            calories: findNutrientValue(nutrients, 'Calories'),
+            protein: findNutrientValue(nutrients, 'Protein'),
+            fat: findNutrientValue(nutrients, 'Fat'),
+            carbs: findNutrientValue(nutrients, 'Carbohydrates'),
+            sugar: findNutrientValue(nutrients, 'Sugar'),
+            healthScore: recipe.healthScore,
+            usedIngredientCount: recipe.usedIngredientCount,
+            missedIngredientCount: recipe.missedIngredientCount,
+            usedIngredients: recipe.usedIngredients,
+            missedIngredients: recipe.missedIngredients,
+        };
+    });
+
+    return recipes;
+};
+
+
+// 2. Funktion für die Zutatensuche (findByIngredients-basiert)
+const searchRecipesByIngredients = async ({
+    ingredients, // Array von Strings
+    offset,
+    number,
+    maxMissingIngredients, // Max. fehlende Zutaten
+    // HINWEIS: sortBy, sortDirection und Filter für Nährwerte werden hier NICHT unterstützt!
+    // findByIngredients hat nur "ranking" als Sortieroption.
+    // Wenn Nährwert-Sortierung hier benötigt wird, müsstest du eine POST-Filterung / Sortierung im Backend vornehmen
+    // (was bei vielen Ergebnissen ineffizient sein kann) oder einen zweiten Call pro Rezept machen.
+    // Für dieses Beispiel lassen wir sie weg.
+}) => {
+    if (!spoonacularKeys || spoonacularKeys.length === 0) {
+        throw new Error('Server configuration error: Spoonacular API keys are missing.');
+    }
+    if (!ingredients || ingredients.length === 0) {
+        throw { status: 400, message: 'Ingredients array is required for ingredient search.' };
+    }
+
+    const spoonacularParams = {
+        ingredients: ingredients.join(','),
+        offset: offset,
+        number: number,
+        ranking: 2, // Priorisiert Rezepte mit den wenigsten fehlenden Zutaten
+        ignorePantry: true, // Um genauere used/missed counts zu erhalten
+    };
+
+    if (maxMissingIngredients !== undefined) {
+        spoonacularParams.maxMissingIngredients = maxMissingIngredients;
+    } else {
+        spoonacularParams.maxMissingIngredients = 10; // Standardwert
+    }
+
+    console.log('--- Backend Spoonacular Service Debug (Ingredient Search) ---');
+    console.log('Received parameters for ingredient search:', { ingredients, offset, number, maxMissingIngredients });
+    console.log('Constructed Spoonacular parameters:', spoonacularParams);
+    console.log('---------------------------------------------------------');
+
+    const response = await makeSpoonacularApiCall(SPOONACULAR_FIND_BY_INGREDIENTS_BASE_URL, spoonacularParams);
+
+    // findByIngredients gibt direkt ein Array von Rezepten zurück
+    const recipes = response.data.map(recipe => {
+        // HINWEIS: Nährwerte, servings, readyInMinutes, healthScore sind HIER NICHT ENTHALTEN!
+        // Sie müssten über einen ZWEITEN API-Call (getSpoonacularRecipeDetails) pro Rezept nachgeladen werden,
+        // was SEHR ineffizient ist und dein API-Kontingent sprengt.
+        // Das Frontend muss damit umgehen, dass diese Felder hier undefined sind.
+        return {
+            id: recipe.id,
+            name: recipe.title,
+            imageUrl: recipe.image,
+            imageType: recipe.imageType,
+            // Diese Felder sind hier typischerweise NICHT vorhanden.
+            servings: undefined,
+            readyInMinutes: undefined,
+            place: undefined,
+            calories: undefined,
+            protein: undefined,
+            fat: undefined,
+            carbs: undefined,
+            sugar: undefined,
+            healthScore: undefined,
+            // Diese sind vorhanden:
+            usedIngredientCount: recipe.usedIngredientCount,
+            missedIngredientCount: recipe.missedIngredientCount,
+            usedIngredients: recipe.usedIngredients,
+            missedIngredients: recipe.missedIngredients,
+        };
+    });
+
+    return recipes;
+};
+
+
+// getSpoonacularRecipeDetails bleibt unverändert
+const getSpoonacularRecipeDetails = async (recipeId) => {
+    if (!spoonacularKeys || spoonacularKeys.length === 0) {
+        throw new Error('Server configuration error: Spoonacular API keys are missing.');
+    }
+
+    const spoonacularParams = {
+        includeNutrition: true, // Wichtig: Auch hier Nährwertinfos anfordern!
+    };
+
+    const response = await makeSpoonacularApiCall(
+        `${SPOONACULAR_RECIPE_INFO_BASE_URL}/${recipeId}/information`,
+        spoonacularParams
+    );
+
+    const recipe = response.data; // Die Antwort ist direkt das Rezeptobjekt
+
+    const mappedRecipeDetails = {
+        id: recipe.id,
+        title: recipe.title,
+        imageUrl: recipe.image,
+        sourceName: recipe.sourceName,
+        sourceUrl: recipe.sourceUrl, // Wichtig für den Link zum Originalrezept
+        readyInMinutes: recipe.readyInMinutes,
+        servings: recipe.servings,
+        summary: recipe.summary, // Enthält oft HTML
+        extendedIngredients: recipe.extendedIngredients ? recipe.extendedIngredients.map(ing => ({
+            id: ing.id,
+            aisle: ing.aisle,
+            image: ing.image,
+            consistency: ing.consistency,
+            name: ing.name,
+            original: ing.original, // Die vollständige Zeichenkette der Zutat
+            amount: ing.amount,
+            unit: ing.unit
+        })) : [],
+        analyzedInstructions: recipe.analyzedInstructions ? recipe.analyzedInstructions.map(instr => ({
+            name: instr.name,
+            steps: instr.steps.map(step => ({
+                number: step.number,
+                step: step.step, // Enthält oft HTML
+                ingredients: step.ingredients ? step.ingredients.map(i => i.name) : [],
+                equipment: step.equipment ? step.equipment.map(e => e.name) : []
+            }))
+        })) : [],
+        healthScore: recipe.healthScore,
+        // Nährwerte direkt von der nutrition-Ebene mappen
+        calories: findNutrientValue(recipe.nutrition?.nutrients, 'Calories'),
+        protein: findNutrientValue(recipe.nutrition?.nutrients, 'Protein'),
+        fat: findNutrientValue(recipe.nutrition?.nutrients, 'Fat'),
+        carbs: findNutrientValue(recipe.nutrition?.nutrients, 'Carbohydrates'),
+        sugar: findNutrientValue(recipe.nutrition?.nutrients, 'Sugar'),
+    };
+
+    return mappedRecipeDetails;
+};
+
 module.exports = {
-    searchSpoonacularRecipes,
+    searchRecipesByQuery,
+    searchRecipesByIngredients,
     getSpoonacularRecipeDetails,
 };
