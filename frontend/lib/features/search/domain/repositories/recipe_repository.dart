@@ -1,8 +1,11 @@
 // lib/features/search/domain/repositories/recipe_repository.dart
 
+import 'package:dio/dio.dart'; // Wichtig: Dio importieren für CancelToken
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/common/models/recipe/recipe_details.dart';
-import 'package:frontend/common/models/ingredient.dart'; // Keep if you use Ingredient objects elsewhere, otherwise can remove.
+// import 'package:frontend/common/models/ingredient.dart'; // Nur beibehalten, wenn Ingredient Objekte hier direkt verwendet werden.
+                                                           // Normalerweise wird hier nur mit einfachen Datentypen wie List<String> gearbeitet.
+
 
 abstract class RecipeRepository {
   // NEW: Method for text-based recipe search
@@ -13,6 +16,7 @@ abstract class RecipeRepository {
     String? sortBy,
     String? sortDirection,
     Map<String, dynamic>? filters,
+    CancelToken? cancelToken, // <--- Hinzufügen des optionalen CancelToken
   });
 
   // NEW: Method for ingredient-based recipe search
@@ -21,7 +25,8 @@ abstract class RecipeRepository {
     int offset,
     int number,
     int? maxMissingIngredients,
+    CancelToken? cancelToken, // <--- Hinzufügen des optionalen CancelToken
   });
 
-  Future<RecipeDetails> getRecipeDetails(int recipeId);
+  Future<RecipeDetails> getRecipeDetails(int recipeId, {CancelToken? cancelToken}); // <--- Hinzufügen des optionalen CancelToken
 }

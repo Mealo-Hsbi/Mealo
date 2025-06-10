@@ -31,3 +31,7 @@ class TimeoutFailure extends Failure {
 class NetworkFailure extends Failure {
   const NetworkFailure({String message = 'No internet connection. Please check your network settings.'}) : super(message);
 }
+
+class CancelledFailure extends Failure {
+  const CancelledFailure({String message = 'Operation cancelled.'}) : super(message);
+}

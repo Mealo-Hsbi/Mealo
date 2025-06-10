@@ -6,11 +6,10 @@ import 'package:flutter/material.dart'; // For debugPrint
 import 'package:frontend/common/models/recipe.dart'; // Recipe Entity
 import 'package:frontend/common/models/recipe/recipe_details.dart'; // RecipeDetails (for getRecipeDetails)
 import 'package:frontend/services/api_client.dart';
-import 'package:frontend/core/error/exceptions.dart';
+import 'package:frontend/core/error/exceptions.dart'; // For ServerException, TimeoutException, ClientException, CancelledException
 import 'package:frontend/common/models/recipe_model.dart'; // RecipeModel for parsing
 
 abstract class RecipeApiDataSource {
-  // NEW: Separate method for text-based recipe search
   Future<List<Recipe>> searchRecipesByQuery({
     required String query,
     int offset,
@@ -21,18 +20,15 @@ abstract class RecipeApiDataSource {
     CancelToken? cancelToken, // Optional cancel token for request cancellation
   });
 
-  // NEW: Separate method for ingredient-based recipe search
   Future<List<Recipe>> searchRecipesByIngredients({
     required List<String> ingredients, // Ingredients are required here
     int offset,
     int number,
     int? maxMissingIngredients,
     CancelToken? cancelToken, // Optional cancel token for request cancellation
-    // Note: sortBy/sortDirection (for nutrients) and filters are not directly supported by findByIngredients.
-    // If needed, the repository or use case would have to handle post-filtering/sorting.
   });
 
-  Future<RecipeDetails> getRecipeDetails(int recipeId);
+  Future<RecipeDetails> getRecipeDetails(int recipeId, {CancelToken? cancelToken}); // Optional cancel token for request cancellation
 }
 
 class RecipeApiDataSourceImpl implements RecipeApiDataSource {
@@ -65,13 +61,13 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
         queryParams.addAll(filters); // Add filter parameters directly (e.g., minCalories)
       }
 
-      final String endpoint = '/recipes/search/query'; // **NEW: Correct backend endpoint for query search**
+      final String endpoint = '/recipes/search/query';
 
       debugPrint('[Frontend Data] Calling GET $endpoint with params: $queryParams');
 
       final Response response = await _apiClient.get(
         endpoint,
-        queryParameters: queryParams, // **Parameters sent as queryParameters for GET request**
+        queryParameters: queryParams,
         options: Options(
           sendTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 30),
@@ -81,13 +77,17 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = response.data;
-        // Map from JSON to RecipeModel, then to Recipe entity
         var result = jsonList.map((json) => RecipeModel.fromJson(json).toEntity()).toList();
         return result;
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
     } on DioException catch (e) {
+      // **NEU:** Prüfe, ob es ein Abbruchfehler war
+      if (e.type == DioExceptionType.cancel) {
+        debugPrint('Query search cancelled: ${e.message}');
+        throw CancelledException('Search was cancelled.'); // Wirf deine eigene CancelledException
+      }
       if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
         throw TimeoutException('The connection to the server timed out. Please try again later.');
       }
@@ -127,29 +127,33 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
         queryParams['maxMissingIngredients'] = maxMissingIngredients;
       }
 
-      final String endpoint = '/recipes/search/ingredients'; // **NEW: Correct backend endpoint for ingredient search**
+      final String endpoint = '/recipes/search/ingredients';
 
       debugPrint('[Frontend Data] Calling GET $endpoint with params: $queryParams');
 
       final Response response = await _apiClient.get(
         endpoint,
-        queryParameters: queryParams, // **Parameters sent as queryParameters for GET request**
+        queryParameters: queryParams,
         options: Options(
           sendTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 30),
         ),
-        cancelToken: cancelToken, // Use optional cancel token for request cancellation
+        cancelToken: cancelToken, // Pass the optional cancel token
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = response.data;
-        // Map from JSON to RecipeModel, then to Recipe entity
         var result = jsonList.map((json) => RecipeModel.fromJson(json).toEntity()).toList();
         return result;
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
     } on DioException catch (e) {
+      // **NEU:** Prüfe, ob es ein Abbruchfehler war
+      if (e.type == DioExceptionType.cancel) {
+        debugPrint('Ingredient search cancelled: ${e.message}');
+        throw CancelledException('Search was cancelled.'); // Wirf deine eigene CancelledException
+      }
       if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
         throw TimeoutException('The connection to the server timed out. Please try again later.');
       }
@@ -165,11 +169,11 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
     }
   }
 
-  // --- IMPLEMENTATION FOR getRecipeDetails (remains mostly same, just check endpoint) ---
+  // --- IMPLEMENTATION FOR getRecipeDetails ---
   @override
-  Future<RecipeDetails> getRecipeDetails(int recipeId) async {
+  Future<RecipeDetails> getRecipeDetails(int recipeId, {CancelToken? cancelToken}) async {
     try {
-      final String endpoint = '/recipes/$recipeId'; // **Confirmed: Correct backend endpoint**
+      final String endpoint = '/recipes/$recipeId';
 
       debugPrint('[Frontend Data] Calling GET $endpoint');
 
@@ -179,6 +183,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
           sendTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 20),
         ),
+        cancelToken: cancelToken, // Pass the optional cancel token
       );
 
       debugPrint('DEBUG API Response for recipe ID $recipeId: ${response.data}');
@@ -190,6 +195,11 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
     } on DioException catch (e) {
+      // **NEU:** Prüfe, ob es ein Abbruchfehler war
+      if (e.type == DioExceptionType.cancel) {
+        debugPrint('Recipe details fetch cancelled: ${e.message}');
+        throw CancelledException('Details fetch was cancelled.'); // Wirf deine eigene CancelledException
+      }
       if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
         throw TimeoutException('The connection to the server timed out. Please try again later.');
       }

@@ -1,5 +1,6 @@
 // lib/features/search/domain/usecases/search_recipes_by_query.dart
 
+import 'package:dio/dio.dart'; // Wichtig: Dio importieren, um CancelToken nutzen zu können
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/features/search/domain/repositories/recipe_repository.dart';
 
@@ -16,6 +17,7 @@ class SearchRecipesByQuery {
     String? sortBy,
     String? sortDirection,
     Map<String, dynamic>? filters,
+    CancelToken? cancelToken, // Optional cancel token for request cancellation
   }) async {
     // Ruft die spezifische Methode des Repositories für die Query-Suche auf
     return await repository.searchRecipesByQuery(
@@ -25,6 +27,7 @@ class SearchRecipesByQuery {
       sortBy: sortBy,
       sortDirection: sortDirection,
       filters: filters,
+      cancelToken: cancelToken, // <--- DIESE ZEILE MUSST DU HINZUFÜGEN
     );
   }
 }

@@ -1,5 +1,6 @@
 // lib/features/search/domain/usecases/search_recipes_by_ingredients.dart
 
+import 'package:dio/dio.dart'; // Wichtig: Dio importieren für CancelToken
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/features/search/domain/repositories/recipe_repository.dart';
 
@@ -14,6 +15,7 @@ class SearchRecipesByIngredients {
     int offset = 0,
     int number = 10,
     int? maxMissingIngredients,
+    CancelToken? cancelToken, // <--- Hinzufügen des optionalen CancelToken
   }) async {
     // Ruft die spezifische Methode des Repositories für die Zutatensuche auf
     return await repository.searchRecipesByIngredients(
@@ -21,6 +23,7 @@ class SearchRecipesByIngredients {
       offset: offset,
       number: number,
       maxMissingIngredients: maxMissingIngredients,
+      cancelToken: cancelToken, // <--- Wichtig: CancelToken hier weitergeben!
     );
   }
 }

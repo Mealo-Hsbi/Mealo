@@ -33,6 +33,14 @@ class CacheException extends AppException {
   }
 }
 
+class CancelledException implements Exception {
+  final String message;
+  const CancelledException(this.message);
+
+  @override
+  String toString() => 'CancelledException: $message';
+}
+
 class ClientException extends AppException {
   ClientException(String message, {int? statusCode}) : super(message, statusCode: statusCode);
 
