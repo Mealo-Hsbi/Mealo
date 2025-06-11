@@ -44,7 +44,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     super.initState();
     final apiClient = ApiClient();
     final dataSource = RecipeApiDataSourceImpl(apiClient);
-    final repository = RecipeRepositoryImpl(dataSource);
+    final repository = RecipeRepositoryImpl(remoteDataSource: dataSource);
     _getRecipeDetailsUseCase = GetRecipeDetails(repository);
 
     _fetchRecipeDetails();

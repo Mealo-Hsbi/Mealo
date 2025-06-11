@@ -63,8 +63,8 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           carbs: recipe.carbs,
           sugar: recipe.sugar,
           healthScore: recipe.healthScore,
-          matchingIngredientsCount: recipe.matchingIngredientsCount,
-          missingIngredientsCount: recipe.missingIngredientsCount,
+          matchingIngredientsCount: recipe.usedIngredientCount,
+          missingIngredientsCount: recipe.missedIngredientCount,
         );
       },
     );
