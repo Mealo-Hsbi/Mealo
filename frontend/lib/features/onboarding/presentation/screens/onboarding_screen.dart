@@ -22,15 +22,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   void dispose() {
-    // Systemleisten zurücksetzen
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _controller.dispose();
     super.dispose();
   }
 
   void _completeOnboarding() {
-    // TODO: Save preferences / call viewmodel
-    Navigator.of(context, rootNavigator: true).pop(); // direkt raus
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   @override
@@ -51,11 +49,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               final question = onboardingQuestions[index - 1];
               final answers = _responses.putIfAbsent(question.title, () => []);
-              return PreferenceChips(
-                title: question.title,
-                options: question.options.map((e) => e.label).toList(),
-                icons: question.options.map((e) => e.icon).toList(),
-                selection: answers,
+
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          if (question.questionIcon != null) ...[
+                            Icon(
+                              question.questionIcon,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                          Text(
+                            question.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                      PreferenceChips(
+                        title: '',
+                        options: question.options.map((e) => e.label).toList(),
+                        icons: question.options.map((e) => e.icon).toList(),
+                        selection: answers,
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -76,7 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: 120,
                 height: 120,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               Text(
                 'Willkommen bei Mealo!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -113,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildBottomControls(int totalPages) {
     return Positioned(
-      bottom: 24,
+      bottom: 30,
       left: 24,
       right: 24,
       child: Row(

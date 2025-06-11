@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 class OnboardingQuestion {
   final String title;
   final List<OnboardingOption> options;
+  final IconData? questionIcon;
 
-  OnboardingQuestion({required this.title, required this.options});
+  OnboardingQuestion({
+    required this.title,
+    required this.options,
+    this.questionIcon,
+  });
 }
 
 class OnboardingOption {
@@ -17,6 +22,7 @@ class OnboardingOption {
 final List<OnboardingQuestion> onboardingQuestions = [
   OnboardingQuestion(
     title: 'Was isst du gerne?',
+    questionIcon: Icons.restaurant_menu,
     options: [
       OnboardingOption(label: 'Vegan', icon: Icons.eco),
       OnboardingOption(label: 'Vegetarisch', icon: Icons.spa),
@@ -28,6 +34,7 @@ final List<OnboardingQuestion> onboardingQuestions = [
   ),
   OnboardingQuestion(
     title: 'Hast du Allergien?',
+    questionIcon: Icons.warning_amber,
     options: [
       OnboardingOption(label: 'Gluten', icon: Icons.no_food),
       OnboardingOption(label: 'Laktose', icon: Icons.icecream),
@@ -39,6 +46,7 @@ final List<OnboardingQuestion> onboardingQuestions = [
   ),
   OnboardingQuestion(
     title: 'Was ist dein Ziel?',
+    questionIcon: Icons.flag,
     options: [
       OnboardingOption(label: 'Abnehmen', icon: Icons.trending_down),
       OnboardingOption(label: 'Muskelaufbau', icon: Icons.fitness_center),
@@ -49,6 +57,7 @@ final List<OnboardingQuestion> onboardingQuestions = [
   ),
   OnboardingQuestion(
     title: 'Wie oft kochst du pro Woche?',
+    questionIcon: Icons.schedule,
     options: [
       OnboardingOption(label: 'Täglich', icon: Icons.restaurant),
       OnboardingOption(label: '2–3x', icon: Icons.schedule),
@@ -57,6 +66,7 @@ final List<OnboardingQuestion> onboardingQuestions = [
   ),
   OnboardingQuestion(
     title: 'Welche Geräte nutzt du?',
+    questionIcon: Icons.kitchen,
     options: [
       OnboardingOption(label: 'Ofen', icon: Icons.local_pizza),
       OnboardingOption(label: 'Mikrowelle', icon: Icons.microwave),
