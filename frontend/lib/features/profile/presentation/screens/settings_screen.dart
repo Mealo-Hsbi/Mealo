@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -31,6 +32,17 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.notifications),
             title: const Text('Notifications'),
             onTap: () {/* TODO */},
+          ),
+          ListTile(
+            leading: const Icon(Icons.tune),
+            title: const Text('Onboarding starten'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const OnboardingScreen(),
+                ),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.info),
