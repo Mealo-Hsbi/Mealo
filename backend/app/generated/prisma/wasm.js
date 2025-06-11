@@ -21,11 +21,11 @@ exports.$Enums = {}
 
 /**
  * Prisma Client JS version: 6.8.2
- * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+ * Query Engine version: bf0e5e8a04cada8225617067eaa03d041e2bba36
  */
 Prisma.prismaVersion = {
   client: "6.8.2",
-  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
+  engine: "bf0e5e8a04cada8225617067eaa03d041e2bba36"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -264,6 +264,25 @@ exports.Prisma.User_achievementScalarFieldEnum = {
   unlocked_at: 'unlocked_at'
 };
 
+exports.Prisma.Preference_optionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  label: 'label',
+  icon: 'icon',
+  question_id: 'question_id'
+};
+
+exports.Prisma.Preference_questionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  label: 'label'
+};
+
+exports.Prisma.User_preferenceScalarFieldEnum = {
+  user_id: 'user_id',
+  option_id: 'option_id'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -296,7 +315,10 @@ exports.Prisma.ModelName = {
   tags: 'tags',
   user_tags: 'user_tags',
   achievement: 'achievement',
-  user_achievement: 'user_achievement'
+  user_achievement: 'user_achievement',
+  preference_option: 'preference_option',
+  preference_question: 'preference_question',
+  user_preference: 'user_preference'
 };
 
 /**
