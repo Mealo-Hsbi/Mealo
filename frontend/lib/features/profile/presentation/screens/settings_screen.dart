@@ -37,11 +37,12 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.tune),
             title: const Text('Onboarding starten'),
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const OnboardingScreen(),
-                ),
-              );
+              Navigator.of(context, rootNavigator: true).push(
+              MaterialPageRoute(
+                fullscreenDialog: true, // optional: Slide von unten
+                builder: (_) => const OnboardingScreen(),
+              ),
+            );
             },
           ),
           ListTile(
