@@ -118,7 +118,7 @@ class SearchNotifier extends ChangeNotifier {
       _selectedIngredients.remove(ingredient);
     } else {
       _selectedIngredients.add(ingredient);
-      // _query = ''; // Diese Zeile wurde entfernt oder auskommentiert, damit Query bestehen bleibt
+      _query = ''; // Diese Zeile wurde entfernt oder auskommentiert, damit Query bestehen bleibt
       _filteredIngredientSuggestions = [];
     }
     _performSearch(isInitialLoad: true);

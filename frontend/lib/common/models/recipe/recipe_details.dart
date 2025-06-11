@@ -65,9 +65,20 @@ class RecipeDetails {
   factory RecipeDetails.fromJson(Map<String, dynamic> json) {
     // Clean up summary HTML
     final String? rawSummary = json['summary'] as String?;
-    final String? cleanSummary = rawSummary != null
-        ? HtmlUnescape().convert(rawSummary.replaceAll(RegExp(r'<[^>]*>'), ''))
-        : null;
+
+    // Hier die Änderung: HTML-Tags nicht komplett entfernen,
+    // sondern nur unerwünschte Tags wie <a href="...">
+    // Und dann HTML-Entities unescappen.
+    String? cleanSummary;
+    if (rawSummary != null) {
+      // Zuerst unerwünschte Tags (z.B. Links) entfernen, um die Anzeige zu vereinfachen.
+      // Behalte <b> und <strong> Tags.
+      String filteredSummary = rawSummary.replaceAll(RegExp(r'<a[^>]*>.*?</a>'), ''); // Entfernt <a> Tags
+      filteredSummary = filteredSummary.replaceAll(RegExp(r'<img[^>]*>'), ''); // Entfernt <img> Tags
+
+      // Dann HTML-Entities unescappen.
+      cleanSummary = HtmlUnescape().convert(filteredSummary);
+    }
 
     Nutrition? parsedNutrition;
     if (json['nutrition'] is Map<String, dynamic>) {
