@@ -1,18 +1,28 @@
-// lib/features/search/presentation/provider/search_notifier.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Für rootBundle
 
-import 'package:frontend/common/data/ingredients.dart';
+// Importe für Modelle und UseCase
+import 'package:frontend/common/data/ingredients.dart'; // Für allIngredients
 import 'package:frontend/common/models/ingredient.dart';
 import 'package:frontend/common/models/recipe.dart';
-import 'package:frontend/features/search/domain/usecases/search_recipes.dart';
+// **NEU:** Importiere beide spezifischen Use Cases
+import 'package:frontend/features/search/domain/usecases/search_recipes_by_query.dart';
+import 'package:frontend/features/search/domain/usecases/search_recipes_by_ingredients.dart';
 import 'package:frontend/common/utils/string_similarity_helper.dart';
+import 'package:frontend/core/error/failures.dart'; // Für Fehlerbehandlung
 
 class SearchNotifier extends ChangeNotifier {
-  final SearchRecipes _searchRecipesUsecase;
+  // **NEU:** Injektion beider spezifischer Use Cases
+  final SearchRecipesByQuery _searchRecipesByQueryUsecase;
+  final SearchRecipesByIngredients _searchRecipesByIngredientsUsecase;
 
-  SearchNotifier(this._searchRecipesUsecase);
+  // **NEU:** Konstruktor erwartet jetzt beide Use Cases
+  SearchNotifier({
+    required SearchRecipesByQuery searchRecipesByQueryUsecase,
+    required SearchRecipesByIngredients searchRecipesByIngredientsUsecase,
+  })  : _searchRecipesByQueryUsecase = searchRecipesByQueryUsecase,
+        _searchRecipesByIngredientsUsecase = searchRecipesByIngredientsUsecase;
 
   // --- State Variables ---
   String _query = '';
@@ -22,13 +32,16 @@ class SearchNotifier extends ChangeNotifier {
   bool _isLoading = false;
   bool _isFetchingMore = false;
   String? _errorMessage;
-  String _currentSortOption = 'relevance';
+  String _currentSortOption = 'relevance'; // Für Text-basierte Suche
   int _offset = 0;
   final int _number = 10;
   bool _hasMore = true;
   Timer? _debounceTimer;
   final Duration _debounceDuration = const Duration(milliseconds: 400);
   final Map<String, bool> _imageAvailabilityCache = {};
+
+  // Parameter für die maximale Anzahl fehlender Zutaten (relevant für Zutatensuche)
+  int _maxMissingIngredients = 2; // Standardwert, kann angepasst werden
 
 
   // --- Getters to expose state to UI ---
@@ -41,8 +54,13 @@ class SearchNotifier extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get currentSortOption => _currentSortOption;
   bool get hasMore => _hasMore;
-  Map<String, bool> get imageAvailabilityCache => _imageAvailabilityCache; // Expose cache
+  Map<String, bool> get imageAvailabilityCache => _imageAvailabilityCache;
+  int get maxMissingIngredients => _maxMissingIngredients;
 
+  /// **NEU:** Gibt an, ob erweiterte Sortieroptionen (wie Nährwerte) verfügbar sind.
+  /// Dies ist nur der Fall, wenn keine Zutaten ausgewählt sind und ein Suchbegriff vorhanden ist,
+  /// da nur die Textsuche diese Sortierung über die Spoonacular API unterstützt.
+  bool get isAdvancedSortingAvailable => _selectedIngredients.isEmpty && _query.isNotEmpty;
 
   // --- Init and Dispose Logic ---
   void initializeSearch(List<Ingredient> initialSelectedIngredients) {
@@ -59,25 +77,21 @@ class SearchNotifier extends ChangeNotifier {
     super.dispose();
   }
 
-
   // --- Business Logic Methods ---
   void _updateCacheForIngredients(List<Ingredient> ingredients) {
     for (final ingredient in ingredients) {
       final imageUrl = ingredient.imageUrl;
       if (imageUrl != null && imageUrl.startsWith('assets/') && !_imageAvailabilityCache.containsKey(imageUrl)) {
         _canLoadImage(imageUrl).then((result) {
-          if (hasListeners) { // Check if there are listeners before updating
+          if (hasListeners) {
             _imageAvailabilityCache[imageUrl] = result;
-            // No need to call notifyListeners() for each individual image,
-            // as this is a background cache. The UI will request images as needed.
           }
         });
-        _imageAvailabilityCache[imageUrl] = false; // Mark as potentially unavailable until checked
+        _imageAvailabilityCache[imageUrl] = false;
       }
     }
   }
 
-  // NOTE: This should probably be moved to a more generic Utility class
   Future<bool> _canLoadImage(String? path) async {
     if (path == null || !path.startsWith('assets/')) return false;
     try {
@@ -96,7 +110,7 @@ class SearchNotifier extends ChangeNotifier {
       threshold: 0.3,
     );
     _updateCacheForIngredients([..._selectedIngredients, ..._filteredIngredientSuggestions]);
-    notifyListeners(); // Notify UI about suggestion changes
+    notifyListeners();
   }
 
   void toggleIngredient(Ingredient ingredient) {
@@ -104,27 +118,25 @@ class SearchNotifier extends ChangeNotifier {
       _selectedIngredients.remove(ingredient);
     } else {
       _selectedIngredients.add(ingredient);
-      _query = ''; // Clear query on ingredient selection
-      _filteredIngredientSuggestions = []; // Clear suggestions
+      // _query = ''; // Diese Zeile wurde entfernt oder auskommentiert, damit Query bestehen bleibt
+      _filteredIngredientSuggestions = [];
     }
     _performSearch(isInitialLoad: true);
-    notifyListeners(); // Notify UI about selected ingredients change
+    notifyListeners();
   }
 
   void onSearchChanged(String value) {
     _query = value;
-    _updateFilteredSuggestions(); // Update filtered suggestions immediately
+
+    _updateFilteredSuggestions();
 
     _debounceTimer?.cancel();
     _debounceTimer = Timer(_debounceDuration, () {
-      _performSearch(isInitialLoad: true); // Perform actual search after debounce
-    });
-    notifyListeners(); // Notify UI about query change
-  }
-
-  Future<void> _performSearch({bool isInitialLoad = false}) async {
-    if (isInitialLoad) {
-      if (_query.isEmpty && _selectedIngredients.isEmpty) {
+      // Suche nur auslösen, wenn tatsächlich Kriterien vorhanden sind (Query oder Zutaten)
+      if (_query.isNotEmpty || _selectedIngredients.isNotEmpty) {
+        _performSearch(isInitialLoad: true);
+      } else {
+        // Wenn keine Kriterien, UI zurücksetzen (Leere Ergebnisse, keine Ladeanzeige)
         _searchResults = [];
         _errorMessage = null;
         _isLoading = false;
@@ -132,9 +144,46 @@ class SearchNotifier extends ChangeNotifier {
         _offset = 0;
         _hasMore = true;
         notifyListeners();
-        return;
       }
+    });
+    notifyListeners();
+  }
 
+  void setMaxMissingIngredients(int value) {
+    if (_maxMissingIngredients != value) {
+      _maxMissingIngredients = value;
+      notifyListeners();
+      if (_selectedIngredients.isNotEmpty) {
+        _performSearch(isInitialLoad: true);
+      }
+    }
+  }
+
+  Future<void> refreshSearch() async {
+    _offset = 0;
+    _hasMore = true;
+    await _performSearch(isInitialLoad: true);
+  }
+
+  /// Führt die eigentliche Suche basierend auf dem aktuellen Zustand (Query vs. Zutaten) durch.
+  /// Priorisiert Zutatensuche, wenn selectedIngredients vorhanden sind.
+  /// Andernfalls wird eine Query-Suche durchgeführt (sofern ein Query vorhanden ist).
+  Future<void> _performSearch({bool isInitialLoad = false}) async {
+    final bool hasQuery = _query.isNotEmpty;
+    final bool hasIngredients = _selectedIngredients.isNotEmpty;
+
+    if (!hasQuery && !hasIngredients) {
+      _searchResults = [];
+      _errorMessage = null;
+      _isLoading = false;
+      _isFetchingMore = false;
+      _offset = 0;
+      _hasMore = true;
+      notifyListeners();
+      return;
+    }
+
+    if (isInitialLoad) {
       _isLoading = true;
       _errorMessage = null;
       _searchResults = [];
@@ -147,30 +196,47 @@ class SearchNotifier extends ChangeNotifier {
       notifyListeners();
     }
 
-    String? sortBy;
-    String? sortDirection;
-    if (_currentSortOption != 'relevance') {
-      final parts = _currentSortOption.split('_');
-      sortBy = parts[0];
-      sortDirection = parts[1];
-    }
-
     try {
-      final results = await _searchRecipesUsecase.call(
-        query: _query,
-        selectedIngredients: _selectedIngredients,
-        offset: _offset,
-        number: _number,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
-      );
+      List<Recipe> results = [];
+
+      // Logik zur Priorisierung der Suche:
+      // Wenn Zutaten ausgewählt sind, führe die Zutatensuche durch.
+      // Andernfalls, wenn ein Query vorhanden ist, führe die Query-Suche durch.
+      if (hasIngredients) {
+        debugPrint('Performing ingredient search with: ${_selectedIngredients.map((i) => i.name).toList()}');
+        results = await _searchRecipesByIngredientsUsecase.call(
+          ingredients: _selectedIngredients.map((i) => i.name).toList(),
+          offset: _offset,
+          number: _number,
+          maxMissingIngredients: _maxMissingIngredients,
+        );
+        // HINWEIS: sortBy/sortDirection ist hier nicht anwendbar, da Spoonacular findByIngredients diese nicht unterstützt.
+      } else if (hasQuery) {
+        debugPrint('Performing query search with: $_query');
+        String? sortBy;
+        String? sortDirection;
+        if (_currentSortOption != 'relevance') {
+          final parts = _currentSortOption.split('_');
+          sortBy = parts[0];
+          sortDirection = parts[1];
+        }
+        results = await _searchRecipesByQueryUsecase.call(
+          query: _query,
+          offset: _offset,
+          number: _number,
+          sortBy: sortBy,
+          sortDirection: sortDirection,
+        );
+      } else {
+        debugPrint('No valid search criteria (query or ingredients) provided.');
+      }
 
       if (isInitialLoad) {
         _searchResults = results;
       } else {
         _searchResults.addAll(results);
       }
-      
+
       _isLoading = false;
       _isFetchingMore = false;
       _hasMore = results.length == _number;
@@ -178,12 +244,18 @@ class SearchNotifier extends ChangeNotifier {
         _hasMore = false;
       }
       notifyListeners();
-    } catch (e) {
-      _errorMessage = 'Error fetching recipes: ${e.toString()}';
+    } on Failure catch (e) {
+      _errorMessage = e.message;
       _isLoading = false;
       _isFetchingMore = false;
       notifyListeners();
-      debugPrint('Error during recipe search: $e'); // Use debugPrint for console output
+      debugPrint('Error during recipe search: ${e.toString()}');
+    } catch (e) {
+      _errorMessage = 'Ein unerwarteter Fehler ist aufgetreten: ${e.toString()}';
+      _isLoading = false;
+      _isFetchingMore = false;
+      notifyListeners();
+      debugPrint('Unexpected error during recipe search: $e');
     }
   }
 
@@ -194,9 +266,15 @@ class SearchNotifier extends ChangeNotifier {
     await _performSearch(isInitialLoad: false);
   }
 
+  /// Ändert die Sortieroption und löst eine neue Suche aus, wenn die erweiterte Sortierung verfügbar ist.
   void onSortOptionSelected(String selectedOption) {
     _currentSortOption = selectedOption;
-    _performSearch(isInitialLoad: true);
+    // Sortierung nur auslösen, wenn erweiterte Sortierung verfügbar ist (d.h. Textsuche aktiv)
+    if (isAdvancedSortingAvailable) { // Verwende den neuen Getter
+      _performSearch(isInitialLoad: true);
+    } else {
+      debugPrint('Sort option changed, but not applied because advanced sorting is not available for current search type.');
+    }
     notifyListeners();
   }
 }

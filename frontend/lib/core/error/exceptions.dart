@@ -33,6 +33,23 @@ class CacheException extends AppException {
   }
 }
 
+class CancelledException implements Exception {
+  final String message;
+  const CancelledException(this.message);
+
+  @override
+  String toString() => 'CancelledException: $message';
+}
+
+class ClientException extends AppException {
+  ClientException(String message, {int? statusCode}) : super(message, statusCode: statusCode);
+
+  @override
+  String toString() {
+    return 'ClientException: $message' + (statusCode != null ? ' (Status: $statusCode)' : '');
+  }
+}
+
 /// Exception thrown for network connectivity issues.
 class NetworkException extends AppException {
   NetworkException(String message) : super(message);
@@ -43,15 +60,12 @@ class NetworkException extends AppException {
   }
 }
 
-// You might also want to define your TimeoutException here if it's custom.
-// However, Dart's `dart:async` already provides a `TimeoutException` class,
-// which is often sufficient if you just need to re-throw it.
-// If you want to wrap it or add more context, you could:
-// class CustomTimeoutException extends AppException {
-//   CustomTimeoutException(String message) : super(message);
-//
-//   @override
-//   String toString() {
-//     return 'CustomTimeoutException: $message';
-//   }
-// }
+// **NEU:** Custom TimeoutException, abgeleitet von AppException
+class TimeoutException extends AppException {
+  TimeoutException(String message, {int? statusCode}) : super(message, statusCode: statusCode);
+
+  @override
+  String toString() {
+    return 'TimeoutException: $message' + (statusCode != null ? ' (Status: $statusCode)' : '');
+  }
+}

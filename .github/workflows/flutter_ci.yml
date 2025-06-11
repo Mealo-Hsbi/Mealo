@@ -11,7 +11,6 @@ jobs:
     name: Analyse & Tests (frontend)
     runs-on: ubuntu-latest
 
-    # Hier geben wir an, dass alle `run:`-Schritte im Unterordner "frontend" ausgeführt werden
     defaults:
       run:
         working-directory: frontend
@@ -30,3 +29,50 @@ jobs:
 
       - name: Unit- & Widget-Tests
         run: flutter test --coverage
+
+  build_apk_and_release: # <-- NEUER JOB
+    name: Build APK & Release
+    runs-on: ubuntu-latest
+    needs: analyze_and_test # <-- Dieser Job wird nur ausgeführt, wenn 'analyze_and_test' erfolgreich war
+
+    defaults:
+      run:
+        working-directory: frontend # Bleibt im 'frontend'-Ordner
+
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+
+      - name: Dependencies holen
+        run: flutter pub get # Nochmals Abhängigkeiten holen (oder Cache nutzen, siehe unten)
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Flutter benötigt Java für den Android-Build
+
+      - name: Build Android APK (Release)
+        run: flutter build apk --release # Baut die Release-APK
+
+      - name: Upload APK to Release
+        uses: softprops/action-gh-release@v1
+        # Die 'if'-Bedingung sorgt dafür, dass ein Release nur bei einem Push auf 'main' erstellt wird
+        # und nicht bei einem Pull Request.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          files: frontend/build/app/outputs/flutter-apk/app-release.apk # Pfad zur APK in deinem 'frontend'-Ordner
+          name: APK Build ${{ github.run_number }} # Name des Releases, z.B. "APK Build 123"
+          tag_name: apk-build-${{ github.run_number }} # Eindeutiger Tag für das Release
+          body: |
+            Automatisch generierte APK von Build ${{ github.run_number }}.
+            Commit: ${{ github.sha }}
+            
+            Dieser Build wurde nach erfolgreichen Tests erstellt.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Das von GitHub bereitgestellte Token

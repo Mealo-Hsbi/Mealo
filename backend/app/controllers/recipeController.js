@@ -1,27 +1,58 @@
 // controllers/recipeController.js
-const { searchSpoonacularRecipes, getSpoonacularRecipeDetails } = require('../services/spoonacularService');
+const { searchRecipesByQuery, searchRecipesByIngredients, getSpoonacularRecipeDetails } = require('../services/spoonacularService');
 
 
-const searchRecipes = async (req, res) => {
-    // DIESER LOG MUSS ERSCHEINEN, WENN DIE ANFRAGE DIE CONTROLLER-FUNKTION ERREICHT!
-
-    const { query, ingredients, offset, number, filters, sortBy, sortDirection } = req.body;
-
+const getRecipesByQuery = async (req, res) => {
     try {
-        const recipes = await searchSpoonacularRecipes({
+        // Parameter für die Textsuche kommen aus req.query
+        const { query, offset, number, sortBy, sortDirection } = req.query;
+        const filters = {
+            minCalories: req.query.minCalories,
+            maxCalories: req.query.maxCalories,
+            diet: req.query.diet,
+            intolerances: req.query.intolerances,
+        };
+
+        const recipes = await searchRecipesByQuery({
             query,
-            ingredients,
-            offset,
-            number,
+            offset: parseInt(offset) || 0, // Standardwert 0, falls nicht gesetzt
+            number: parseInt(number) || 10, // Standardwert 10, falls nicht gesetzt
             filters,
             sortBy,
-            sortDirection
+            sortDirection,
         });
 
         return res.json(recipes);
 
     } catch (error) {
-        console.error('[BACKEND DEBUG - CONTROLLER] Error in controller:', error);
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in getRecipesByQuery controller:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Internal server error';
+        return res.status(statusCode).json({ message });
+    }
+};
+
+const getRecipesByIngredients = async (req, res) => {
+    try {
+        // Parameter für die Zutatensuche kommen aus req.query
+        const { ingredients, offset, number, maxMissingIngredients } = req.query;
+
+        // Zutaten kommen als kommaseparierter String, hier als Array splitten
+        // Nur splitten, wenn ingredients vorhanden ist, sonst bleibt es ein leeres Array
+        const ingredientsArray = ingredients ? ingredients.split(',') : [];
+
+        const recipes = await searchRecipesByIngredients({
+            ingredients: ingredientsArray,
+            offset: parseInt(offset) || 0, // Standardwert 0, falls nicht gesetzt
+            number: parseInt(number) || 10, // Standardwert 10, falls nicht gesetzt
+            // maxMissingIngredients als Zahl parsen. undefined, wenn nicht gesetzt, damit der Service-Standard greift.
+            maxMissingIngredients: maxMissingIngredients !== undefined ? parseInt(maxMissingIngredients) : undefined,
+        });
+
+        return res.json(recipes);
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in getRecipesByIngredients controller:', error);
         const statusCode = error.status || 500;
         const message = error.message || 'Internal server error';
         return res.status(statusCode).json({ message });
@@ -46,13 +77,15 @@ const getRecipeDetails = async (req, res) => {
         res.json(recipeDetails);
     } catch (error) {
         console.error('Error in getRecipeDetails controller:', error.message);
-        const statusCode = error.response ? error.response.status : 500;
-        const errorMessage = error.response && error.response.data ? error.response.data.message : 'Failed to fetch recipe details.';
+        // Anpassung der Fehlerantwort, um konsistent zu sein
+        const statusCode = error.status || error.response?.status || 500;
+        const errorMessage = error.message || error.response?.data?.message || 'Failed to fetch recipe details.';
         res.status(statusCode).json({ message: errorMessage });
     }
 };
 
 module.exports = {
-    searchRecipes,
-    getRecipeDetails, // NEU: Exportiere die Funktion
+    getRecipesByQuery,      // Exportiere die neue Funktion für Query-Suche
+    getRecipesByIngredients, // Exportiere die neue Funktion für Zutatensuche
+    getRecipeDetails,
 };
