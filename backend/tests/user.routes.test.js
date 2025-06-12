@@ -90,7 +90,7 @@ describe("User-Routes", () => {
     it("401 ohne Header", async () => {
       const res = await request(app).get("/api/users/me");
       expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty("message", "Kein Token");
+      expect(res.body).toHaveProperty("message", "Kein Token übergeben.");
     });
 
     it("401 bei falschem Header-Format", async () => {
