@@ -35,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.tune),
-            title: const Text('Onboarding starten'),
+            title: const Text('Start Onboarding'),
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
               MaterialPageRoute(

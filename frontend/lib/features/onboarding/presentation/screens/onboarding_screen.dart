@@ -15,7 +15,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  // key = questionKey, value = list of selected optionKeys
   final Map<String, List<String>> _responses = {};
 
   @override
@@ -32,7 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await OnboardingApi().submitPreferences(allSelected);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Fehler beim Speichern der Präferenzen.')),
+        const SnackBar(content: Text('Error saving preferences.')),
       );
       return;
     }
@@ -128,7 +127,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 32),
               Text(
-                'Willkommen bei Mealo!',
+                'Welcome to Mealo!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.normal,
                     ),
@@ -136,7 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Lass uns deine Vorlieben kennenlernen.',
+                'Let’s get to know your preferences.',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -153,9 +152,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: const [
               Icon(Icons.check_circle_outline, size: 80, color: Colors.green),
               SizedBox(height: 24),
-              Text('Du bist bereit!', style: TextStyle(fontSize: 24)),
+              Text('You’re ready!', style: TextStyle(fontSize: 24)),
               SizedBox(height: 12),
-              Text('Du kannst deine Angaben später jederzeit anpassen.'),
+              Text('You can always adjust your settings later.'),
             ],
           ),
         ),
@@ -170,7 +169,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton(
-            child: const Text('Zurück'),
+            child: const Text('Back'),
             onPressed: _currentPage > 0
                 ? () => _controller.previousPage(
                       duration: const Duration(milliseconds: 300),
@@ -195,7 +194,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
           TextButton(
-            child: Text(_currentPage == totalPages - 1 ? 'Fertig' : 'Weiter'),
+            child: Text(_currentPage == totalPages - 1 ? 'Finish' : 'Next'),
             onPressed: () {
               if (_currentPage == totalPages - 1) {
                 _completeOnboarding();
