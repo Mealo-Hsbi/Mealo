@@ -132,20 +132,22 @@ model shopping_list_item {
 }
 
 model users {
-  id               String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  firebase_uid     String             @unique
-  email            String?
-  created_at       DateTime           @default(now()) @db.Timestamptz(6)
-  name             String?
-  avatar_url       String?
-  favorites        favorites[]
-  inventory        inventory[]
-  ratings          ratings[]
-  recipes          recipes[]
-  shopping_list    shopping_list[]
-  user_achievement user_achievement[]
-  user_tags        user_tags[]
-  weekly_plan      weekly_plan[]
+  id                       String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  firebase_uid             String             @unique
+  email                    String?
+  created_at               DateTime           @default(now()) @db.Timestamptz(6)
+  name                     String?
+  avatar_url               String?
+  has_completed_onboarding Boolean            @default(false)
+  favorites                favorites[]
+  inventory                inventory[]
+  ratings                  ratings[]
+  recipes                  recipes[]
+  shopping_list            shopping_list[]
+  user_achievement         user_achievement[]
+  user_preference          user_preference[]
+  user_tags                user_tags[]
+  weekly_plan              weekly_plan[]
 }
 
 model weekly_plan {
@@ -204,4 +206,32 @@ model user_achievement {
   users          users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_ua_user")
 
   @@id([user_id, achievement_id], map: "pk_user_achievement")
+}
+
+model preference_option {
+  id                  String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  key                 String
+  label               String
+  icon                String?
+  question_id         String              @db.Uuid
+  preference_question preference_question @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user_preference     user_preference[]
+
+  @@unique([key, question_id])
+}
+
+model preference_question {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  key               String              @unique
+  label             String
+  preference_option preference_option[]
+}
+
+model user_preference {
+  user_id           String            @db.Uuid
+  option_id         String            @db.Uuid
+  preference_option preference_option @relation(fields: [option_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users             users             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([user_id, option_id])
 }
