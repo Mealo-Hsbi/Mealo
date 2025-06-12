@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 class PreferenceChips extends StatelessWidget {
   final String title;
-  final List<String> options;
+  final List<String> options;              // Das sind die Labels für die Anzeige
   final List<IconData?>? icons;
-  final List<String> selection;
+  final List<String> selection;            // Labels der aktuell ausgewählten Optionen
+  final void Function(String)? onChanged;  // Wird bei Auswahl/Umschaltung aufgerufen
 
   const PreferenceChips({
     super.key,
@@ -12,6 +13,7 @@ class PreferenceChips extends StatelessWidget {
     required this.options,
     required this.selection,
     this.icons,
+    this.onChanged,
   });
 
   @override
@@ -20,7 +22,7 @@ class PreferenceChips extends StatelessWidget {
 
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 32), // << Nur seitlich + unten
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
         child: Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -32,7 +34,11 @@ class PreferenceChips extends StatelessWidget {
 
             return FilterChip(
               avatar: icon != null
-                  ? Icon(icon, size: 18, color: isSelected ? theme.colorScheme.onPrimary : Colors.grey)
+                  ? Icon(
+                      icon,
+                      size: 18,
+                      color: isSelected ? theme.colorScheme.onPrimary : Colors.grey,
+                    )
                   : null,
               label: Text(
                 option,
@@ -47,14 +53,7 @@ class PreferenceChips extends StatelessWidget {
               elevation: 1,
               pressElevation: 3,
               showCheckmark: false,
-              onSelected: (selected) {
-                if (selected) {
-                  selection.add(option);
-                } else {
-                  selection.remove(option);
-                }
-                (context as Element).markNeedsBuild();
-              },
+              onSelected: (_) => onChanged?.call(option),
             );
           }),
         ),

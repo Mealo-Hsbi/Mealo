@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../data/onboarding_questions.dart';
 import '../widget/preference_chips.dart';
+import '../../data/onboarding_api.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -13,12 +14,9 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
-  final Map<String, List<String>> _responses = {};
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  // key = questionKey, value = list of selected optionKeys
+  final Map<String, List<String>> _responses = {};
 
   @override
   void dispose() {
@@ -27,7 +25,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  void _completeOnboarding() {
+  Future<void> _completeOnboarding() async {
+    final allSelected = _responses.values.expand((list) => list).toList();
+
+    try {
+      await OnboardingApi().submitPreferences(allSelected);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Fehler beim Speichern der Präferenzen.')),
+      );
+      return;
+    }
+
     Navigator.of(context, rootNavigator: true).pop();
   }
 
@@ -48,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               if (index == totalPages - 1) return _buildSummary();
 
               final question = onboardingQuestions[index - 1];
-              final answers = _responses.putIfAbsent(question.title, () => []);
+              final answers = _responses.putIfAbsent(question.questionKey, () => []);
 
               return Center(
                 child: Padding(
@@ -57,32 +66,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        children: [
-                          if (question.questionIcon != null) ...[
-                            Icon(
-                              question.questionIcon,
-                              size: 64,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                          Text(
-                            question.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 32),
-                        ],
+                      if (question.questionIcon != null) ...[
+                        Icon(
+                          question.questionIcon,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      Text(
+                        question.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
                       ),
+                      const SizedBox(height: 32),
                       PreferenceChips(
                         title: '',
                         options: question.options.map((e) => e.label).toList(),
                         icons: question.options.map((e) => e.icon).toList(),
-                        selection: answers,
+                        selection: question.options
+                            .where((o) => answers.contains(o.key))
+                            .map((o) => o.label)
+                            .toList(),
+                        onChanged: (selectedLabel) {
+                          final option = question.options.firstWhere(
+                              (e) => e.label == selectedLabel);
+                          setState(() {
+                            if (answers.contains(option.key)) {
+                              answers.remove(option.key);
+                            } else {
+                              answers.add(option.key);
+                            }
+                          });
+                        },
                       ),
                     ],
                   ),

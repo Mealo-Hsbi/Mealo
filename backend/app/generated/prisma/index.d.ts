@@ -481,7 +481,7 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.8.2
+   * Prisma Client JS version: 6.9.0
    * Query Engine version: bf0e5e8a04cada8225617067eaa03d041e2bba36
    */
   export type PrismaVersion = {
