@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../onboarding/presentation/screens/onboarding_screen.dart';
+import 'about-mealo_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -48,7 +49,13 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('About Mealo'),
-            onTap: () {/* TODO */},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AboutMealoScreen(),
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
