@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class PreferenceChips extends StatelessWidget {
   final String title;
-  final List<String> options;              // Das sind die Labels für die Anzeige
+  final List<String> options;
   final List<IconData?>? icons;
-  final List<String> selection;            // Labels der aktuell ausgewählten Optionen
-  final void Function(String)? onChanged;  // Wird bei Auswahl/Umschaltung aufgerufen
+  final List<String> selection;
+  final void Function(String)? onChanged;
 
   const PreferenceChips({
     super.key,
