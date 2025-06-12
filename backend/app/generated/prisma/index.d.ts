@@ -12509,6 +12509,7 @@ export namespace Prisma {
     created_at: Date | null
     name: string | null
     avatar_url: string | null
+    has_completed_onboarding: boolean | null
   }
 
   export type UsersMaxAggregateOutputType = {
@@ -12518,6 +12519,7 @@ export namespace Prisma {
     created_at: Date | null
     name: string | null
     avatar_url: string | null
+    has_completed_onboarding: boolean | null
   }
 
   export type UsersCountAggregateOutputType = {
@@ -12527,6 +12529,7 @@ export namespace Prisma {
     created_at: number
     name: number
     avatar_url: number
+    has_completed_onboarding: number
     _all: number
   }
 
@@ -12538,6 +12541,7 @@ export namespace Prisma {
     created_at?: true
     name?: true
     avatar_url?: true
+    has_completed_onboarding?: true
   }
 
   export type UsersMaxAggregateInputType = {
@@ -12547,6 +12551,7 @@ export namespace Prisma {
     created_at?: true
     name?: true
     avatar_url?: true
+    has_completed_onboarding?: true
   }
 
   export type UsersCountAggregateInputType = {
@@ -12556,6 +12561,7 @@ export namespace Prisma {
     created_at?: true
     name?: true
     avatar_url?: true
+    has_completed_onboarding?: true
     _all?: true
   }
 
@@ -12638,6 +12644,7 @@ export namespace Prisma {
     created_at: Date
     name: string | null
     avatar_url: string | null
+    has_completed_onboarding: boolean
     _count: UsersCountAggregateOutputType | null
     _min: UsersMinAggregateOutputType | null
     _max: UsersMaxAggregateOutputType | null
@@ -12664,6 +12671,7 @@ export namespace Prisma {
     created_at?: boolean
     name?: boolean
     avatar_url?: boolean
+    has_completed_onboarding?: boolean
     favorites?: boolean | users$favoritesArgs<ExtArgs>
     inventory?: boolean | users$inventoryArgs<ExtArgs>
     ratings?: boolean | users$ratingsArgs<ExtArgs>
@@ -12683,6 +12691,7 @@ export namespace Prisma {
     created_at?: boolean
     name?: boolean
     avatar_url?: boolean
+    has_completed_onboarding?: boolean
   }, ExtArgs["result"]["users"]>
 
 
@@ -12693,9 +12702,10 @@ export namespace Prisma {
     created_at?: boolean
     name?: boolean
     avatar_url?: boolean
+    has_completed_onboarding?: boolean
   }
 
-  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firebase_uid" | "email" | "created_at" | "name" | "avatar_url", ExtArgs["result"]["users"]>
+  export type usersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firebase_uid" | "email" | "created_at" | "name" | "avatar_url" | "has_completed_onboarding", ExtArgs["result"]["users"]>
   export type usersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     favorites?: boolean | users$favoritesArgs<ExtArgs>
     inventory?: boolean | users$inventoryArgs<ExtArgs>
@@ -12730,6 +12740,7 @@ export namespace Prisma {
       created_at: Date
       name: string | null
       avatar_url: string | null
+      has_completed_onboarding: boolean
     }, ExtArgs["result"]["users"]>
     composites: {}
   }
@@ -13138,6 +13149,7 @@ export namespace Prisma {
     readonly created_at: FieldRef<"users", 'DateTime'>
     readonly name: FieldRef<"users", 'String'>
     readonly avatar_url: FieldRef<"users", 'String'>
+    readonly has_completed_onboarding: FieldRef<"users", 'Boolean'>
   }
     
 
@@ -22703,7 +22715,8 @@ export namespace Prisma {
     email: 'email',
     created_at: 'created_at',
     name: 'name',
-    avatar_url: 'avatar_url'
+    avatar_url: 'avatar_url',
+    has_completed_onboarding: 'has_completed_onboarding'
   };
 
   export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -23576,6 +23589,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"users"> | Date | string
     name?: StringNullableFilter<"users"> | string | null
     avatar_url?: StringNullableFilter<"users"> | string | null
+    has_completed_onboarding?: BoolFilter<"users"> | boolean
     favorites?: FavoritesListRelationFilter
     inventory?: InventoryListRelationFilter
     ratings?: RatingsListRelationFilter
@@ -23594,6 +23608,7 @@ export namespace Prisma {
     created_at?: SortOrder
     name?: SortOrderInput | SortOrder
     avatar_url?: SortOrderInput | SortOrder
+    has_completed_onboarding?: SortOrder
     favorites?: favoritesOrderByRelationAggregateInput
     inventory?: inventoryOrderByRelationAggregateInput
     ratings?: ratingsOrderByRelationAggregateInput
@@ -23615,6 +23630,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"users"> | Date | string
     name?: StringNullableFilter<"users"> | string | null
     avatar_url?: StringNullableFilter<"users"> | string | null
+    has_completed_onboarding?: BoolFilter<"users"> | boolean
     favorites?: FavoritesListRelationFilter
     inventory?: InventoryListRelationFilter
     ratings?: RatingsListRelationFilter
@@ -23633,6 +23649,7 @@ export namespace Prisma {
     created_at?: SortOrder
     name?: SortOrderInput | SortOrder
     avatar_url?: SortOrderInput | SortOrder
+    has_completed_onboarding?: SortOrder
     _count?: usersCountOrderByAggregateInput
     _max?: usersMaxOrderByAggregateInput
     _min?: usersMinOrderByAggregateInput
@@ -23648,6 +23665,7 @@ export namespace Prisma {
     created_at?: DateTimeWithAggregatesFilter<"users"> | Date | string
     name?: StringNullableWithAggregatesFilter<"users"> | string | null
     avatar_url?: StringNullableWithAggregatesFilter<"users"> | string | null
+    has_completed_onboarding?: BoolWithAggregatesFilter<"users"> | boolean
   }
 
   export type weekly_planWhereInput = {
@@ -24798,6 +24816,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -24816,6 +24835,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -24834,6 +24854,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -24852,6 +24873,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
@@ -24870,6 +24892,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
   }
 
   export type usersUpdateManyMutationInput = {
@@ -24879,6 +24902,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type usersUncheckedUpdateManyInput = {
@@ -24888,6 +24912,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type weekly_planCreateInput = {
@@ -26163,6 +26188,7 @@ export namespace Prisma {
     created_at?: SortOrder
     name?: SortOrder
     avatar_url?: SortOrder
+    has_completed_onboarding?: SortOrder
   }
 
   export type usersMaxOrderByAggregateInput = {
@@ -26172,6 +26198,7 @@ export namespace Prisma {
     created_at?: SortOrder
     name?: SortOrder
     avatar_url?: SortOrder
+    has_completed_onboarding?: SortOrder
   }
 
   export type usersMinOrderByAggregateInput = {
@@ -26181,6 +26208,7 @@ export namespace Prisma {
     created_at?: SortOrder
     name?: SortOrder
     avatar_url?: SortOrder
+    has_completed_onboarding?: SortOrder
   }
 
   export type weekly_planCountOrderByAggregateInput = {
@@ -28201,6 +28229,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
@@ -28218,6 +28247,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
@@ -28318,6 +28348,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
@@ -28335,6 +28366,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
@@ -28542,6 +28574,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
@@ -28559,6 +28592,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
@@ -28629,6 +28663,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
@@ -28646,6 +28681,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
@@ -28724,6 +28760,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     recipes?: recipesCreateNestedManyWithoutUsersInput
@@ -28741,6 +28778,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     recipes?: recipesUncheckedCreateNestedManyWithoutUsersInput
@@ -28841,6 +28879,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     recipes?: recipesUpdateManyWithoutUsersNestedInput
@@ -28858,6 +28897,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     recipes?: recipesUncheckedUpdateManyWithoutUsersNestedInput
@@ -29297,6 +29337,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -29314,6 +29355,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -29468,6 +29510,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -29485,6 +29528,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
@@ -29552,6 +29596,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -29569,6 +29614,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -29657,6 +29703,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -29674,6 +29721,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
@@ -30324,6 +30372,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -30341,6 +30390,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -30414,6 +30464,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -30431,6 +30482,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
@@ -30693,6 +30745,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -30710,6 +30763,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -30764,6 +30818,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -30781,6 +30836,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
@@ -30857,6 +30913,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -30874,6 +30931,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -30936,6 +30994,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -30953,6 +31012,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput
@@ -31118,6 +31178,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesCreateNestedManyWithoutUsersInput
     inventory?: inventoryCreateNestedManyWithoutUsersInput
     ratings?: ratingsCreateNestedManyWithoutUsersInput
@@ -31135,6 +31196,7 @@ export namespace Prisma {
     created_at?: Date | string
     name?: string | null
     avatar_url?: string | null
+    has_completed_onboarding?: boolean
     favorites?: favoritesUncheckedCreateNestedManyWithoutUsersInput
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutUsersInput
@@ -31195,6 +31257,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUpdateManyWithoutUsersNestedInput
@@ -31212,6 +31275,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    has_completed_onboarding?: BoolFieldUpdateOperationsInput | boolean
     favorites?: favoritesUncheckedUpdateManyWithoutUsersNestedInput
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutUsersNestedInput

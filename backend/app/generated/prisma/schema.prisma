@@ -132,21 +132,22 @@ model shopping_list_item {
 }
 
 model users {
-  id               String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  firebase_uid     String             @unique
-  email            String?
-  created_at       DateTime           @default(now()) @db.Timestamptz(6)
-  name             String?
-  avatar_url       String?
-  favorites        favorites[]
-  inventory        inventory[]
-  ratings          ratings[]
-  recipes          recipes[]
-  shopping_list    shopping_list[]
-  user_achievement user_achievement[]
-  user_preference  user_preference[]
-  user_tags        user_tags[]
-  weekly_plan      weekly_plan[]
+  id                       String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  firebase_uid             String             @unique
+  email                    String?
+  created_at               DateTime           @default(now()) @db.Timestamptz(6)
+  name                     String?
+  avatar_url               String?
+  has_completed_onboarding Boolean            @default(false)
+  favorites                favorites[]
+  inventory                inventory[]
+  ratings                  ratings[]
+  recipes                  recipes[]
+  shopping_list            shopping_list[]
+  user_achievement         user_achievement[]
+  user_preference          user_preference[]
+  user_tags                user_tags[]
+  weekly_plan              weekly_plan[]
 }
 
 model weekly_plan {
