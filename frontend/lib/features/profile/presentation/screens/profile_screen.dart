@@ -66,7 +66,6 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 🔝 Headerbild
                   SizedBox(
                     height: kHeaderHeight,
                     width: double.infinity,
@@ -82,8 +81,6 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  // 👤 Profilkarte mit Avatar
                   Transform.translate(
                     offset: Offset(0, -kAvatarRadius),
                     child: Column(
@@ -135,7 +132,6 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: kSectionSpacing),
 
                         // 🍽️ My Recipes
@@ -160,19 +156,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // 🧺 My Pantry
-                        ProfileSection(
-                          title: 'My Pantry',
-                          child: ListTile(
-                            leading: const Icon(Icons.kitchen, size: 32),
-                            title: Text('You have ${profile.pantryCount} items'),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () => Navigator.of(context).push(
-                                _createSlideRoute(const PantryScreen())),
-                          ),
-                        ),
-
-                        // 🏆 Achievements (letzte Section)
+                        // 🏆 Achievements
                         ProfileSection(
                           title: 'Achievements',
                           action: TextButton(

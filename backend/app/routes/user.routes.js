@@ -19,19 +19,32 @@ router.post('/register', async (req, res, next) => {
     const decoded = await admin.auth().verifyIdToken(idToken);
 
     const { name } = req.body;
-    const PLACEHOLDER_KEY = 'profile-pictures/profile_placeholder.png'; 
-    const avatarKey     =  PLACEHOLDER_KEY;
+    const PLACEHOLDER_KEY = 'profile-pictures/profile_placeholder.png';
 
-    const user = await prisma.users.upsert({
+    // Prüfen, ob Nutzer bereits in DB existiert
+    const userExists = await prisma.users.findUnique({
       where: { firebase_uid: decoded.uid },
-      update: { name, avatar_url: avatarKey },
-      create: {
-        firebase_uid: decoded.uid,
-        email      : decoded.email,
-        name       : name,
-        avatar_url : avatarKey,
-      },
     });
+
+    let user;
+
+    if (userExists) {
+      // Nur den Namen aktualisieren, avatar_url nicht überschreiben
+      user = await prisma.users.update({
+        where: { firebase_uid: decoded.uid },
+        data: { name },
+      });
+    } else {
+      // Nutzer neu anlegen mit Platzhalter-Profilbild
+      user = await prisma.users.create({
+        data: {
+          firebase_uid: decoded.uid,
+          email      : decoded.email,
+          name       : name,
+          avatar_url : PLACEHOLDER_KEY,
+        },
+      });
+    }
 
     res.status(201).json(user);
   } catch (err) {
