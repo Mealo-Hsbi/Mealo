@@ -139,3 +139,4 @@ package-lock.json
 # Docker
 docker-compose.override.yml
 .docker/
+frontend/.env.dev
