@@ -12,6 +12,7 @@ import 'package:frontend/features/camera/presentation/widgets/camera_controls.da
 import 'package:frontend/features/camera/presentation/widgets/camera_view.dart';
 import 'package:frontend/features/camera/presentation/widgets/thumbnail_bar.dart';
 import 'package:frontend/features/camera/presentation/screens/ingredient_review_screen.dart';
+import 'package:frontend/features/search/presentation/provider/search_notifier.dart';
 import 'package:frontend/providers/current_tab_provider.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:image_picker/image_picker.dart';
@@ -296,7 +297,7 @@ Future<List<String>> _uploadAndProcessImages(List<XFile> images) async {
     if (mounted) {
       // 1. Lade-Dialog schließen (vom rootNavigator aus)
       Navigator.of(context, rootNavigator: true).pop();
-
+      context.read<SearchNotifier>().resetSearchState();
       // 2. Provider mit den erkannten Zutaten aktualisieren
       context.read<SelectedIngredientsProvider>().setIngredients(ingredients);
 
