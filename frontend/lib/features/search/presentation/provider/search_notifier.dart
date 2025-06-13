@@ -92,6 +92,22 @@ class SearchNotifier extends ChangeNotifier {
     }
   }
 
+  void resetSearchState() {
+    _query = '';
+    _selectedIngredients = [];
+    _filteredIngredientSuggestions = [];
+    _searchResults = [];
+    _isLoading = false;
+    _isFetchingMore = false;
+    _errorMessage = null;
+    _currentSortOption = 'relevance'; // Zurücksetzen auf Standardwert
+    _offset = 0;
+    _hasMore = true;
+    _debounceTimer?.cancel(); // Sicherstellen, dass der Timer auch abgebrochen wird
+    _imageAvailabilityCache.clear(); // Cache leeren
+    notifyListeners();
+  }
+
   Future<bool> _canLoadImage(String? path) async {
     if (path == null || !path.startsWith('assets/')) return false;
     try {
