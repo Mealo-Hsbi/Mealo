@@ -21,6 +21,8 @@ import 'package:frontend/core/providers/app_providers.dart'; // NEU: Importiere 
 
 import 'firebase_options.dart';
 
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 // Eine neue Funktion zur Initialisierung von App-Services
 Future<void> _initializeAppServices() async {
@@ -79,6 +81,7 @@ class MyApp extends StatelessWidget {
         '/home': (_) => const AppNavigationShell(),
       },
       navigatorObservers: [observer],
+      scaffoldMessengerKey: scaffoldMessengerKey,
     );
   }
 }

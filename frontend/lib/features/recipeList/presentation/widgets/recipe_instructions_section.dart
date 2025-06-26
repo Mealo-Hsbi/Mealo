@@ -2,12 +2,48 @@
 
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe/analyzed_instruction_set.dart';
-import 'package:frontend/features/recipeList/presentation/widgets/recipe_timer_button.dart';
+import 'package:frontend/features/recipeList/presentation/widgets/recipe_timer_button.dart'; // Importiere das Timer-Widget
 
 class RecipeInstructionsSection extends StatelessWidget {
   final List<AnalyzedInstructionSet>? analyzedInstructions;
 
   const RecipeInstructionsSection({super.key, required this.analyzedInstructions});
+
+  // Helfermethode zum Parsen von einfachem HTML in TextSpans
+  List<TextSpan> _parseHtmlToTextSpans(String htmlText, TextStyle defaultStyle) {
+    final List<TextSpan> spans = [];
+    final RegExp exp = RegExp(r'<b>(.*?)</b>|<strong>(.*?)</strong>|<i>(.*?)</i>|<em>(.*?)</em>|([^<]+)');
+    final matches = exp.allMatches(htmlText);
+
+    for (final match in matches) {
+      if (match.group(1) != null || match.group(2) != null) {
+        // Bold text (<b> or <strong>)
+        spans.add(
+          TextSpan(
+            text: match.group(1) ?? match.group(2),
+            style: defaultStyle.copyWith(fontWeight: FontWeight.bold),
+          ),
+        );
+      } else if (match.group(3) != null || match.group(4) != null) {
+        // Italic text (<i> or <em>)
+        spans.add(
+          TextSpan(
+            text: match.group(3) ?? match.group(4),
+            style: defaultStyle.copyWith(fontStyle: FontStyle.italic),
+          ),
+        );
+      } else if (match.group(5) != null) {
+        // Regular text
+        spans.add(
+          TextSpan(
+            text: match.group(5),
+            style: defaultStyle,
+          ),
+        );
+      }
+    }
+    return spans;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +90,8 @@ class RecipeInstructionsSection extends StatelessWidget {
                     ),
                   ),
                 ...instructionSet.steps.map((step) {
-                  // Prüfen, ob eine Dauer für diesen Schritt vorhanden ist
                   final int? durationInSeconds = step.duration?.toSeconds();
+                  final bool hasTimer = durationInSeconds != null && durationInSeconds > 0;
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
@@ -73,47 +109,52 @@ class RecipeInstructionsSection extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Column( // Ändern zu Column, um Timer unter den Text zu legen
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Wrap( // NEU: Wrap Widget für flexiblen Zeilenumbruch
+                        alignment: WrapAlignment.start,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 12.0, // Abstand zwischen den Elementen im Wrap
+                        runSpacing: 8.0, // Abstand zwischen den Zeilen im Wrap
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primary,
-                                  borderRadius: BorderRadius.circular(6.0),
-                                ),
-                                child: Text(
-                                  step.number.toString(),
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onPrimary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                          // Schrittnummer als "Badge"
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary,
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                            child: Text(
+                              step.number.toString(),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  step.step, // Der eigentliche Anweisungstext
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurface,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                          if (durationInSeconds != null && durationInSeconds > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12.0), // Abstand zum Text
-                              child: Align(
-                                alignment: Alignment.centerLeft, // Timer linksbündig unter dem Text
-                                child: RecipeTimerButton(
-                                  initialDurationInSeconds: durationInSeconds,
+                          // Der eigentliche Anweisungstext (HTML-formatiert)
+                          Flexible( // Wichtig, damit der Text umbricht und den Timer nicht verdrängt
+                            child: Text.rich(
+                              TextSpan(
+                                children: _parseHtmlToTextSpans(
+                                  step.step,
+                                  textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurface,
+                                        height: 1.5,
+                                      ) ??
+                                      const TextStyle(), // Fallback für TextStyle
                                 ),
                               ),
+                            ),
+                          ),
+                          // Timer-Button, falls eine Dauer vorhanden ist
+                          if (hasTimer)
+                            RecipeTimerButton(
+                              initialDurationInSeconds: durationInSeconds,
+                              // Optional: Text- und Icon-Stile vom Eltern-Widget übergeben
+                              textStyle: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              iconColor: colorScheme.primary,
                             ),
                         ],
                       ),

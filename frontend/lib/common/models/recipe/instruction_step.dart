@@ -1,14 +1,16 @@
 // lib/common/models/instruction_step.dart
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'; // For debugPrint
+import 'package:html_unescape/html_unescape.dart'; // NEU: Für HTML unescaping
 
 /// Represents a single step within a recipe's instructions.
+/// Now includes an optional duration for timer functionality and handles HTML unescaping.
 class InstructionStep {
   final int number;
-  final String step; 
-  final List<String> ingredients;
-  final List<String> equipment;
-  final LengthDetail? duration;
+  final String step; // Can contain HTML
+  final List<String> ingredients; // Names of ingredients mentioned in this step
+  final List<String> equipment; // Names of equipment mentioned in this step
+  final LengthDetail? duration; // Optionale Dauer für den Timer
 
   const InstructionStep({
     required this.number,
@@ -34,16 +36,18 @@ class InstructionStep {
     }
 
     try {
-      // Spoonacular doesnt  always provide a 'length' field, so we handle it gracefully
-      // and parse it only if it exists and is a valid JSON object.
       final lengthJson = json['length'];
       final LengthDetail? parsedLength = lengthJson != null && lengthJson is Map<String, dynamic>
           ? LengthDetail.fromJson(lengthJson)
           : null;
 
+      // NEU: HTML unescaping für den Schritttext
+      final String rawStep = json['step'] as String? ?? '';
+      final String unescapedStep = HtmlUnescape().convert(rawStep);
+
       return InstructionStep(
         number: json['number'] as int,
-        step: json['step'] as String? ?? '',
+        step: unescapedStep, // Den unescaped-String verwenden
         ingredients: parseNamedList(json['ingredients']),
         equipment: parseNamedList(json['equipment']),
         duration: parsedLength,
@@ -60,6 +64,7 @@ class InstructionStep {
   }
 }
 
+/// Repräsentiert die Dauer eines Schrittes (z.B. 10 Minuten)
 class LengthDetail {
   final int number;
   final String unit;
