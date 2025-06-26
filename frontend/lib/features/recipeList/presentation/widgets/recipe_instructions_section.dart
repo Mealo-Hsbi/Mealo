@@ -1,6 +1,8 @@
+// lib/features/recipeDetails/presentation/widgets/recipe_instructions_section.dart
+
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe/analyzed_instruction_set.dart';
-import 'package:frontend/common/models/recipe/instruction_step.dart'; // Importiere InstructionStep
+import 'package:frontend/features/recipeList/presentation/widgets/recipe_timer_button.dart';
 
 class RecipeInstructionsSection extends StatelessWidget {
   final List<AnalyzedInstructionSet>? analyzedInstructions;
@@ -17,13 +19,13 @@ class RecipeInstructionsSection extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0), // Vertikales Padding um die gesamte Sektion
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row( // Überschrift mit Icon wie im Mockup
+          Row(
             children: [
-              Icon(Icons.format_list_numbered_rounded, size: 28, color: colorScheme.primary), // Passendes Icon
+              Icon(Icons.format_list_numbered_rounded, size: 28, color: colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Instructions',
@@ -34,77 +36,94 @@ class RecipeInstructionsSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12), // Abstand zur Liste der Anweisungen
+          const SizedBox(height: 12),
 
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: analyzedInstructions!.expand((instructionSet) {
               return [
-                // Optionaler Untertitel für Anweisungsgruppen (z.B. "For the sauce")
                 if (instructionSet.name != null && instructionSet.name!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
                     child: Text(
                       instructionSet.name!,
-                      style: textTheme.titleLarge?.copyWith( // Etwas größer als Schritte, weniger fett als Haupttitel
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
                       ),
                     ),
                   ),
-                // Die einzelnen Schritte als Karten
-                ...instructionSet.steps.map((step) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0), // Abstand zwischen den Schritt-Karten
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0), // Innenabstand
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface, // Hintergrundfarbe der Schritt-Karte
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: colorScheme.outline.withOpacity(0.2)), // Dezenter Rand
-                          boxShadow: [ // Leichter Schatten für den "schwebenden" Effekt
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Schrittnummer als "Badge"
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary, // Farbe des Badges (z.B. primäre Akzentfarbe)
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              child: Text(
-                                step.number.toString(),
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onPrimary, // Textfarbe für die Nummer
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12), // Abstand zwischen Nummer und Text
-                            Expanded(
-                              child: Text(
-                                step.step ?? '', // Der eigentliche Anweisungstext
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurface,
-                                  height: 1.5, // Zeilenabstand für bessere Lesbarkeit
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                ...instructionSet.steps.map((step) {
+                  // Prüfen, ob eine Dauer für diesen Schritt vorhanden ist
+                  final int? durationInSeconds = step.duration?.toSeconds();
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.03),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    )),
+                      child: Column( // Ändern zu Column, um Timer unter den Text zu legen
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                ),
+                                child: Text(
+                                  step.number.toString(),
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onPrimary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  step.step, // Der eigentliche Anweisungstext
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurface,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (durationInSeconds != null && durationInSeconds > 0)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12.0), // Abstand zum Text
+                              child: Align(
+                                alignment: Alignment.centerLeft, // Timer linksbündig unter dem Text
+                                child: RecipeTimerButton(
+                                  initialDurationInSeconds: durationInSeconds,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ];
             }).toList(),
           ),
-          const SizedBox(height: 20), // Abstand nach der gesamten Sektion
+          const SizedBox(height: 20),
         ],
       ),
     );

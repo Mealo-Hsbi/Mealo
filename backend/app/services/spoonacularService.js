@@ -90,10 +90,10 @@ const searchRecipesByQuery = async ({
     if (sortBy) spoonacularParams.sort = sortBy;
     if (sortDirection) spoonacularParams.sortDirection = sortDirection;
 
-    console.log('--- Backend Spoonacular Service Debug (Query Search) ---');
-    console.log('Received parameters for query search:', { query, offset, number, filters, sortBy, sortDirection });
-    console.log('Constructed Spoonacular parameters:', spoonacularParams);
-    console.log('-----------------------------------------------------');
+    // console.log('--- Backend Spoonacular Service Debug (Query Search) ---');
+    // console.log('Received parameters for query search:', { query, offset, number, filters, sortBy, sortDirection });
+    // console.log('Constructed Spoonacular parameters:', spoonacularParams);
+    // console.log('-----------------------------------------------------');
 
     const response = await makeSpoonacularApiCall(SPOONACULAR_COMPLEX_SEARCH_BASE_URL, spoonacularParams);
 
@@ -157,10 +157,10 @@ const searchRecipesByIngredients = async ({
         spoonacularParams.maxMissingIngredients = 10; // Standardwert
     }
 
-    console.log('--- Backend Spoonacular Service Debug (Ingredient Search) ---');
-    console.log('Received parameters for ingredient search:', { ingredients, offset, number, maxMissingIngredients });
-    console.log('Constructed Spoonacular parameters:', spoonacularParams);
-    console.log('---------------------------------------------------------');
+    // console.log('--- Backend Spoonacular Service Debug (Ingredient Search) ---');
+    // console.log('Received parameters for ingredient search:', { ingredients, offset, number, maxMissingIngredients });
+    // console.log('Constructed Spoonacular parameters:', spoonacularParams);
+    // console.log('---------------------------------------------------------');
 
     const response = await makeSpoonacularApiCall(SPOONACULAR_FIND_BY_INGREDIENTS_BASE_URL, spoonacularParams);
 
@@ -233,15 +233,24 @@ const getSpoonacularRecipeDetails = async (recipeId) => {
             amount: ing.amount,
             unit: ing.unit
         })) : [],
-        analyzedInstructions: recipe.analyzedInstructions ? recipe.analyzedInstructions.map(instr => ({
+        analyzedInstructions: recipe.analyzedInstructions
+        ? recipe.analyzedInstructions.map((instr) => ({
             name: instr.name,
-            steps: instr.steps.map(step => ({
+            steps: instr.steps.map((step) => ({
                 number: step.number,
                 step: step.step, // Enthält oft HTML
-                ingredients: step.ingredients ? step.ingredients.map(i => i.name) : [],
-                equipment: step.equipment ? step.equipment.map(e => e.name) : []
+                ingredients: step.ingredients ? step.ingredients.map((i) => i.name) : [],
+                equipment: step.equipment ? step.equipment.map((e) => e.name) : [],
+                // Include length information if available
+                length: step.length
+                ? {
+                    number: step.length.number,
+                    unit: step.length.unit,
+                    }
+                : null,
+            })),
             }))
-        })) : [],
+        : [],
         healthScore: recipe.healthScore,
         // Nährwerte direkt von der nutrition-Ebene mappen
         calories: findNutrientValue(recipe.nutrition?.nutrients, 'Calories'),
@@ -250,6 +259,13 @@ const getSpoonacularRecipeDetails = async (recipeId) => {
         carbs: findNutrientValue(recipe.nutrition?.nutrients, 'Carbohydrates'),
         sugar: findNutrientValue(recipe.nutrition?.nutrients, 'Sugar'),
     };
+
+    // log analyized Instructions for debugging
+    // console.log("--- Backend Spoonacular Service Debug (Recipe Details) ---");
+    // console.log('Received recipe details for ID:', recipeId);
+    // console.log('Mapped recipe details:', mappedRecipeDetails);
+    // console.log('Steps:', mappedRecipeDetails.analyzedInstructions.map(instr => instr.steps).flat());
+    // console.log('-----------------------------------------------------');
 
     return mappedRecipeDetails;
 };
