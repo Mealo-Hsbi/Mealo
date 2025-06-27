@@ -197,37 +197,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-Future<List<String>> _uploadAndProcessImages(List<XFile> images) async {
-  try {
-    // Simuliere eine Netzwerkoperation oder Backend-Verarbeitung
-    // Jetzt mit einer simulierten längeren Verzögerung, um den Timeout zu testen
-    await Future.delayed(const Duration(seconds: 3)) // Simuliert eine lange Antwortzeit
-        .timeout(const Duration(seconds: 5), onTimeout: () { // Timeout nach 5 Sekunden
-      throw TimeoutException('Der Server hat zu lange für die Antwort gebraucht.');
-    });
-
-    // Hier würde dein tatsächlicher HTTP-Request an das Backend stehen, z.B. mit Dio oder http
-    // Beispiel:
-    // var response = await Dio().post(
-    //   'YOUR_BACKEND_URL/api/process-images',
-    //   data: formData, // Deine Multipart-Form-Daten
-    // ).timeout(const Duration(seconds: 30)); // Setze hier einen realistischen Timeout (z.B. 30 Sekunden)
-
-    // Beispielhafte erkannte Zutaten bei Erfolg
-    return ['Tomate', 'Mozzarella', 'Basilikum', 'Olivenöl'];
-
-  } on TimeoutException catch (e) {
-    // Hier wird die spezifische Timeout-Ausnahme abgefangen
-    print('Timeout bei der Bildverarbeitung: $e');
-    rethrow; // Wirf die Ausnahme erneut, damit sie im _onContinueButtonPressed gefangen wird
-  } catch (e) {
-    // Hier werden andere potenzielle Fehler (z.B. Netzwerkfehler, Serverfehler) abgefangen
-    print('Fehler im _uploadAndProcessImages: $e');
-    rethrow; // Wirf die Ausnahme erneut
-  }
-}
-
-
   Future<void> _onContinueButtonPressed() async {
     if (_capturedImages.isEmpty) {
       _showSnackBar('Please capture at least one image first.');
