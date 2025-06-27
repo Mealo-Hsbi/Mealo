@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe/analyzed_instruction_set.dart';
-import 'package:frontend/features/recipeList/presentation/widgets/recipe_timer_button.dart'; // Importiere das Timer-Widget
+import 'package:frontend/features/recipe/presentation/widgets/recipe_timer_button.dart'; // Importiere das Timer-Widget
 
 class RecipeInstructionsSection extends StatelessWidget {
   final List<AnalyzedInstructionSet>? analyzedInstructions;

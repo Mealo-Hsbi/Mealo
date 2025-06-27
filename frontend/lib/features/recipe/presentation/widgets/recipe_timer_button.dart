@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/utils/time_formatter.dart';
 
 /// Ein anpassbares Timer-Button-Widget für Rezeptschritte.
 /// Es zeigt die verbleibende Zeit an und ermöglicht das Starten, Pausieren und Zurücksetzen des Timers.
@@ -43,6 +44,7 @@ class _RecipeTimerButtonState extends State<RecipeTimerButton>
   void initState() {
     super.initState();
     _remainingSeconds = widget.initialDurationInSeconds;
+    // _remainingSeconds = 2;
     if (_remainingSeconds <= 0) {
       _remainingSeconds = 0;
       _isRunning = false;
@@ -185,22 +187,6 @@ class _RecipeTimerButtonState extends State<RecipeTimerButton>
     });
   }
 
-  /// Formatiert Sekunden in einen menschenlesbaren String (MM:SS oder HH:MM:SS).
-  String _formatTime(int seconds) {
-    if (seconds < 0) seconds = 0;
-    final Duration duration = Duration(seconds: seconds);
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final String minutes = twoDigits(duration.inMinutes.remainder(60));
-    final String hours = twoDigits(duration.inHours);
-    final String secondsStr = twoDigits(duration.inSeconds.remainder(60));
-
-    if (duration.inHours > 0) {
-      return '$hours:$minutes:$secondsStr';
-    } else {
-      return '$minutes:$secondsStr';
-    }
-  }
-
   /// Zeigt eine einfache Benachrichtigung an, wenn der Timer abgelaufen ist.
   void _showCompletionNotification() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -281,7 +267,7 @@ class _RecipeTimerButtonState extends State<RecipeTimerButton>
         Icon(Icons.timer_outlined, color: defaultIconColor.withOpacity(0.7), size: 18),
         const SizedBox(width: 4),
         Text(
-          _formatTime(_remainingSeconds),
+          formatTime(_remainingSeconds),
           style: defaultTextStyle.copyWith(
             fontSize: 14,
             color: defaultIconColor.withOpacity(0.8),
@@ -294,7 +280,7 @@ class _RecipeTimerButtonState extends State<RecipeTimerButton>
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          _formatTime(_remainingSeconds),
+          formatTime(_remainingSeconds),
           style: defaultTextStyle.copyWith(
             fontSize: 16,
             color: defaultTextStyle.color,

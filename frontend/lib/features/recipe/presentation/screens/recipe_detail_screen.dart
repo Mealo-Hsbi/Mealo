@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 // Importiere deine ausgelagerten Modelle
 import 'package:frontend/common/models/recipe/recipe_details.dart';
-import 'package:frontend/features/recipeList/presentation/widgets/recipe_detail_app_bar.dart';
-import 'package:frontend/features/recipeList/presentation/widgets/recipe_detail_content.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_detail_app_bar.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_detail_content.dart';
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
 import 'package:frontend/features/search/domain/usecases/get_recipe_details.dart';
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';

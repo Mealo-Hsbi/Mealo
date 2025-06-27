@@ -16,7 +16,7 @@ import '../widgets/achievement_card.dart';
 import '../screens/achievements_overview_screen.dart';
 import '../screens/pantry_screen.dart';
 import '../screens/settings_screen.dart';
-import 'package:frontend/features/recipeList/recipe_list_screen.dart';
+import 'package:frontend/features/recipe/recipe_list_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
