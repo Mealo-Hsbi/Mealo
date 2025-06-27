@@ -1,4 +1,9 @@
+// lib/core/providers/app_providers.dart
 
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+
+// Bestehende Imports
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
 import 'package:frontend/features/search/domain/usecases/search_recipes_by_ingredients.dart';
@@ -7,39 +12,88 @@ import 'package:frontend/features/search/presentation/provider/search_notifier.d
 import 'package:frontend/providers/current_tab_provider.dart';
 import 'package:frontend/providers/selected_ingredients_provider.dart';
 import 'package:frontend/services/api_client.dart';
-import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
+
+// NEUE IMPORTS für Favoriten und Bewertungen
+import 'package:frontend/features/recipe/presentation/provider/favorite_notifier.dart';
+import 'package:frontend/features/recipe/presentation/provider/rating_notifier.dart';
+
+// WICHTIG: Korrekter Import für IHRE implementierte DataSource
+import 'package:frontend/features/recipe/data/datasources/recipe_interaction_remote_datasource.dart'; // <-- Dies ist IHR Pfad zu Interface UND Implementierung
+import 'package:frontend/features/recipe/data/repositories/recipe_interaction_repository_impl.dart'; // Annahme: Pfad zum Repository
+
+import 'package:frontend/features/recipe/domain/usecases/add_favorite_recipe.dart';
+import 'package:frontend/features/recipe/domain/usecases/remove_favorite_recipe.dart';
+import 'package:frontend/features/recipe/domain/usecases/get_favorite_recipes.dart';
+import 'package:frontend/features/recipe/domain/usecases/is_recipe_favorited.dart';
+import 'package:frontend/features/recipe/domain/usecases/add_or_update_recipe_rating.dart';
+import 'package:frontend/features/recipe/domain/usecases/get_user_recipe_rating.dart';
+
 
 class AppProviders {
   static List<SingleChildWidget> get providers {
-    // Hier instanziieren wir die Kern-Services, die von Notifiern benötigt werden
     final ApiClient apiClient = ApiClient();
-    
-    // Instanziierung der DataSource-Implementierung
-    // Dies sollte nun eindeutig sein, wenn keine Re-Exports vorliegen.
-    final RecipeApiDataSource recipeApiDataSource = RecipeApiDataSourceImpl(apiClient);
 
-    // Instanziierung des Repository
-    // Behebt "The method 'RecipeRepositoryImpl' isn't defined"
+    // Instanziierung der DataSource-Implementierung (bestehend)
+    final RecipeApiDataSourceImpl recipeApiDataSource = RecipeApiDataSourceImpl(apiClient);
+
+    // Instanziierung des RecipeRepository (bestehend)
     final RecipeRepositoryImpl recipeRepository = RecipeRepositoryImpl(remoteDataSource: recipeApiDataSource);
 
-    // **KORREKTUR:** Instanziierung BEIDER neuer Use Cases
-    // Behebt "Undefined class 'SearchRecipes'" und "The method 'SearchRecipes' isn't defined"
+    // Instanziierung BEIDER Search Use Cases (bestehend)
     final SearchRecipesByQuery searchRecipesByQueryUsecase = SearchRecipesByQuery(recipeRepository);
     final SearchRecipesByIngredients searchRecipesByIngredientsUsecase = SearchRecipesByIngredients(recipeRepository);
 
+
+    // --- KORRIGIERTE INSTANZIIERUNG FÜR FAVORITEN/BEWERTUNGEN ---
+    // Sie haben bereits RecipeInteractionRemoteDataSourceImpl, also instanziieren wir diese
+    final RecipeInteractionRemoteDataSourceImpl recipeInteractionDataSource = RecipeInteractionRemoteDataSourceImpl(apiClient);
+
+    // Instanziierung des RecipeInteractionRepository, das jetzt die KORREKTE DataSource erhält
+    final RecipeInteractionRepositoryImpl recipeInteractionRepository = RecipeInteractionRepositoryImpl(remoteDataSource: recipeInteractionDataSource);
+
+
+    // NEU: Use Cases für Favoriten
+    final AddFavoriteRecipe addFavoriteRecipeUseCase = AddFavoriteRecipe(recipeInteractionRepository);
+    final RemoveFavoriteRecipe removeFavoriteRecipeUseCase = RemoveFavoriteRecipe(recipeInteractionRepository);
+    final GetFavoriteRecipes getFavoriteRecipesUseCase = GetFavoriteRecipes(recipeInteractionRepository);
+    final IsRecipeFavorited isRecipeFavoritedUseCase = IsRecipeFavorited(recipeInteractionRepository);
+
+    // NEU: Use Cases für Bewertungen
+    final AddOrUpdateRecipeRating addOrUpdateRecipeRatingUseCase = AddOrUpdateRecipeRating(recipeInteractionRepository);
+    final GetUserRecipeRating getUserRecipeRatingUseCase = GetUserRecipeRating(recipeInteractionRepository);
+
+
     return [
+      // Bestehende Provider
       ChangeNotifierProvider(create: (_) => SelectedIngredientsProvider()),
       ChangeNotifierProvider(create: (_) => CurrentTabProvider()),
-      // **KORREKTUR:** Der SearchNotifier muss nun BEIDE Use Cases erhalten
-      // Behebt "The named parameter 'searchRecipesByQueryUsecase' is required..."
       ChangeNotifierProvider(
         create: (_) => SearchNotifier(
           searchRecipesByQueryUsecase: searchRecipesByQueryUsecase,
           searchRecipesByIngredientsUsecase: searchRecipesByIngredientsUsecase,
         ),
       ),
-      // Füge hier weitere ChangeNotifierProvider oder andere Provider hinzu
+
+      // NEUE PROVIDER für Favoriten und Bewertungen
+      ChangeNotifierProvider(
+        create: (_) => FavoriteNotifier(
+          addFavoriteRecipeUseCase: addFavoriteRecipeUseCase,
+          removeFavoriteRecipeUseCase: removeFavoriteRecipeUseCase,
+          getFavoriteRecipesUseCase: getFavoriteRecipesUseCase,
+          isRecipeFavoritedUseCase: isRecipeFavoritedUseCase,
+        ),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => RatingNotifier(
+          addOrUpdateRecipeRatingUseCase: addOrUpdateRecipeRatingUseCase,
+          getUserRecipeRatingUseCase: getUserRecipeRatingUseCase,
+        ),
+      ),
+
+      // Wichtiger Hinweis:
+      // Die Riverpod-Provider (authRepositoryProvider, authStateChangesProvider, currentUserIdProvider)
+      // werden HIER NICHT hinzugefügt. Sie sind globale Provider und werden durch den ProviderScope
+      // in main.dart verfügbar gemacht.
     ];
   }
 }

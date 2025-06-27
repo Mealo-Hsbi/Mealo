@@ -3,7 +3,7 @@
 // import 'package:dartz/dartz.dart'; // <--- Dieser Import wird JETZT ENTFERNT!
 import 'package:frontend/core/error/exceptions.dart'; // Ihre Exceptions
 import 'package:frontend/core/error/failures.dart'; // Ihre Failures
-import 'package:frontend/features/recipe/data/models/datasources/recipe_interaction_remote_datasource.dart';
+import 'package:frontend/features/recipe/data/datasources/recipe_interaction_remote_datasource.dart';
 import 'package:frontend/features/recipe/data/models/recipe_model.dart';
 import 'package:frontend/features/recipe/domain/entities/favorite.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart';

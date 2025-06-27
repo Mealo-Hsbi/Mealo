@@ -1,127 +1,135 @@
 // lib/features/recipe/presentation/provider/rating_notifier.dart
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/core/error/failures.dart'; // Ihre Failure-Klassen
-import 'package:frontend/features/recipe/domain/entities/recipe.dart';
-import 'package:frontend/features/recipe/domain/entities/recipe_rating.dart';
+import 'package:frontend/core/error/failures.dart'; // Importieren Sie Ihre Failure-Klassen
+import 'package:frontend/features/recipe/domain/entities/recipe.dart'; // NEU: Import für Recipe Entity
+import 'package:frontend/features/recipe/domain/entities/recipe_rating.dart'; // NEU: Import für RecipeRating Entity
 import 'package:frontend/features/recipe/domain/usecases/add_or_update_recipe_rating.dart';
 import 'package:frontend/features/recipe/domain/usecases/get_user_recipe_rating.dart';
 
-// Enum für den Zustand der Bewertung
-enum RatingStatus { initial, loading, loaded, error }
-
 class RatingNotifier extends ChangeNotifier {
-  // Use Cases, die über den Konstruktor injiziert werden
   final AddOrUpdateRecipeRating addOrUpdateRecipeRatingUseCase;
   final GetUserRecipeRating getUserRecipeRatingUseCase;
 
-  // Zustand der Bewertung
-  RecipeRating? _currentRating; // Die Bewertung des aktuell angezeigten Rezepts durch den Nutzer
-  RecipeRating? get currentRating => _currentRating;
-
+  // Statusvariablen für den Notifier
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
   String? _errorMessage;
+
+  bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-
-  RatingStatus _status = RatingStatus.initial;
-  RatingStatus get status => _status;
-
-  // Map, um Bewertungen für verschiedene Rezepte zu cachen (optional, aber nützlich)
-  final Map<String, RecipeRating> _cachedRatings = {};
 
   RatingNotifier({
     required this.addOrUpdateRecipeRatingUseCase,
     required this.getUserRecipeRatingUseCase,
   });
 
-  // --- Methoden für Bewertungen ---
+  // Methode zum Hinzufügen oder Aktualisieren einer Bewertung
+  Future<void> addOrUpdateRecipeRating({
+    required String userId,
+    required int? spoonacularId,
+    required int score,
+    required Recipe recipe, // Verwenden Sie Recipe Entity, nicht RecipeModel
+    String? comment,
+  }) async {
+    _setLoading(true);
+    _clearError();
 
-  Future<void> addOrUpdateRating(String userId, int? spoonacularId, int score, Recipe recipe, {String? comment}) async {
-    _setLoading();
+    // KORREKTUR: Parameter direkt an den Use Case übergeben
+    final result = await addOrUpdateRecipeRatingUseCase(
+      userId: userId,
+      spoonacularId: spoonacularId,
+      score: score,
+      recipe: recipe,
+      comment: comment,
+    );
+
+    // Der Use Case gibt direkt die RecipeRating-Entität zurück, nicht Either<Failure, RecipeRating>
+    // Da keine Either-Klasse verwendet wird, müssen wir Fehler in der Catch-Klausel behandeln
+    // (Diese Methode ist nicht ideal, wenn der Use Case keine Left/Right-Struktur verwendet)
+    // Wenn addOrUpdateRecipeRatingUseCase eine Exception wirft, wird diese hier gefangen.
     try {
-      // KORRIGIERTER AUFRUF: explizit benannte Parameter verwenden
-      final updatedRating = await addOrUpdateRecipeRatingUseCase(
+      // Wenn der Use Case direkt das Ergebnis zurückgibt und bei Fehlern eine Exception wirft.
+      await addOrUpdateRecipeRatingUseCase(
         userId: userId,
         spoonacularId: spoonacularId,
         score: score,
         recipe: recipe,
         comment: comment,
       );
-      _currentRating = updatedRating;
-      if (recipe.id != null) {
-        _cachedRatings[recipe.id!] = updatedRating; // Cache aktualisieren
-      }
-      _setStatus(RatingStatus.loaded);
-    } on Failure catch (e) {
-      _setError(e.message);
+      debugPrint('Rating added/updated successfully.');
+    } catch (e) {
+      // Annahme: Alle Fehler von addOrUpdateRecipeRatingUseCase sind Failures.
+      // Dies erfordert, dass Ihr Use Case selbst Failures wirft oder in ein Failure umwandelt.
+      _setError(_mapExceptionToFailure(e)); // Hilfsmethode, um Exception in Failure umzuwandeln
+    } finally {
+      _setLoading(false);
     }
   }
 
-  Future<void> fetchUserRecipeRating(String userId, String recipeId) async {
-    // Zuerst im Cache nachschauen
-    if (_cachedRatings.containsKey(recipeId)) {
-      _currentRating = _cachedRatings[recipeId];
-      _setStatus(RatingStatus.loaded);
-      return;
-    }
+  // Methode zum Abrufen der Benutzerbewertung
+  // Annahme: getUserRecipeRating ebenfalls mit direkten benannten Parametern
+  Future<RecipeRating?> getUserRecipeRating({
+    required String userId,
+    required String recipeId, // Hier ist es die DB-ID des Rezepts
+  }) async {
+    _setLoading(true);
+    _clearError();
 
-    _setLoading();
+    RecipeRating? rating;
     try {
-      // KORRIGIERTER AUFRUF
-      _currentRating = await getUserRecipeRatingUseCase(
+      // KORREKTUR: Parameter direkt an den Use Case übergeben
+      rating = await getUserRecipeRatingUseCase(
         userId: userId,
         recipeId: recipeId,
       );
-      if (_currentRating != null) {
-        _cachedRatings[recipeId] = _currentRating!; // Zum Cache hinzufügen
+    } catch (e) {
+      _setError(_mapExceptionToFailure(e));
+      rating = null;
+    } finally {
+      _setLoading(false);
+    }
+    return rating;
+  }
+
+  // Hilfsmethode zur Umwandlung von Exceptions in Failures (falls Ihr Use Case Exceptions wirft)
+  Failure _mapExceptionToFailure(Object e) {
+    if (e is Failure) {
+      return e; // Ist bereits eine Failure
+    } else if (e is DioException) {
+      // Hier können Sie spezifische DioException-Typen mappen
+      if (e.type == DioExceptionType.connectionTimeout) {
+        return TimeoutFailure(message: 'Connection timed out. Please try again later.');
+      } else if (e.response != null) {
+        return ServerFailure(message: 'Server error: ${e.response?.statusMessage ?? e.message}');
       }
-      _setStatus(RatingStatus.loaded);
-    } on Failure catch (e) {
-      _setError(e.message);
+      return ServerFailure(message: 'Network error: ${e.message}');
     }
+    return ServerFailure(message: 'An unexpected error occurred: ${e.toString()}');
   }
 
-  // Setzt die aktuell angezeigte Bewertung zurück, z.B. beim Wechsel des Rezepts
-  void clearCurrentRating() {
-    _currentRating = null;
-    _status = RatingStatus.initial;
-    _errorMessage = null;
+  void _setLoading(bool loading) {
+    _isLoading = loading;
     notifyListeners();
   }
 
-  // Diese Methode kann nützlich sein, wenn sich der User ändert oder ausgeloggt wird
-  void reset() {
-    _currentRating = null;
-    _cachedRatings.clear();
-    _isLoading = false;
-    _errorMessage = null;
-    _status = RatingStatus.initial;
-    notifyListeners();
-  }
-
-  // --- Hilfsmethoden für den Zustand ---
-  void _setLoading() {
-    _isLoading = true;
-    _errorMessage = null;
-    _status = RatingStatus.loading;
-    notifyListeners();
-  }
-
-  void _setError(String message) {
-    _isLoading = false;
-    _errorMessage = message;
-    _status = RatingStatus.error;
-    notifyListeners();
-  }
-
-  void _setStatus(RatingStatus newStatus) {
-    _isLoading = false;
-    _status = newStatus;
-    if (newStatus == RatingStatus.loaded) {
-      _errorMessage = null;
+  void _setError(Failure failure) {
+    if (failure is ServerFailure) {
+      _errorMessage = failure.message;
+    } else if (failure is CacheFailure) {
+      _errorMessage = failure.message;
+    } else if (failure is TimeoutFailure) {
+      _errorMessage = 'The connection to the server timed out. Please try again later.';
+    } else if (failure is CancelledFailure) {
+      _errorMessage = 'Request was cancelled.';
+    } else {
+      _errorMessage = 'An unexpected error occurred: ${failure.toString()}';
     }
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
 }
