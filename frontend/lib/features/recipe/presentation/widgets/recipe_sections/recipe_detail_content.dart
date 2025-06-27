@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe/recipe_details.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_health_score_section.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_info_row.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_ingredients_section.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_instructions_section.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_nutrition_section.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_source_link.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_summary_section.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_health_score_section.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_info_row.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_ingredients_section.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_instructions_section.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_nutrition_section.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_source_link.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_summary_section.dart';
 
 import 'package:frontend/common/models/recipe/extended_ingredient.dart';
-import 'package:frontend/features/recipe/presentation/widgets/servings_adjuster_section.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/servings_adjuster_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:frontend/common/widgets/ingredientChips/ingredient_chip_row.dart';
 import 'package:frontend/common/widgets/search/search_header.dart';
 import 'package:frontend/features/search/presentation/widgets/sort_options_bottom_sheet.dart';
-import 'package:frontend/features/recipe/parallax_recipes.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_list/parallax_recipes.dart';
 import 'package:frontend/providers/selected_ingredients_provider.dart';
 import 'package:frontend/features/search/presentation/provider/search_notifier.dart';
 
