@@ -20,47 +20,38 @@ class RecipeRatingWidget extends ConsumerStatefulWidget {
 }
 
 class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
-  // _currentRating speichert die EIGENE Bewertung des Nutzers.
-  // This remains local state as it updates instantly on tap.
+  // _currentRating speichert die EIGENE Bewertung des Nutzers und wird sofort aktualisiert.
   double _currentRating = 0.0;
-  // bool _isLoading = true; // No longer needed as RatingNotifier will handle loading state for initial fetch
-  String? _errorMessage; // Still useful for local errors not related to notifier's main ops
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    // Initialize _currentRating immediately from recipeDetails
+    // _currentRating initialisiert sich aus den userRating Details.
     _currentRating = widget.recipeDetails.userRating?.score?.toDouble() ?? 0.0;
 
-    // Defer the initial setting of notifier state and fetching of user rating
-    // until after the first frame has rendered.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
-      // Set initial values in the notifier from recipeDetails if they are not already set
-      // (This prevents redundant updates if RatingNotifier is persistent across navigations)
-      if (ratingNotifier.averageRating == 0.0 && ratingNotifier.ratingCount == 0) { // Or a more robust check
+      // Setze initiale Werte im Notifier, falls noch nicht geschehen.
+      if (ratingNotifier.averageRating == 0.0 && ratingNotifier.ratingCount == 0) {
         ratingNotifier.setInitialAverageRating(widget.recipeDetails.averageRating ?? 0.0);
         ratingNotifier.setInitialRatingCount(widget.recipeDetails.ratingCount ?? 0);
       }
 
-      // Load the user's rating only if the internal recipe ID (UUID) is available.
+      // Lade die Bewertung des Benutzers nur, wenn die interne Rezept-ID verfügbar ist.
       if (widget.recipeDetails.id != null) {
-        _fetchUserRating(); // Ensures the latest user rating is loaded
+        _fetchUserRating(); // Stellt sicher, dass die neueste Nutzerbewertung geladen wird
       }
-      // No else block needed as _isLoading is now primarily handled by the notifier
     });
   }
 
   void _fetchUserRating() async {
-    // No local setState for _isLoading = true; here, as the notifier will manage its own loading state.
-    // We only set local error message for this specific fetch.
     setState(() {
       _errorMessage = null;
     });
 
     final String? userId = ref.read(currentUserIdProvider);
     if (userId == null) {
-      // No local isLoading update needed, simply return
       return;
     }
 
@@ -74,7 +65,8 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
     }
 
     final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
-    // Set notifier's loading state before API call
+    // Behalte den Ladezustand des Notifiers für den initialen Fetch bei,
+    // damit der Ladekreis bei der ersten Anzeige erscheint, falls die Daten fehlen.
     ratingNotifier.setLoading(true);
 
     try {
@@ -83,19 +75,24 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
         recipeId: internalRecipeId,
       );
 
-      setState(() {
-        _currentRating = existingRating?.score.toDouble() ?? 0.0;
-        // _isLoading = false; // Not needed
-      });
+      if (mounted) {
+        setState(() {
+          // Aktualisiere _currentRating basierend auf der geladenen Bewertung
+          _currentRating = existingRating?.score.toDouble() ?? 0.0;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Could not load your rating: $e';
-        _currentRating = 0.0;
-      });
-      _showSnackBar(_errorMessage!);
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Could not load your rating: $e';
+          _currentRating = 0.0; // Setze auf 0 bei Fehler
+        });
+        _showSnackBar(_errorMessage!);
+      }
     } finally {
-      // Ensure loading state is turned off by notifier
-      ratingNotifier.setLoading(false);
+      if (mounted) {
+        ratingNotifier.setLoading(false);
+      }
     }
   }
 
@@ -107,15 +104,11 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
       return;
     }
 
-    // Instantly update the local user's rating for immediate visual feedback
+    // SOFORTIGE AKTUALISIERUNG des lokalen States für visuelles Feedback
     setState(() {
       _currentRating = newRating;
-      _errorMessage = null; // Clear any previous local error
+      _errorMessage = null; // Alte Fehlermeldungen löschen
     });
-
-    // Show loading state for the actual API call
-    final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
-    ratingNotifier.setLoading(true); // Use the notifier's isLoading state
 
     try {
       final Recipe recipeEntity = Recipe(
@@ -125,33 +118,41 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
         imageUrl: widget.recipeDetails.image ?? '',
       );
 
-      // This call will update the averageRating and ratingCount within the RatingNotifier
-      await ratingNotifier.addOrUpdateRecipeRating(
+      // Hier wird der Notifier-Aufruf verwendet, wie er ursprünglich war.
+      // Er muss kein UserRating zurückgeben.
+      await legacy_provider.Provider.of<RatingNotifier>(context, listen: false).addOrUpdateRecipeRating(
         userId: userId,
         spoonacularId: widget.recipeDetails.spoonacularId,
         score: newRating.toInt(),
         recipe: recipeEntity,
-        // comment: '', // Add comment if you have an input for it
       );
 
-      // _showSnackBar('Rating saved successfully!');
+      // Optional: Wenn der API-Aufruf fehlschlägt und die UI nicht sofort
+      // zurückgesetzt wird, könnte hier nach dem Erfolg eine Überprüfung
+      // oder eine erneute Abfrage des User-Ratings erfolgen,
+      // um die Konsistenz zu gewährleisten, falls der lokale Zustand nicht 100% genau ist.
+      // Aber für die "keine Ladeanzeige"-Anforderung ist das hier der Punkt des Erfolgs.
 
     } catch (e) {
-      // Catch error from notifier and display it
-      _showSnackBar('Failed to save rating: ${ratingNotifier.errorMessage ?? 'Unknown error'}');
-      // If an error occurred, re-fetch the user's rating to revert if needed
-      // and potentially refresh the average/count from backend.
-      // Do this in a post-frame callback to avoid a nested build
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _fetchUserRating();
-      });
-    } finally {
-      // Ensure loading state is turned off by notifier
-      ratingNotifier.setLoading(false);
+      if (mounted) {
+        // Bei Fehler: Snackbar anzeigen und die Sterne auf den Zustand VOR der Änderung zurücksetzen
+        final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+        _showSnackBar('Failed to save rating: ${ratingNotifier.errorMessage ?? 'Unknown error'}');
+
+        // WICHTIG: Im Fehlerfall die Bewertung des Nutzers erneut vom Backend laden,
+        // um den lokalen _currentRating-Wert auf den echten, zuletzt gespeicherten Wert zu setzen.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _fetchUserRating();
+          }
+        });
+      }
     }
+    // Kein finally-Block hier, da keine spezielle Ladeanzeige verwaltet wird
   }
 
   void _showSnackBar(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -162,19 +163,18 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
     final String? userId = ref.watch(currentUserIdProvider);
     final theme = Theme.of(context);
 
-    // WATCH the RatingNotifier to get the current average rating and count.
-    // This is the crucial change: the UI now reacts to updates in the notifier.
+    // Watch the RatingNotifier for changes to average rating and count
     final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context);
     final double displayAverageRating = ratingNotifier.averageRating;
     final int displayRatingCount = ratingNotifier.ratingCount;
 
-    // Use the notifier's isLoading state for the main loading indicator.
-    // The `_isLoading` local state was removed for this reason.
-    if (ratingNotifier.isLoading && userId != null) {
+    // Behalte den Ladekreis NUR für den initialen Fetch, wenn der Notifier lädt
+    // und noch KEINE Daten für die eigene Bewertung oder den Durchschnitt vorhanden sind.
+    if (ratingNotifier.isLoading && userId != null && _currentRating == 0.0 && displayRatingCount == 0) {
       return Center(child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary));
     }
 
-    // If no user is logged in, show only the average rating and no interaction.
+    // Wenn kein Benutzer angemeldet ist
     if (userId == null) {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -211,24 +211,24 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
       );
     }
 
-    // If a user is logged in:
+    // Wenn ein Benutzer angemeldet ist:
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (ratingNotifier.errorMessage != null) // Use notifier's error message
+        if (ratingNotifier.errorMessage != null)
           Text(
             ratingNotifier.errorMessage!,
             style: const TextStyle(color: Colors.red, fontSize: 12),
             textAlign: TextAlign.center,
           ),
-        // Average rating and number of ratings
+        // Durchschnittliche Bewertung und Anzahl der Bewertungen
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
             return Icon(
               index < displayAverageRating.round() ? Icons.star : Icons.star_border,
               color: Colors.amber[700],
-              size: 24, // Slightly smaller for average display
+              size: 24,
             );
           }),
         ),
@@ -242,20 +242,24 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
             textAlign: TextAlign.center,
           ),
         ),
-        // User's own rating and interaction to rate
+        // Eigene Bewertung des Benutzers und Interaktion zum Bewerten
         Text(
           'Your rating:',
           style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
         ),
+        const SizedBox(height: 4), // Konstante Höhe für Layout-Stabilität
+
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
             return GestureDetector(
+              // `onTap` ist immer aktiv. Die Sterne ändern sich SOFORT (durch setState),
+              // und werden bei Erfolg oder Misserfolg durch den Backend-Call korrigiert.
               onTap: () => _handleRatingSelected((index + 1).toDouble()),
               child: Icon(
-                index < _currentRating ? Icons.star : Icons.star_border, // Shows YOUR rating
-                color: Colors.blueAccent, // Different color to highlight user's own rating
-                size: 36, // Larger to indicate interaction
+                index < _currentRating ? Icons.star : Icons.star_border, // Zeigt DEINE Bewertung (lokaler State)
+                color: Colors.blueAccent, // Andere Farbe zur Hervorhebung der eigenen Bewertung
+                size: 36, // Größer zur Anzeige der Interaktion
               ),
             );
           }),
