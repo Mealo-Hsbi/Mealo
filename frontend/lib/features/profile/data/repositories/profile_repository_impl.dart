@@ -53,13 +53,18 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<String> uploadAvatar(String filename, List<int> bytes, String contentType) async {
     final info = await remote.getAvatarUploadInfo(filename, contentType);
+
     await apiClient.put(
       info.uploadUrl,
       data: bytes,
       options: Options(headers: {'Content-Type': contentType}),
     );
+
+    await remote.updateAvatarKey(info.objectKey); // 👈 hier wird's gespeichert!
+
     return info.objectKey;
   }
+
 
   @override
   Future<void> saveAvatarKey(String objectKey) =>

@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
 import '../viewmodels/profile_viewmodel.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -14,57 +12,52 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  File? _selectedImage;
   final _picker = ImagePicker();
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImageAndUpload() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+      final vm = Provider.of<ProfileViewModel>(context, listen: false);
+      final file = File(image.path);
+      await vm.uploadAvatar(file);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profilbild aktualisiert')),
+        );
+        Navigator.of(context).pop(); // oder: Navigator.of(context).maybePop();
+      }
     }
   }
 
-  Future<void> _save(BuildContext context) async {
-    if (_selectedImage != null) {
-      final vm = Provider.of<ProfileViewModel>(context, listen: false);
-      await vm.uploadAvatar(_selectedImage!);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profilbild aktualisiert')),
-      );
-      Navigator.of(context).pop();
-    }
+  void _changeName() {
+    // TODO: Navigator push zu ChangeNameScreen oder Dialog
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Name ändern – noch nicht implementiert')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(title: const Text('Edit Profile')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: _pickImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage:
-                    _selectedImage != null ? FileImage(_selectedImage!) : null,
-                child: _selectedImage == null
-                    ? const Icon(Icons.camera_alt, size: 32)
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.save),
-              label: const Text('Speichern'),
-              onPressed: () => _save(context),
-            )
-          ],
-        ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        children: [
+          ListTile(
+            leading: const Icon(Icons.image),
+            title: const Text('Change Profile Picture'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _pickImageAndUpload,
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: const Text('Change Name'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _changeName,
+          ),
+        ],
       ),
     );
   }

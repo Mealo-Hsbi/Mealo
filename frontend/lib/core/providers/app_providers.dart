@@ -1,4 +1,3 @@
-
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
 import 'package:frontend/features/search/domain/usecases/search_recipes_by_ingredients.dart';
@@ -10,36 +9,46 @@ import 'package:frontend/services/api_client.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+// 🔽 NEU: Imports für ProfileViewModel und seine Abhängigkeiten
+import 'package:frontend/features/profile/presentation/viewmodels/profile_viewmodel.dart';
+import 'package:frontend/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:frontend/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:frontend/features/profile/domain/usecases/get_profile.dart';
+import 'package:frontend/features/profile/domain/usecases/upload_avatar.dart';
+
 class AppProviders {
   static List<SingleChildWidget> get providers {
-    // Hier instanziieren wir die Kern-Services, die von Notifiern benötigt werden
     final ApiClient apiClient = ApiClient();
-    
-    // Instanziierung der DataSource-Implementierung
-    // Dies sollte nun eindeutig sein, wenn keine Re-Exports vorliegen.
+
+    // 🔎 SEARCH-Feature Setup
     final RecipeApiDataSource recipeApiDataSource = RecipeApiDataSourceImpl(apiClient);
-
-    // Instanziierung des Repository
-    // Behebt "The method 'RecipeRepositoryImpl' isn't defined"
     final RecipeRepositoryImpl recipeRepository = RecipeRepositoryImpl(remoteDataSource: recipeApiDataSource);
-
-    // **KORREKTUR:** Instanziierung BEIDER neuer Use Cases
-    // Behebt "Undefined class 'SearchRecipes'" und "The method 'SearchRecipes' isn't defined"
     final SearchRecipesByQuery searchRecipesByQueryUsecase = SearchRecipesByQuery(recipeRepository);
     final SearchRecipesByIngredients searchRecipesByIngredientsUsecase = SearchRecipesByIngredients(recipeRepository);
 
+    // Provider-Liste
     return [
       ChangeNotifierProvider(create: (_) => SelectedIngredientsProvider()),
       ChangeNotifierProvider(create: (_) => CurrentTabProvider()),
-      // **KORREKTUR:** Der SearchNotifier muss nun BEIDE Use Cases erhalten
-      // Behebt "The named parameter 'searchRecipesByQueryUsecase' is required..."
+
       ChangeNotifierProvider(
         create: (_) => SearchNotifier(
           searchRecipesByQueryUsecase: searchRecipesByQueryUsecase,
           searchRecipesByIngredientsUsecase: searchRecipesByIngredientsUsecase,
         ),
       ),
-      // Füge hier weitere ChangeNotifierProvider oder andere Provider hinzu
+
+      // 👤 PROFILE-Feature Setup
+      ChangeNotifierProvider<ProfileViewModel>(
+        create: (_) {
+          final profileRemoteDataSource = ProfileRemoteDataSourceImpl(apiClient);
+          final profileRepository = ProfileRepositoryImpl(profileRemoteDataSource, apiClient);
+          return ProfileViewModel(
+            GetProfile(profileRepository),
+            UploadAvatar(profileRepository),
+          );
+        },
+      ),
     ];
   }
 }
