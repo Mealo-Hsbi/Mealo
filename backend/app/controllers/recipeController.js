@@ -256,7 +256,6 @@ const getRecipeIsFavorited = async (req, res) => {
     }
 };
 
-
 const addOrUpdateRecipeRating = async (req, res) => {
     console.log('[DEBUG - CONTROLLER] Received rating request body:', req.body);
 
@@ -268,8 +267,21 @@ const addOrUpdateRecipeRating = async (req, res) => {
             return res.status(400).json({ message: 'Missing user ID, Spoonacular ID, valid rating (1-5), or recipe data.' });
         }
 
-        const recipeRating = await recipeManagementService.addOrUpdateRecipeRating(userId, spoonacularId, rating, recipeData, comment);
-        return res.status(200).json(recipeRating);
+        // Rufe den Service auf, der jetzt die aggregierten Daten zurückgibt
+        const { userRating, averageRating, ratingCount } = await recipeManagementService.addOrUpdateRecipeRating(
+            userId,
+            spoonacularId,
+            rating,
+            recipeData,
+            comment // Kommentar übergeben
+        );
+
+        // Sende die spezifische Nutzerbewertung und die aggregierten Werte im Response
+        return res.status(200).json({
+            userRating: userRating,
+            averageRating: averageRating,
+            ratingCount: ratingCount,
+        });
 
     } catch (error) {
         console.error('[BACKEND DEBUG - CONTROLLER] Error in addOrUpdateRecipeRating:', error);

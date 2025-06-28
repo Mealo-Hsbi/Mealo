@@ -91,20 +91,31 @@ async function isRecipeFavoritedByUser(userId, recipeId) {
     return !!favorite;
 }
 
-async function addOrUpdateRecipeRating(userId, spoonacularId, ratingScore, recipeDetailsFromSpoonacular) {
+/**
+ * Fügt eine Rezeptbewertung hinzu oder aktualisiert sie und gibt die aktualisierten
+ * aggregierten Bewertungen für das Rezept zurück.
+ * @param {string} userId - Die ID des Benutzers.
+ * @param {number} spoonacularId - Die Spoonacular ID des Rezepts.
+ * @param {number} ratingScore - Der Bewertungswert (1-5).
+ * @param {object} recipeDetailsFromSpoonacular - Die Rezeptdetails von Spoonacular (für getOrCreateRecipeInDb).
+ * @param {string} [comment=''] - Optionaler Kommentar zur Bewertung.
+ * @returns {Promise<{userRating: object, averageRating: number | null, ratingCount: number}>} - Das Bewertungsobjekt des Benutzers und die aggregierten Werte.
+ */
+async function addOrUpdateRecipeRating(userId, spoonacularId, ratingScore, recipeDetailsFromSpoonacular, comment = '') {
+    // Stellen Sie sicher, dass das Rezept in unserer Datenbank existiert
     const recipe = await getOrCreateRecipeInDb(spoonacularId, recipeDetailsFromSpoonacular);
 
     const ratingDataForPrisma = {
         user_id: userId,
-        recipe_id: recipe.id,
+        recipe_id: recipe.id, // Verwende die interne ID des Rezepts
         score: ratingScore,
-        comment: recipeDetailsFromSpoonacular.comment || '',
+        comment: comment, // Den Kommentar übergeben
     };
 
     console.log('[DEBUG - SERVICE] Attempting to upsert rating with data:', ratingDataForPrisma);
 
     try {
-        const result = await prisma.ratings.upsert({
+        const userRatingResult = await prisma.ratings.upsert({
             where: {
                 user_id_recipe_id: {
                     user_id: ratingDataForPrisma.user_id,
@@ -123,13 +134,24 @@ async function addOrUpdateRecipeRating(userId, spoonacularId, ratingScore, recip
             },
         });
 
-        const frontendFriendlyResult = {
-            ...result,
-            comment: result.comment || '',
+        const frontendFriendlyUserRating = {
+            ...userRatingResult,
+            comment: userRatingResult.comment || '',
         };
 
-        console.log('[DEBUG - SERVICE] Prisma ratings.upsert successful. Returned (frontend-friendly) result:', frontendFriendlyResult);
-        return frontendFriendlyResult;
+        console.log('[DEBUG - SERVICE] Prisma ratings.upsert successful. User rating result:', frontendFriendlyUserRating);
+
+        // Nach dem Speichern/Aktualisieren der Bewertung die aggregierten Werte abrufen
+        const { averageRating, ratingCount } = await getAverageRecipeRating(recipe.id); // Verwende die interne ID
+
+        console.log('[DEBUG - SERVICE] Aggregated rating data after upsert:', { averageRating, ratingCount });
+
+        // Gib beide Informationen zurück: die spezifische Nutzerbewertung und die aggregierten Werte
+        return {
+            userRating: frontendFriendlyUserRating,
+            averageRating: averageRating,
+            ratingCount: ratingCount,
+        };
     } catch (error) {
         console.error('[ERROR - Prisma Ratings Upsert] Fehler beim Erstellen oder Aktualisieren der Bewertung:', error);
         throw error;
@@ -167,16 +189,17 @@ async function getAverageRecipeRating(recipeId) {
                 score: true,
             },
             _count: {
-                score: true,
-                _all: true,
+                score: true, // Zähle non-null Scores
+                _all: true,  // Gesamtzahl der Einträge
             },
             where: {
                 recipe_id: recipeId,
             },
         });
 
-        const averageRating = result._avg.score || null;
-        const ratingCount = result._count._all || 0;
+        // Prüfe auf 0 Bewertungen, um Division durch Null zu vermeiden und korrekte Werte zu liefern
+        const averageRating = result._avg.score !== null ? parseFloat(result._avg.score.toFixed(1)) : null;
+        const ratingCount = result._count.score || 0; // Oder result._count._all, je nachdem was du zählen willst (nur Ratings mit Score vs. alle Ratings)
 
         console.log(`[DEBUG - SERVICE] Average rating for recipe ${recipeId}: ${averageRating}, count: ${ratingCount}`);
         return { averageRating, ratingCount };
@@ -195,5 +218,5 @@ module.exports = {
     isRecipeFavoritedByUser,
     addOrUpdateRecipeRating,
     getUserRecipeRating,
-    getAverageRecipeRating, // SICHERSTELLEN, dass dies hier EXPORTIERT IST!
+    getAverageRecipeRating,
 };

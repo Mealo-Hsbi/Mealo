@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as legacy_provider;
+
+import 'package:frontend/features/recipe/presentation/provider/rating_notifier.dart';
+import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:frontend/common/models/recipe/recipe_details.dart';
-import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart'; // Für User-ID
-import 'package:frontend/main.dart'; // Für scaffoldMessengerKey
-import 'package:frontend/features/recipe/presentation/provider/rating_notifier.dart'; // Für den Notifier
+import 'package:frontend/features/recipe/domain/entities/recipe.dart';
 
 class RecipeRatingWidget extends ConsumerStatefulWidget {
   final RecipeDetails recipeDetails;
@@ -20,219 +22,246 @@ class RecipeRatingWidget extends ConsumerStatefulWidget {
 }
 
 class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
-  // Lokaler State für die Anzeige der Sterne, bevor die API-Antwort kommt
-  int? _displayScore;
-  String? _lastFetchedUserId;
-  String? _lastFetchedInternalRecipeId;
+  // _currentRating speichert die EIGENE Bewertung des Nutzers.
+  double _currentRating = 0.0;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  // Neue Felder für die aggregierten Bewertungen
+  double _averageRating = 0.0;
+  int _ratingCount = 0;
 
   @override
   void initState() {
     super.initState();
-    // Setze den initialen Score basierend auf der userRating, wenn vorhanden
-    _displayScore = widget.recipeDetails.userRating?.score;
-  }
+    // Setze die Anfangswerte basierend auf den übergebenen recipeDetails
+    _currentRating = widget.recipeDetails.userRating?.score?.toDouble() ?? 0.0;
+    _averageRating = widget.recipeDetails.averageRating ?? 0.0;
+    _ratingCount = widget.recipeDetails.ratingCount ?? 0;
 
-  @override
-  void didUpdateWidget(covariant RecipeRatingWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Wenn sich die recipeDetails ändern, aktualisiere den _displayScore
-    if (widget.recipeDetails.userRating?.score != oldWidget.recipeDetails.userRating?.score) {
+    // Lade die Benutzerbewertung nur, wenn die interne Rezept-ID (UUID) verfügbar ist.
+    // Dies ist wichtig, falls die initialen Daten keine User-Bewertung enthielten
+    // oder wenn sich der User nach dem Laden der Seite anmeldet.
+    if (widget.recipeDetails.id != null) {
+      _fetchUserRating(); // Stellt sicher, dass die aktuellste Benutzerbewertung geladen wird
+    } else {
       setState(() {
-        _displayScore = widget.recipeDetails.userRating?.score;
+        _isLoading = false;
+        // Wenn keine interne ID vorhanden ist, kann keine Bewertung abgerufen werden.
+        // Die initialen Werte für AverageRating und Count bleiben wie aus RecipeDetails gesetzt.
       });
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Hole User ID
-    final asyncAuthUser = ref.read(authStateChangesProvider);
-    final String? currentUserId = asyncAuthUser.value?.uid;
-    final String? internalRecipeId = widget.recipeDetails.id;
+  // Diese Methode wird jetzt primär dazu verwendet, die eigene Bewertung des Nutzers zu aktualisieren
+  // und sicherzustellen, dass sie aktuell ist.
+  void _fetchUserRating() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-    // Trigger zum Laden der Benutzerbewertung, wenn User oder Rezept sich ändern
-    if (currentUserId != null &&
-        internalRecipeId != null &&
-        (currentUserId != _lastFetchedUserId || internalRecipeId != _lastFetchedInternalRecipeId)) {
-
-      _lastFetchedUserId = currentUserId;
-      _lastFetchedInternalRecipeId = internalRecipeId;
-
-      // API-Aufruf verzögern
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          final recipeRatingNotifier = ref.read(recipeRatingNotifierProvider.notifier);
-          // Nur laden, wenn die Bewertung nicht bereits vom Backend geladen wurde
-          // und der Notifier nicht schon lädt
-          if (widget.recipeDetails.userRating == null && !recipeRatingNotifier.isLoading) {
-             recipeRatingNotifier.fetchUserRecipeRating(currentUserId, internalRecipeId);
-          }
-        }
+    final String? userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      setState(() {
+        _isLoading = false;
+        // _currentRating bleibt 0.0, da kein Nutzer angemeldet ist
       });
+      return;
     }
+
+    final String? internalRecipeId = widget.recipeDetails.id;
+    if (internalRecipeId == null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Internal Recipe ID is missing, cannot load rating.';
+      });
+      return;
+    }
+
+    try {
+      final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+      final existingRating = await ratingNotifier.getUserRecipeRating(
+        userId: userId,
+        recipeId: internalRecipeId,
+      );
+
+      // Hier wird nur die eigene Bewertung aktualisiert.
+      // Die aggregierten Werte kommen idealerweise direkt aus recipeDetails
+      // oder müssen bei einer Bewertung neu vom Backend abgerufen werden.
+      setState(() {
+        _currentRating = existingRating?.score.toDouble() ?? 0.0;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Could not load your rating: $e';
+        _isLoading = false;
+        _currentRating = 0.0;
+      });
+      _showSnackBar(_errorMessage!);
+    }
+  }
+
+  void _handleRatingSelected(double newRating) async {
+    final String? userId = ref.read(currentUserIdProvider);
+
+    if (userId == null) {
+      _showSnackBar('Please log in to rate recipes.');
+      return;
+    }
+
+    setState(() {
+      _errorMessage = null;
+    });
+
+    try {
+      final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+
+      final Recipe recipeEntity = Recipe(
+        id: widget.recipeDetails.id,
+        spoonacularId: widget.recipeDetails.spoonacularId,
+        title: widget.recipeDetails.title,
+        imageUrl: widget.recipeDetails.image ?? '',
+      );
+
+      await ratingNotifier.addOrUpdateRecipeRating(
+        userId: userId,
+        spoonacularId: widget.recipeDetails.spoonacularId,
+        score: newRating.toInt(),
+        recipe: recipeEntity,
+      );
+
+      setState(() {
+        _currentRating = newRating; // Eigene Bewertung aktualisieren
+        _isLoading = false; // Ladezustand hier auf false setzen, da die Operation abgeschlossen ist
+      });
+      _showSnackBar('Rating saved successfully!');
+
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to save rating: $e';
+        _isLoading = false; // Fehler aufgetreten, Ladezustand beenden
+      });
+      _showSnackBar(_errorMessage!);
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final String? userId = ref.watch(currentUserIdProvider);
     final theme = Theme.of(context);
-    final Color primaryColor = theme.colorScheme.primary;
-    final Color greyStarColor = Colors.grey[400]!; // Für unbewertete/durchschnittliche Sterne
 
-    final asyncAuthUser = ref.watch(authStateChangesProvider);
-    final String? currentUserId = asyncAuthUser.when(
-      data: (user) => user?.uid,
-      loading: () => null,
-      error: (err, stack) => null,
-    );
+    // Initialisiere die Werte mit denen aus recipeDetails, falls sie vorhanden sind
+    // und noch nicht über _fetchUserRating aktualisiert wurden.
+    // Dies ist besonders wichtig, wenn der User nicht angemeldet ist,
+    // damit trotzdem die Durchschnittsbewertung angezeigt wird.
+    final double displayAverageRating = widget.recipeDetails.averageRating ?? 0.0;
+    final int displayRatingCount = widget.recipeDetails.ratingCount ?? 0;
+    final double displayUserRating = widget.recipeDetails.userRating?.score?.toDouble() ?? 0.0;
 
-    final recipeRatingNotifier = ref.watch(recipeRatingNotifierProvider.notifier);
-    // Bevorzugen wir den Score vom Notifier, falls er sich nach einer Interaktion ändert.
-    // Ansonsten den initialen Score von recipeDetails oder den geladenen Score.
-    final int? userScore = recipeRatingNotifier.userRating?.score ?? _displayScore ?? widget.recipeDetails.userRating?.score;
 
-    final double? averageRating = widget.recipeDetails.averageRating;
-    final int? ratingCount = widget.recipeDetails.ratingCount;
+    if (_isLoading && userId != null) { // Zeige Ladeindikator nur, wenn wir spezifisch eine Nutzerbewertung laden
+      return Center(child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary));
+    }
 
-    // Hilfsfunktion zum Anzeigen von Sternen (statisch für Durchschnitt, interaktiv für Benutzer)
-    Widget buildStarRow({
-      required int filledStars,
-      required Color filledColor,
-      Color? borderColor, // Optional für Border-Sterne
-      bool interactive = false,
-      Function(int)? onStarTap,
-    }) {
-      return Row(
+    // Wenn kein Benutzer angemeldet ist, zeige nur die durchschnittliche Bewertung an
+    // und biete keine Interaktion zur eigenen Bewertung an.
+    if (userId == null) {
+      return Column(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(5, (index) {
-          final int starNumber = index + 1;
-          return IconButton(
-            // Verwende Icon für statische Sterne, IconButton für interaktive
-            icon: Icon(
-              starNumber <= filledStars ? Icons.star : Icons.star_border,
-              color: starNumber <= filledStars ? filledColor : greyStarColor,
-              size: interactive ? 28 : 20, // Interaktive Sterne etwas größer
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              return Icon(
+                index < displayAverageRating.round() ? Icons.star : Icons.star_border,
+                color: Colors.amber[700],
+                size: 30,
+              );
+            }),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Text(
+              displayRatingCount > 0
+                  ? '${displayAverageRating.toStringAsFixed(1)} / 5.0 (${displayRatingCount} ratings)'
+                  : 'No ratings yet.',
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              textAlign: TextAlign.center,
             ),
-            padding: EdgeInsets.zero, // Kein Padding um die Icons
-            constraints: BoxConstraints.tightFor(width: interactive ? 30 : 22, height: interactive ? 30 : 22), // Konsistente Größe
-            onPressed: interactive && currentUserId != null && widget.recipeDetails.id != null && !recipeRatingNotifier.isLoading
-                ? () {
-                    // Update the local display score immediately for a snappier UI
-                    setState(() {
-                      _displayScore = starNumber;
-                    });
-                    // Then trigger the API call
-                    onStarTap?.call(starNumber);
-                  }
-                : null, // Deaktiviert, wenn nicht interaktiv oder keine Interaktion möglich
-          );
-        }),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              'Login to rate this recipe.',
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       );
     }
 
-    // Wenn kein Benutzer angemeldet ist, zeige nur die durchschnittliche Bewertung (falls vorhanden)
-    if (currentUserId == null) {
-      if (averageRating != null && averageRating > 0 && ratingCount != null && ratingCount > 0) {
-        return Column(
-          children: [
-            Text('Average Rating', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildStarRow(
-                  filledStars: averageRating.round(), // Runden für Anzeige
-                  filledColor: primaryColor.withOpacity(0.8), // Leichte Transparenz für Durchschnitt
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${averageRating.toStringAsFixed(1)} ($ratingCount reviews)',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
-                ),
-              ],
-            ),
-          ],
-        );
-      } else {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+    // Wenn ein Benutzer angemeldet ist:
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_errorMessage != null)
+          Text(
+            _errorMessage!,
+            style: const TextStyle(color: Colors.red, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        // Durchschnittliche Bewertung und Anzahl der Bewertungen
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            return Icon(
+              index < displayAverageRating.round() ? Icons.star : Icons.star_border,
+              color: Colors.amber[700],
+              size: 24, // Etwas kleiner für die Durchschnittsanzeige
+            );
+          }),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
           child: Text(
-            'No ratings yet. Log in to be the first!',
+            displayRatingCount > 0
+                ? 'Average: ${displayAverageRating.toStringAsFixed(1)} / 5.0 (${displayRatingCount} ratings)'
+                : 'No ratings yet.',
             style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
-        );
-      }
-    }
-
-    // Wenn Benutzer angemeldet ist
-    return Column(
-      children: [
-        // 1. Durchschnittliche Bewertung anzeigen (wenn vorhanden)
-        if (averageRating != null && averageRating > 0 && ratingCount != null && ratingCount > 0)
-          Column(
-            children: [
-              Text('Average Rating', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  buildStarRow(
-                    filledStars: averageRating.round(),
-                    filledColor: primaryColor.withOpacity(0.8),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${averageRating.toStringAsFixed(1)} ($ratingCount reviews)',
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        
-        // 2. Deine Bewertung als interaktive Sterne
-        Text('Your Rating:', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        buildStarRow(
-          filledStars: userScore ?? 0, // Zeige den Score des Benutzers
-          filledColor: primaryColor, // Volle Primärfarbe für Benutzerbewertung
-          interactive: true,
-          onStarTap: (score) async {
-            // Stelle sicher, dass die internalRecipeId verfügbar ist
-            if (widget.recipeDetails.id == null) {
-              scaffoldMessengerKey.currentState?.showSnackBar(
-                const SnackBar(content: Text('Cannot save rating: Recipe ID missing.')),
-              );
-              return;
-            }
-
-            try {
-              // Rufe den Notifier auf, um die Bewertung zu speichern
-              await recipeRatingNotifier.addOrUpdateRating(
-                currentUserId!,
-                widget.recipeDetails.spoonacularId,
-                score,
-                widget.recipeDetails.toEntity(), // Basisrezept-Daten als Entität
-                comment: widget.recipeDetails.userRating?.comment, // Vorhandenen Kommentar übernehmen
-              );
-
-              // Snackbar für Erfolg anzeigen
-              scaffoldMessengerKey.currentState?.showSnackBar(
-                const SnackBar(content: Text('Rating saved successfully!')),
-              );
-            } catch (e) {
-              // Snackbar für Fehler anzeigen
-              scaffoldMessengerKey.currentState?.showSnackBar(
-                SnackBar(content: Text('Failed to save rating: ${e.toString()}')),
-              );
-            }
-          },
         ),
-        // Lade-Indikator, wenn eine Bewertung gespeichert/aktualisiert wird
-        if (recipeRatingNotifier.isLoading)
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: CircularProgressIndicator.adaptive(),
-          ),
+        // Eigene Bewertung und Interaktion zum Bewerten
+        Text(
+          'Your rating:',
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            return GestureDetector(
+              onTap: () => _handleRatingSelected((index + 1).toDouble()),
+              child: Icon(
+                index < _currentRating ? Icons.star : Icons.star_border, // Zeigt die EIGENE Bewertung an
+                color: Colors.blueAccent, // Eine andere Farbe, um die eigene Bewertung abzuheben
+                size: 36, // Größer, um Interaktion zu zeigen
+              ),
+            );
+          }),
+        ),
+        Text(
+          _currentRating > 0 ? 'You rated: ${_currentRating.toInt()}' : 'Tap stars to rate!',
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
       ],
     );
   }
