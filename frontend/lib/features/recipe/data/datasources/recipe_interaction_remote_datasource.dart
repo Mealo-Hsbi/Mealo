@@ -177,7 +177,23 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>);
+                    debugPrint('--- RAW API Response Data for addOrUpdateRecipeRating ---');
+            debugPrint('Type of response.data: ${response.data.runtimeType}');
+            debugPrint('Content of response.data: ${response.data}');
+        
+        final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
+
+                  debugPrint('--- Extracted userRating from responseData ---');
+            debugPrint('Type of responseData[\'userRating\']: ${responseData['userRating'].runtimeType}');
+            debugPrint('Content of responseData[\'userRating\']: ${responseData['userRating']}');
+
+
+        final Map<String, dynamic> userRatingMap = responseData['userRating'] as Map<String, dynamic>;
+        
+            debugPrint('--- Map passed to RecipeRatingModel.fromJson ---');
+            debugPrint('$userRatingMap');
+
+        return RecipeRatingModel.fromJson(userRatingMap);      
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
