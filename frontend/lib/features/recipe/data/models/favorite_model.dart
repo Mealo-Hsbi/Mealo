@@ -4,24 +4,23 @@ import 'package:frontend/features/recipe/domain/entities/favorite.dart';
 import 'package:frontend/features/recipe/data/models/recipe_model.dart';
 
 class FavoriteModel extends Equatable {
-  final String id;
+  final String? id; // Make ID nullable
   final String userId;
   final String recipeId;
   final DateTime createdAt;
-  final RecipeModel recipe; // Das Rezept, das favorisiert wurde, als Modell
+  final RecipeModel recipe;
 
   const FavoriteModel({
-    required this.id,
+    this.id, // Now nullable in constructor
     required this.userId,
     required this.recipeId,
     required this.createdAt,
     required this.recipe,
   });
 
-  // Factory-Methode zum Erstellen eines FavoriteModel aus JSON (von Ihrem Backend)
   factory FavoriteModel.fromJson(Map<String, dynamic> json) {
     return FavoriteModel(
-      id: json['id'] as String,
+      id: json['id'] as String?, // Safely cast to String?
       userId: json['userId'] as String,
       recipeId: json['recipeId'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -32,7 +31,7 @@ class FavoriteModel extends Equatable {
   // Methode zur Umwandlung des FavoriteModel in die Favorite Domain-Entität
   Favorite toEntity() {
     return Favorite(
-      id: id,
+      id: id ?? '', // Provide a default value if id is null
       userId: userId,
       recipeId: recipeId,
       createdAt: createdAt,
@@ -53,5 +52,5 @@ class FavoriteModel extends Equatable {
   }
 
   @override
-  List<Object> get props => [id, userId, recipeId, createdAt, recipe];
+  List<Object> get props => [id ?? '', userId, recipeId, createdAt, recipe];
 }

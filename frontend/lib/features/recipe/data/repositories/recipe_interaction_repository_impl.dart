@@ -1,10 +1,10 @@
 // lib/features/recipe/data/repositories/recipe_interaction_repository_impl.dart
 
-// import 'package:dartz/dartz.dart'; // <--- Dieser Import wird JETZT ENTFERNT!
 import 'package:frontend/core/error/exceptions.dart'; // Ihre Exceptions
 import 'package:frontend/core/error/failures.dart'; // Ihre Failures
 import 'package:frontend/features/recipe/data/datasources/recipe_interaction_remote_datasource.dart';
 import 'package:frontend/features/recipe/data/models/recipe_model.dart';
+import 'package:frontend/features/recipe/data/models/recipe_rating_response_model.dart';
 import 'package:frontend/features/recipe/domain/entities/favorite.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe_rating.dart';
@@ -78,15 +78,17 @@ class RecipeInteractionRepositoryImpl implements RecipeInteractionRepository {
     }
   }
 
-  @override
-  Future<RecipeRating> addOrUpdateRecipeRating(
+@override
+  Future<RecipeRatingResponseModel> addOrUpdateRecipeRating( // CHANGED RETURN TYPE
       String userId, int? spoonacularId, int score, Recipe recipe, {String? comment}) async {
     try {
       final recipeModel = RecipeModel.fromEntity(recipe);
-      final ratingModel = await remoteDataSource.addOrUpdateRecipeRating(
+      final ratingResponseModel = await remoteDataSource.addOrUpdateRecipeRating(
           userId, spoonacularId, score, recipeModel,
           comment: comment);
-      return ratingModel.toEntity();
+      
+      // We now return the full response model, which contains the userRating, averageRating, and ratingCount.
+      return ratingResponseModel; 
     } on ServerException catch (e) {
       throw ServerFailure(message: e.message);
     } on TimeoutException catch (e) {

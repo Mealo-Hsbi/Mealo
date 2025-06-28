@@ -1,5 +1,6 @@
 // lib/features/recipe/domain/repositories/recipe_interaction_repository.dart
 import 'package:frontend/core/error/failures.dart';
+import 'package:frontend/features/recipe/data/models/recipe_rating_response_model.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart';
 import 'package:frontend/features/recipe/domain/entities/favorite.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe_rating.dart';
@@ -18,12 +19,7 @@ abstract class RecipeInteractionRepository {
       String userId, String recipeId);
 
   // --- METHODEN für Bewertungen ---
-  Future<RecipeRating> addOrUpdateRecipeRating(
-      String userId,
-      int? spoonacularId, // <-- GEÄNDERT: Jetzt nullable
-      int score,
-      Recipe recipe,
-      {String? comment});
-  Future<RecipeRating?> getUserRecipeRating(
-      String userId, String recipeId);
+  Future<RecipeRatingResponseModel> addOrUpdateRecipeRating(
+      String userId, int? spoonacularId, int score, Recipe recipe, {String? comment});
+  Future<RecipeRating?> getUserRecipeRating(String userId, String recipeId);
 }

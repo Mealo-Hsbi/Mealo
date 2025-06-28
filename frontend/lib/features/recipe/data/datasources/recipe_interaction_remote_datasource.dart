@@ -5,6 +5,7 @@ import 'package:frontend/core/error/exceptions.dart'; // Ihre spezifischen Excep
 import 'package:frontend/features/recipe/data/models/favorite_model.dart';
 import 'package:frontend/features/recipe/data/models/recipe_model.dart';
 import 'package:frontend/features/recipe/data/models/recipe_rating_model.dart';
+import 'package:frontend/features/recipe/data/models/recipe_rating_response_model.dart';
 import 'package:frontend/services/api_client.dart'; // Ihr ApiClient
 
 // --- Abstrakte Schnittstelle (der "Vertrag") bleibt gleich ---
@@ -15,7 +16,7 @@ abstract class RecipeInteractionRemoteDataSource {
   Future<List<FavoriteModel>> getFavoriteRecipes(String userId);
   Future<bool> isRecipeFavorited(String userId, String recipeId);
 
-  Future<RecipeRatingModel> addOrUpdateRecipeRating(
+  Future<RecipeRatingResponseModel> addOrUpdateRecipeRating(
       String userId, int? spoonacularId, int score, RecipeModel recipe, {String? comment});
   Future<RecipeRatingModel?> getUserRecipeRating(
       String userId, String recipeId);
@@ -158,42 +159,32 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
     }
   }
 
-  @override
-  Future<RecipeRatingModel> addOrUpdateRecipeRating(
+@override
+  Future<RecipeRatingResponseModel> addOrUpdateRecipeRating( // CHANGED RETURN TYPE
       String userId, int? spoonacularId, int score, RecipeModel recipe, {String? comment}) async {
     try {
-      // Backend-Route: POST /api/recipes/ratings
-      final String endpoint = '/recipes/ratings'; // Relative URL
+      final String endpoint = '/recipes/ratings';
       debugPrint('[Frontend Data] Calling POST $endpoint');
 
       final Response response = await _apiClient.post(
         endpoint,
         data: {
-          'spoonacularId': spoonacularId, // Backend erwartet 'spoonacularId' (camelCase)
-          'rating': score,              // Backend erwartet 'rating' (nicht 'score')
+          'spoonacularId': spoonacularId,
+          'rating': score,
           'comment': comment,
-          'recipeData': recipe.toJson(), // Backend erwartet 'recipeData' mit dem Rezept-JSON
+          'recipeData': recipe.toJson(),
         },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-                    debugPrint('--- RAW API Response Data for addOrUpdateRecipeRating ---');
-            debugPrint('Type of response.data: ${response.data.runtimeType}');
-            debugPrint('Content of response.data: ${response.data}');
-        
+        debugPrint('--- RAW API Response Data for addOrUpdateRecipeRating ---');
+        debugPrint('Type of response.data: ${response.data.runtimeType}');
+        debugPrint('Content of response.data: ${response.data}');
+
         final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
 
-                  debugPrint('--- Extracted userRating from responseData ---');
-            debugPrint('Type of responseData[\'userRating\']: ${responseData['userRating'].runtimeType}');
-            debugPrint('Content of responseData[\'userRating\']: ${responseData['userRating']}');
-
-
-        final Map<String, dynamic> userRatingMap = responseData['userRating'] as Map<String, dynamic>;
-        
-            debugPrint('--- Map passed to RecipeRatingModel.fromJson ---');
-            debugPrint('$userRatingMap');
-
-        return RecipeRatingModel.fromJson(userRatingMap);      
+        // Now parse the entire response with the new RecipeRatingResponseModel
+        return RecipeRatingResponseModel.fromJson(responseData); // Pass the whole responseData
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
@@ -220,7 +211,12 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
       );
 
       if (response.statusCode == 200) {
-        return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>);
+        // return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>);
+      
+        if (response.data == null || !(response.data is Map<String, dynamic>)) {
+          return null; // Return null if the data is null or not in the expected format
+        }
+        return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>); // Cast safely if not null
       } else if (response.statusCode == 404) { // Angenommen, 404 bedeutet keine Bewertung gefunden
         debugPrint('No rating found for recipe $recipeId by user $userId (404 Not Found).');
         return null;

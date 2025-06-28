@@ -23,38 +23,40 @@ class RecipeRatingWidget extends ConsumerStatefulWidget {
 
 class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
   // _currentRating speichert die EIGENE Bewertung des Nutzers.
+  // This remains local state as it updates instantly on tap.
   double _currentRating = 0.0;
   bool _isLoading = true;
   String? _errorMessage;
 
-  // Neue Felder für die aggregierten Bewertungen
-  double _averageRating = 0.0;
-  int _ratingCount = 0;
+  // REMOVE these local state variables.
+  // double _averageRating = 0.0; // No longer needed here
+  // int _ratingCount = 0;      // No longer needed here
 
   @override
   void initState() {
     super.initState();
-    // Setze die Anfangswerte basierend auf den übergebenen recipeDetails
+    // Set the initial user's own rating from recipeDetails
     _currentRating = widget.recipeDetails.userRating?.score?.toDouble() ?? 0.0;
-    _averageRating = widget.recipeDetails.averageRating ?? 0.0;
-    _ratingCount = widget.recipeDetails.ratingCount ?? 0;
 
-    // Lade die Benutzerbewertung nur, wenn die interne Rezept-ID (UUID) verfügbar ist.
-    // Dies ist wichtig, falls die initialen Daten keine User-Bewertung enthielten
-    // oder wenn sich der User nach dem Laden der Seite anmeldet.
+    // Initialize RatingNotifier's averageRating and ratingCount
+    // This is crucial to set the initial values from the recipeDetails
+    // into the notifier's state when the widget first loads.
+    final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+    ratingNotifier.setInitialAverageRating(widget.recipeDetails.averageRating ?? 0.0);
+    ratingNotifier.setInitialRatingCount(widget.recipeDetails.ratingCount ?? 0);
+
+    // Load the user's rating only if the internal recipe ID (UUID) is available.
     if (widget.recipeDetails.id != null) {
-      _fetchUserRating(); // Stellt sicher, dass die aktuellste Benutzerbewertung geladen wird
+      _fetchUserRating(); // Ensures the latest user rating is loaded
     } else {
       setState(() {
         _isLoading = false;
-        // Wenn keine interne ID vorhanden ist, kann keine Bewertung abgerufen werden.
-        // Die initialen Werte für AverageRating und Count bleiben wie aus RecipeDetails gesetzt.
       });
     }
   }
 
-  // Diese Methode wird jetzt primär dazu verwendet, die eigene Bewertung des Nutzers zu aktualisieren
-  // und sicherzustellen, dass sie aktuell ist.
+  // This method is now primarily used to update the user's own rating
+  // and ensure it is current.
   void _fetchUserRating() async {
     setState(() {
       _isLoading = true;
@@ -65,7 +67,6 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
     if (userId == null) {
       setState(() {
         _isLoading = false;
-        // _currentRating bleibt 0.0, da kein Nutzer angemeldet ist
       });
       return;
     }
@@ -86,9 +87,6 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
         recipeId: internalRecipeId,
       );
 
-      // Hier wird nur die eigene Bewertung aktualisiert.
-      // Die aggregierten Werte kommen idealerweise direkt aus recipeDetails
-      // oder müssen bei einer Bewertung neu vom Backend abgerufen werden.
       setState(() {
         _currentRating = existingRating?.score.toDouble() ?? 0.0;
         _isLoading = false;
@@ -111,13 +109,17 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
       return;
     }
 
+    // Instantly update the local user's rating for immediate visual feedback
     setState(() {
+      _currentRating = newRating;
       _errorMessage = null;
     });
 
-    try {
-      final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+    // Show loading state for the actual API call
+    final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+    ratingNotifier.setLoading(true); // Use the notifier's isLoading state
 
+    try {
       final Recipe recipeEntity = Recipe(
         id: widget.recipeDetails.id,
         spoonacularId: widget.recipeDetails.spoonacularId,
@@ -125,25 +127,27 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
         imageUrl: widget.recipeDetails.image ?? '',
       );
 
+      // This call will update the averageRating and ratingCount within the RatingNotifier
       await ratingNotifier.addOrUpdateRecipeRating(
         userId: userId,
         spoonacularId: widget.recipeDetails.spoonacularId,
         score: newRating.toInt(),
         recipe: recipeEntity,
+        // comment: '', // Add comment if you have an input for it
       );
 
-      setState(() {
-        _currentRating = newRating; // Eigene Bewertung aktualisieren
-        _isLoading = false; // Ladezustand hier auf false setzen, da die Operation abgeschlossen ist
-      });
+      // No need for local setState(_isLoading = false) here, notifier handles it
       _showSnackBar('Rating saved successfully!');
 
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to save rating: $e';
-        _isLoading = false; // Fehler aufgetreten, Ladezustand beenden
-      });
-      _showSnackBar(_errorMessage!);
+      // Catch error from notifier
+      _showSnackBar('Failed to save rating: ${ratingNotifier.errorMessage ?? 'Unknown error'}');
+      // If an error occurred, re-fetch the user's rating to revert if needed
+      // and potentially refresh the average/count from backend.
+      _fetchUserRating();
+    } finally {
+      // Ensure loading state is turned off by notifier
+      ratingNotifier.setLoading(false);
     }
   }
 
@@ -158,21 +162,18 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
     final String? userId = ref.watch(currentUserIdProvider);
     final theme = Theme.of(context);
 
-    // Initialisiere die Werte mit denen aus recipeDetails, falls sie vorhanden sind
-    // und noch nicht über _fetchUserRating aktualisiert wurden.
-    // Dies ist besonders wichtig, wenn der User nicht angemeldet ist,
-    // damit trotzdem die Durchschnittsbewertung angezeigt wird.
-    final double displayAverageRating = widget.recipeDetails.averageRating ?? 0.0;
-    final int displayRatingCount = widget.recipeDetails.ratingCount ?? 0;
-    final double displayUserRating = widget.recipeDetails.userRating?.score?.toDouble() ?? 0.0;
+    // WATCH the RatingNotifier to get the current average rating and count.
+    // This is the crucial change: the UI now reacts to updates in the notifier.
+    final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context);
+    final double displayAverageRating = ratingNotifier.averageRating;
+    final int displayRatingCount = ratingNotifier.ratingCount;
 
-
-    if (_isLoading && userId != null) { // Zeige Ladeindikator nur, wenn wir spezifisch eine Nutzerbewertung laden
+    // Use the notifier's isLoading state
+    if (ratingNotifier.isLoading && userId != null) {
       return Center(child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary));
     }
 
-    // Wenn kein Benutzer angemeldet ist, zeige nur die durchschnittliche Bewertung an
-    // und biete keine Interaktion zur eigenen Bewertung an.
+    // If no user is logged in, show only the average rating and no interaction.
     if (userId == null) {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -209,24 +210,24 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
       );
     }
 
-    // Wenn ein Benutzer angemeldet ist:
+    // If a user is logged in:
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_errorMessage != null)
+        if (ratingNotifier.errorMessage != null) // Use notifier's error message
           Text(
-            _errorMessage!,
+            ratingNotifier.errorMessage!,
             style: const TextStyle(color: Colors.red, fontSize: 12),
             textAlign: TextAlign.center,
           ),
-        // Durchschnittliche Bewertung und Anzahl der Bewertungen
+        // Average rating and number of ratings
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
             return Icon(
               index < displayAverageRating.round() ? Icons.star : Icons.star_border,
               color: Colors.amber[700],
-              size: 24, // Etwas kleiner für die Durchschnittsanzeige
+              size: 24, // Slightly smaller for average display
             );
           }),
         ),
@@ -240,7 +241,7 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
             textAlign: TextAlign.center,
           ),
         ),
-        // Eigene Bewertung und Interaktion zum Bewerten
+        // User's own rating and interaction to rate
         Text(
           'Your rating:',
           style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
@@ -251,9 +252,9 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
             return GestureDetector(
               onTap: () => _handleRatingSelected((index + 1).toDouble()),
               child: Icon(
-                index < _currentRating ? Icons.star : Icons.star_border, // Zeigt die EIGENE Bewertung an
-                color: Colors.blueAccent, // Eine andere Farbe, um die eigene Bewertung abzuheben
-                size: 36, // Größer, um Interaktion zu zeigen
+                index < _currentRating ? Icons.star : Icons.star_border, // Shows YOUR rating
+                color: Colors.blueAccent, // Different color to highlight user's own rating
+                size: 36, // Larger to indicate interaction
               ),
             );
           }),
