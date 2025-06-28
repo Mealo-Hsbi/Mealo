@@ -3,8 +3,6 @@
 const { PrismaClient } = require('../generated/prisma');
 const prisma = new PrismaClient();
 
-console.log('[DEBUG] PrismaClient:', PrismaClient ? 'Loaded' : 'NOT Loaded');
-console.log('[DEBUG] Prisma instance:', prisma ? 'Initialized' : 'NOT Initialized');
 if (prisma && !prisma.recipes) {
     console.warn('[DEBUG] prisma.recipes is undefined. Is the Prisma schema correct and client regenerated? (Expected: "model recipes")');
 }
@@ -13,14 +11,12 @@ if (prisma && !prisma.ratings) {
 }
 
 async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend) {
-    console.log('[DEBUG - SERVICE] getOrCreateRecipeInDb called with:');
-    console.log('   spoonacularId:', spoonacularId);
-    console.log('   recipeDataFromFrontend (received from Flutter):', recipeDataFromFrontend);
-
     if (!prisma || !prisma.recipes || typeof prisma.recipes.upsert !== 'function') {
         console.error('[ERROR] Prisma client or prisma.recipes.upsert is not available. Check Prisma setup and "npx prisma generate".');
         throw new Error('Prisma client not properly initialized or "recipes" model is missing.');
     }
+
+    const internalRecipeIdFromFrontend = recipeDataFromFrontend.id; // Die interne ID des Rezepts in Ihrer Datenbank
 
     const prismaRecipeData = {
         title: recipeDataFromFrontend.title,
@@ -34,42 +30,86 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend) {
         dish_types: recipeDataFromFrontend.dishTypes || [],
         summary: recipeDataFromFrontend.summary || null,
         health_score: recipeDataFromFrontend.healthScore || null,
+        spoonacular_id: spoonacularId || null, // Die Spoonacular ID des Rezepts
     };
 
     try {
-        return await prisma.recipes.upsert({
-            where: { spoonacular_id: spoonacularId },
-            update: {
-                ...prismaRecipeData,
-            },
-            create: {
-                spoonacular_id: spoonacularId,
-                ...prismaRecipeData,
-            },
-        });
+        let recipe;
+        if (spoonacularId) {
+            // Fall 1: Spoonacular ID ist vorhanden (wie bisher)
+            recipe = await prisma.recipes.upsert({
+                where: { spoonacular_id: spoonacularId },
+                update: prismaRecipeData,
+                create: {
+                    spoonacular_id: spoonacularId,
+                    ...prismaRecipeData,
+                },
+            });
+        } else if (internalRecipeIdFromFrontend) {
+            // Fall 2: Keine Spoonacular ID, aber interne ID vom Frontend vorhanden
+            // Dies ist der Fall für bereits existierende, selbst erstellte Rezepte,
+            // oder importierte Spoonacular-Rezepte, deren interne ID das Frontend kennt.
+            recipe = await prisma.recipes.upsert({
+                where: { id: internalRecipeIdFromFrontend }, // Suche über interne ID
+                update: {
+                    // Keine spoonacular_id im Update setzen, wenn sie null ist
+                    ...prismaRecipeData,
+                },
+                create: {
+                    id: internalRecipeIdFromFrontend, // Interne ID beim Erstellen setzen
+                    ...prismaRecipeData,
+                },
+            });
+        } else {
+            // Fall 3: Weder Spoonacular ID noch interne ID vom Frontend vorhanden
+            // Dies ist der Fall für ein **brandneues, selbst erstelltes Rezept**,
+            // das zum ersten Mal gespeichert wird. Hier muss die DB die UUID generieren.
+            recipe = await prisma.recipes.create({
+                data: prismaRecipeData, // Prisma generiert die UUID für 'id'
+            });
+        }
+
+        return recipe;
     } catch (error) {
-        console.error('[ERROR - Prisma Upsert] Fehler beim Erstellen oder Aktualisieren des Rezepts:', error);
+        console.error('[ERROR - Prisma Recipe Operation] Fehler beim Erstellen oder Aktualisieren des Rezepts:', error);
         throw error;
     }
 }
 
 async function addFavoriteRecipe(userId, spoonacularId, recipeDetailsFromSpoonacular) {
     const recipe = await getOrCreateRecipeInDb(spoonacularId, recipeDetailsFromSpoonacular);
-    return prisma.favorites.create({
-        data: {
-            user_id: userId,
-            recipe_id: recipe.id,
-        },
-    });
+    
+    try {
+        const newFavorite = await prisma.favorites.create({
+            data: {
+                user_id: userId,
+                recipe_id: recipe.id,
+            },
+            include: {
+                recipes: true,
+            },
+        });
+        
+        return newFavorite;
+    } catch (error) {
+        console.error('[Backend Service] Error adding favorite:', error);
+        throw error;
+    }
 }
 
-async function removeFavoriteRecipe(userId, recipeId) {
-    return prisma.favorites.deleteMany({
-        where: {
-            user_id: userId,
-            recipe_id: recipeId,
-        },
-    });
+async function removeFavoriteRecipe(userId, favoriteId) {
+    try {
+        const result = await prisma.favorites.delete({ // delete statt deleteMany, da es eine einzelne ID ist
+            where: {
+                id: favoriteId, // Lösche nach der ID des Favoriten-Eintrags
+            },
+        });
+
+        return result;
+    } catch (error) {
+        console.error(`[Backend Service] Error removing favorite for userId: ${userId}, recipeId: ${recipeId}:`, error);
+        throw error;
+    }
 }
 
 async function getFavoriteRecipesForUser(userId) {
@@ -87,8 +127,13 @@ async function isRecipeFavoritedByUser(userId, recipeId) {
                 recipe_id: recipeId,
             },
         },
+        // Optional: Include the recipe details if the frontend expects them as part of the FavoriteModel
+        // include: {
+        //     recipes: true,
+        // },
     });
-    return !!favorite;
+    // Gibt das Favorite-Objekt oder null zurück
+    return favorite;
 }
 
 /**
@@ -111,8 +156,6 @@ async function addOrUpdateRecipeRating(userId, spoonacularId, ratingScore, recip
         score: ratingScore,
         comment: comment, // Den Kommentar übergeben
     };
-
-    console.log('[DEBUG - SERVICE] Attempting to upsert rating with data:', ratingDataForPrisma);
 
     try {
         const userRatingResult = await prisma.ratings.upsert({
@@ -139,12 +182,8 @@ async function addOrUpdateRecipeRating(userId, spoonacularId, ratingScore, recip
             comment: userRatingResult.comment || '',
         };
 
-        console.log('[DEBUG - SERVICE] Prisma ratings.upsert successful. User rating result:', frontendFriendlyUserRating);
-
         // Nach dem Speichern/Aktualisieren der Bewertung die aggregierten Werte abrufen
         const { averageRating, ratingCount } = await getAverageRecipeRating(recipe.id); // Verwende die interne ID
-
-        console.log('[DEBUG - SERVICE] Aggregated rating data after upsert:', { averageRating, ratingCount });
 
         // Gib beide Informationen zurück: die spezifische Nutzerbewertung und die aggregierten Werte
         return {
@@ -201,7 +240,6 @@ async function getAverageRecipeRating(recipeId) {
         const averageRating = result._avg.score !== null ? parseFloat(result._avg.score.toFixed(1)) : null;
         const ratingCount = result._count.score || 0; // Oder result._count._all, je nachdem was du zählen willst (nur Ratings mit Score vs. alle Ratings)
 
-        console.log(`[DEBUG - SERVICE] Average rating for recipe ${recipeId}: ${averageRating}, count: ${ratingCount}`);
         return { averageRating, ratingCount };
     } catch (error) {
         console.error('[ERROR - Prisma Ratings Aggregate] Fehler beim Abrufen der durchschnittlichen Bewertung:', error);

@@ -10,10 +10,10 @@ import 'package:frontend/features/recipe/domain/entities/recipe.dart';
 import 'package:frontend/features/recipe/data/models/recipe_rating_model.dart'; // NEU: Import für RecipeRatingModel
 
 class RecipeDetails {
-  final int spoonacularId;
+  final int? spoonacularId; // <--- HIER WICHTIGE ÄNDERUNG: Jetzt nullable!
   final String? id; // Interne DB-ID (UUID), kommt jetzt als 'internalRecipeId'
   final String title;
-  final String? image;
+  final String? image; // kann null sein
   final String? imageType;
   final int? servings;
   final int? readyInMinutes;
@@ -37,13 +37,12 @@ class RecipeDetails {
 
   final Nutrition? nutrition;
 
-  // NEUE FELDER FÜR BEWERTUNGEN
-  final RecipeRatingModel? userRating; // Die Bewertung des aktuell eingeloggten Benutzers (nullable)
-  final double? averageRating;        // Der durchschnittliche Bewertungsscore (nullable)
-  final int? ratingCount;             // Die Anzahl der abgegebenen Bewertungen (nullable)
+  final RecipeRatingModel? userRating;
+  final double? averageRating;
+  final int? ratingCount;
 
   const RecipeDetails({
-    required this.spoonacularId,
+    this.spoonacularId, // <--- HIER WICHTIGE ÄNDERUNG: Nicht mehr required!
     this.id, // Interne ID
     required this.title,
     this.image,
@@ -67,7 +66,6 @@ class RecipeDetails {
     this.carbs,
     this.sugar,
     this.nutrition,
-    // NEUE FELDER IM KONSTRUKTOR
     this.userRating,
     this.averageRating,
     this.ratingCount,
@@ -91,22 +89,19 @@ class RecipeDetails {
       }
     }
 
-    // NEU: Parsing für userRating
     RecipeRatingModel? parsedUserRating;
     if (json['userRating'] != null) {
       try {
         parsedUserRating = RecipeRatingModel.fromJson(json['userRating'] as Map<String, dynamic>);
       } catch (e, st) {
         debugPrint('Error parsing userRating for Recipe ID ${json['id']}: $e\nStack: $st');
-        // Hier könnte man den Fehler loggen, aber die App nicht abstürzen lassen
-        // wenn die Bewertung optional ist.
       }
     }
 
     try {
       return RecipeDetails(
-        spoonacularId: json['id'] as int, // Spoonacular ID kommt als 'id' vom Spoonacular Service
-        id: json['internalRecipeId'] as String?, // NEU: Interne DB-ID kommt als 'internalRecipeId'
+        spoonacularId: json['id'] as int?, // <--- HIER WICHTIGE ÄNDERUNG: Parsing als int?!
+        id: json['internalRecipeId'] as String?,
         title: json['title'] as String,
         image: json['image'] as String?,
         imageType: json['imageType'] as String?,
@@ -129,7 +124,6 @@ class RecipeDetails {
         carbs: (json['carbs'] as num?)?.toDouble(),
         sugar: (json['sugar'] as num?)?.toDouble(),
         nutrition: parsedNutrition,
-        // NEUE FELDER PARSEN
         averageRating: (json['averageRating'] as num?)?.toDouble(),
         ratingCount: json['ratingCount'] as int?,
         userRating: parsedUserRating,
@@ -158,18 +152,18 @@ class RecipeDetails {
     return null;
   }
 
-  Recipe toEntity() {
+  Recipe toRecipe() {
     return Recipe(
       id: id,
-      spoonacularId: spoonacularId,
+      spoonacularId: spoonacularId, // <--- HIER AUCH ANPASSEN, wenn Recipe Entity angepasst wird
       title: title,
-      imageUrl: image,
+      imageUrl: image ?? '',
     );
   }
 
   RecipeDetails copyWith({
     String? id,
-    int? spoonacularId,
+    int? spoonacularId, // <--- HIER AUCH ÄNDERUNG: Nun nullable!
     String? title,
     String? image,
     String? imageType,
@@ -192,14 +186,13 @@ class RecipeDetails {
     double? carbs,
     double? sugar,
     Nutrition? nutrition,
-    // NEUE FELDER IN copyWith
     RecipeRatingModel? userRating,
     double? averageRating,
     int? ratingCount,
   }) {
     return RecipeDetails(
       id: id ?? this.id,
-      spoonacularId: spoonacularId ?? this.spoonacularId,
+      spoonacularId: spoonacularId ?? this.spoonacularId, // <--- HIER AUCH ANPASSEN
       title: title ?? this.title,
       image: image ?? this.image,
       imageType: imageType ?? this.imageType,
@@ -222,7 +215,6 @@ class RecipeDetails {
       carbs: carbs ?? this.carbs,
       sugar: sugar ?? this.sugar,
       nutrition: nutrition ?? this.nutrition,
-      // NEUE FELDER ZUWEISEN
       userRating: userRating ?? this.userRating,
       averageRating: averageRating ?? this.averageRating,
       ratingCount: ratingCount ?? this.ratingCount,

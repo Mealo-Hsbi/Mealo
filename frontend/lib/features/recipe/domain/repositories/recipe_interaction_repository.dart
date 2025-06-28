@@ -7,15 +7,13 @@ import 'package:frontend/features/recipe/domain/entities/recipe_rating.dart';
 
 abstract class RecipeInteractionRepository {
   // --- METHODEN für Favoriten ---
-  Future<void> addFavoriteRecipe(
-      String userId,
-      int? spoonacularId, // <-- GEÄNDERT: Jetzt nullable
-      Recipe recipe);
+  Future<Favorite> addFavoriteRecipe(String userId, int? spoonacularId, Recipe recipe); // Change from void to Favorite
+
   Future<void> removeFavoriteRecipe(
       String userId, String favoriteId);
 
   Future<List<Favorite>> getFavoriteRecipes(String userId);
-  Future<bool> isRecipeFavorited(
+  Future<Favorite?> isRecipeFavorited(
       String userId, String recipeId);
 
   // --- METHODEN für Bewertungen ---

@@ -20,11 +20,12 @@ class FavoriteModel extends Equatable {
 
   factory FavoriteModel.fromJson(Map<String, dynamic> json) {
     return FavoriteModel(
-      id: json['id'] as String?, // Safely cast to String?
-      userId: json['userId'] as String,
-      recipeId: json['recipeId'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      recipe: RecipeModel.fromJson(json['recipe'] as Map<String, dynamic>),
+      id: json['id'] as String?,
+      // ANPASSUNG HIER: Nutze 'user_id' und 'recipe_id' aus dem Backend
+      userId: json['user_id'] as String, 
+      recipeId: json['recipe_id'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String), // Auch hier 'created_at' statt 'createdAt'
+      recipe: RecipeModel.fromJson(json['recipes'] as Map<String, dynamic>), // Das Backend liefert 'recipes' als Schlüssel
     );
   }
 

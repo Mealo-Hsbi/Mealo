@@ -1,5 +1,3 @@
-// lib/features/recipe/presentation/widgets/recipe_sections/recipe_rating_widget.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as legacy_provider;
@@ -25,63 +23,61 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
   // _currentRating speichert die EIGENE Bewertung des Nutzers.
   // This remains local state as it updates instantly on tap.
   double _currentRating = 0.0;
-  bool _isLoading = true;
-  String? _errorMessage;
-
-  // REMOVE these local state variables.
-  // double _averageRating = 0.0; // No longer needed here
-  // int _ratingCount = 0;      // No longer needed here
+  // bool _isLoading = true; // No longer needed as RatingNotifier will handle loading state for initial fetch
+  String? _errorMessage; // Still useful for local errors not related to notifier's main ops
 
   @override
   void initState() {
     super.initState();
-    // Set the initial user's own rating from recipeDetails
+    // Initialize _currentRating immediately from recipeDetails
     _currentRating = widget.recipeDetails.userRating?.score?.toDouble() ?? 0.0;
 
-    // Initialize RatingNotifier's averageRating and ratingCount
-    // This is crucial to set the initial values from the recipeDetails
-    // into the notifier's state when the widget first loads.
-    final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
-    ratingNotifier.setInitialAverageRating(widget.recipeDetails.averageRating ?? 0.0);
-    ratingNotifier.setInitialRatingCount(widget.recipeDetails.ratingCount ?? 0);
+    // Defer the initial setting of notifier state and fetching of user rating
+    // until after the first frame has rendered.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+      // Set initial values in the notifier from recipeDetails if they are not already set
+      // (This prevents redundant updates if RatingNotifier is persistent across navigations)
+      if (ratingNotifier.averageRating == 0.0 && ratingNotifier.ratingCount == 0) { // Or a more robust check
+        ratingNotifier.setInitialAverageRating(widget.recipeDetails.averageRating ?? 0.0);
+        ratingNotifier.setInitialRatingCount(widget.recipeDetails.ratingCount ?? 0);
+      }
 
-    // Load the user's rating only if the internal recipe ID (UUID) is available.
-    if (widget.recipeDetails.id != null) {
-      _fetchUserRating(); // Ensures the latest user rating is loaded
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+      // Load the user's rating only if the internal recipe ID (UUID) is available.
+      if (widget.recipeDetails.id != null) {
+        _fetchUserRating(); // Ensures the latest user rating is loaded
+      }
+      // No else block needed as _isLoading is now primarily handled by the notifier
+    });
   }
 
-  // This method is now primarily used to update the user's own rating
-  // and ensure it is current.
   void _fetchUserRating() async {
+    // No local setState for _isLoading = true; here, as the notifier will manage its own loading state.
+    // We only set local error message for this specific fetch.
     setState(() {
-      _isLoading = true;
       _errorMessage = null;
     });
 
     final String? userId = ref.read(currentUserIdProvider);
     if (userId == null) {
-      setState(() {
-        _isLoading = false;
-      });
+      // No local isLoading update needed, simply return
       return;
     }
 
     final String? internalRecipeId = widget.recipeDetails.id;
     if (internalRecipeId == null) {
       setState(() {
-        _isLoading = false;
         _errorMessage = 'Internal Recipe ID is missing, cannot load rating.';
       });
+      _showSnackBar(_errorMessage!);
       return;
     }
 
+    final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
+    // Set notifier's loading state before API call
+    ratingNotifier.setLoading(true);
+
     try {
-      final ratingNotifier = legacy_provider.Provider.of<RatingNotifier>(context, listen: false);
       final existingRating = await ratingNotifier.getUserRecipeRating(
         userId: userId,
         recipeId: internalRecipeId,
@@ -89,15 +85,17 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
 
       setState(() {
         _currentRating = existingRating?.score.toDouble() ?? 0.0;
-        _isLoading = false;
+        // _isLoading = false; // Not needed
       });
     } catch (e) {
       setState(() {
         _errorMessage = 'Could not load your rating: $e';
-        _isLoading = false;
         _currentRating = 0.0;
       });
       _showSnackBar(_errorMessage!);
+    } finally {
+      // Ensure loading state is turned off by notifier
+      ratingNotifier.setLoading(false);
     }
   }
 
@@ -112,7 +110,7 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
     // Instantly update the local user's rating for immediate visual feedback
     setState(() {
       _currentRating = newRating;
-      _errorMessage = null;
+      _errorMessage = null; // Clear any previous local error
     });
 
     // Show loading state for the actual API call
@@ -136,15 +134,17 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
         // comment: '', // Add comment if you have an input for it
       );
 
-      // No need for local setState(_isLoading = false) here, notifier handles it
-      _showSnackBar('Rating saved successfully!');
+      // _showSnackBar('Rating saved successfully!');
 
     } catch (e) {
-      // Catch error from notifier
+      // Catch error from notifier and display it
       _showSnackBar('Failed to save rating: ${ratingNotifier.errorMessage ?? 'Unknown error'}');
       // If an error occurred, re-fetch the user's rating to revert if needed
       // and potentially refresh the average/count from backend.
-      _fetchUserRating();
+      // Do this in a post-frame callback to avoid a nested build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fetchUserRating();
+      });
     } finally {
       // Ensure loading state is turned off by notifier
       ratingNotifier.setLoading(false);
@@ -168,7 +168,8 @@ class _RecipeRatingWidgetState extends ConsumerState<RecipeRatingWidget> {
     final double displayAverageRating = ratingNotifier.averageRating;
     final int displayRatingCount = ratingNotifier.ratingCount;
 
-    // Use the notifier's isLoading state
+    // Use the notifier's isLoading state for the main loading indicator.
+    // The `_isLoading` local state was removed for this reason.
     if (ratingNotifier.isLoading && userId != null) {
       return Center(child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary));
     }

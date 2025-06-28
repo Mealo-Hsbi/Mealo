@@ -10,11 +10,13 @@ import 'package:frontend/services/api_client.dart'; // Ihr ApiClient
 
 // --- Abstrakte Schnittstelle (der "Vertrag") bleibt gleich ---
 abstract class RecipeInteractionRemoteDataSource {
-  Future<FavoriteModel> addFavoriteRecipe(
-      String userId, int? spoonacularId, RecipeModel recipe);
+  Future<FavoriteModel> addFavoriteRecipe(String userId, int? spoonacularId, RecipeModel recipe);
+
   Future<void> removeFavoriteRecipe(String userId, String favoriteId);
   Future<List<FavoriteModel>> getFavoriteRecipes(String userId);
-  Future<bool> isRecipeFavorited(String userId, String recipeId);
+
+  // Der Rückgabetyp ist bereits FavoriteModel?
+  Future<FavoriteModel?> isRecipeFavorited(String userId, String recipeId);
 
   Future<RecipeRatingResponseModel> addOrUpdateRecipeRating(
       String userId, int? spoonacularId, int score, RecipeModel recipe, {String? comment});
@@ -28,7 +30,7 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
 
   RecipeInteractionRemoteDataSourceImpl(this._apiClient);
 
-  // Hilfsmethode für die zentrale Fehlerbehandlung, angelehnt an Ihr Beispiel
+  // Hilfsmethode für die zentrale Fehlerbehandlung
   void _handleDioError(DioException e, String contextMessage) {
     if (e.type == DioExceptionType.cancel) {
       debugPrint('$contextMessage cancelled: ${e.message}');
@@ -42,7 +44,7 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
       final errorMessage = errorData != null && errorData is Map && errorData.containsKey('message')
           ? errorData['message']
           : e.message;
-      throw ServerException('$contextMessage: ${errorMessage ?? 'Unknown server error'}');
+      throw ServerException('$contextMessage: ${errorMessage ?? 'Unknown server error'}', statusCode: e.response!.statusCode); // statusCode hinzugefügt
     } else {
       throw ServerException('$contextMessage: Network error or server problem: ${e.message}');
     }
@@ -52,15 +54,15 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
   Future<FavoriteModel> addFavoriteRecipe(
       String userId, int? spoonacularId, RecipeModel recipe) async {
     try {
-      // Backend-Route: POST /api/recipes/favorites
-      final String endpoint = '/recipes/favorites'; // Relative URL zum ApiClient baseURL (/api)
+      final String endpoint = '/recipes/favorites';
       debugPrint('[Frontend Data] Calling POST $endpoint');
 
       final Response response = await _apiClient.post(
         endpoint,
         data: {
-          'spoonacularId': spoonacularId, // Backend erwartet 'spoonacularId' (camelCase)
-          'recipeData': recipe.toJson(), // Backend erwartet 'recipeData' mit dem Rezept-JSON
+          'userId': userId,
+          'spoonacularId': spoonacularId,
+          'recipeData': recipe.toJson(),
         },
       );
 
@@ -81,15 +83,14 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
   @override
   Future<void> removeFavoriteRecipe(String userId, String favoriteId) async {
     try {
-      // Backend-Route: DELETE /api/recipes/favorites/:recipeId (hier ist :recipeId die favoriteId aus Ihrer DB)
-      final String endpoint = '/recipes/favorites/$favoriteId'; // Relative URL
+      final String endpoint = '/recipes/favorites/$favoriteId';
       debugPrint('[Frontend Data] Calling DELETE $endpoint');
 
       final Response response = await _apiClient.delete(
         endpoint,
       );
 
-      if (response.statusCode != 204) { // 204 No Content ist typisch für erfolgreiches DELETE
+      if (response.statusCode != 204) {
         throw ServerException('Failed to remove favorite: Unexpected status code ${response.statusCode}');
       }
     } on DioException catch (e) {
@@ -103,14 +104,18 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
 
   @override
   Future<List<FavoriteModel>> getFavoriteRecipes(String userId) async {
+    debugPrint('--- Entering getFavoriteRecipes for userId: $userId ---'); // NEU
     try {
-      // Backend-Route: GET /api/recipes/favorites
-      final String endpoint = '/recipes/favorites'; // Relative URL
+      final String endpoint = '/recipes/favorites';
       debugPrint('[Frontend Data] Calling GET $endpoint');
 
       final Response response = await _apiClient.get(
         endpoint,
+        // Hier könntest du bei Bedarf Query-Parameter hinzufügen
+        queryParameters: {'userId': userId}, // Optional: Wenn dein Backend userId als Query-Parameter erwartet
       );
+
+      debugPrint('*** RAW API Response for GET /recipes/favorites: ${response.data}');
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = response.data as List<dynamic>;
@@ -119,48 +124,59 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
         throw ServerException('Failed to get favorite recipes: Unexpected status code ${response.statusCode}');
       }
     } on DioException catch (e) {
+      debugPrint('!!! DioException in getFavoriteRecipes: ${e.response?.statusCode ?? 'No status'} - ${e.message}'); // NEU
       _handleDioError(e, 'Failed to get favorite recipes');
       rethrow;
     } catch (e) {
-      debugPrint('Unexpected error in RecipeInteractionRemoteDataSource.getFavoriteRecipes: $e');
+      debugPrint('!!! Unexpected error in RecipeInteractionRemoteDataSource.getFavoriteRecipes: $e'); // NEU
       throw ServerException('An unexpected error occurred: ${e.toString()}');
+    } finally { // NEU: Fängt immer einen Print ab
+      debugPrint('--- Exiting getFavoriteRecipes ---');
     }
   }
 
   @override
-  Future<bool> isRecipeFavorited(String userId, String recipeId) async {
+  Future<FavoriteModel?> isRecipeFavorited(String userId, String recipeId) async {
+    debugPrint('--- Entering isRecipeFavorited for recipeId: $recipeId and userId: $userId ---'); // NEU
     try {
-      // Backend-Route: GET /api/recipes/:recipeId/isFavorited
-      // :recipeId ist hier die interne DB-UUID des Rezepts
-      final String endpoint = '/recipes/$recipeId/isFavorited'; // Relative URL
+      final String endpoint = '/recipes/$recipeId/isFavorited';
       debugPrint('[Frontend Data] Calling GET $endpoint');
 
       final Response response = await _apiClient.get(
         endpoint,
+        // Optional: Wenn dein Backend userId als Query-Parameter erwartet
+        queryParameters: {'userId': userId},
       );
 
+      debugPrint('*** RAW API Response for GET /recipes/$recipeId/isFavorited: ${response.data}');
+
       if (response.statusCode == 200) {
-        // Angenommen, das Backend gibt ein JSON wie {'isFavorited': true} zurück
-        return (response.data as Map<String, dynamic>)['isFavorited'] == true;
+        if (response.data != null && response.data is Map<String, dynamic>) {
+            return FavoriteModel.fromJson(response.data as Map<String, dynamic>);
+        } else {
+            throw ServerException('Expected FavoriteModel data, but got null or wrong type with status 200.');
+        }
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      // Wenn das Backend einen 404 zurückgibt, bedeutet das hier, dass es nicht favorisiert ist.
+      debugPrint('!!! DioException in isRecipeFavorited: ${e.response?.statusCode ?? 'No status'} - ${e.message}'); // NEU
       if (e.response?.statusCode == 404) {
-        debugPrint('Recipe $recipeId not favorited for user $userId (404 Not Found).');
-        return false;
+        debugPrint('Recipe $recipeId not favorited for user $userId (404 Not Found). Returning null.');
+        return null;
       }
       _handleDioError(e, 'Failed to check if recipe is favorited');
       rethrow;
     } catch (e) {
-      debugPrint('Unexpected error in RecipeInteractionRemoteDataSource.isRecipeFavorited: $e');
+      debugPrint('!!! Unexpected error in RecipeInteractionRemoteDataSource.isRecipeFavorited: $e'); // NEU
       throw ServerException('An unexpected error occurred: ${e.toString()}');
+    } finally { // NEU: Fängt immer einen Print ab
+      debugPrint('--- Exiting isRecipeFavorited ---');
     }
   }
 
-@override
-  Future<RecipeRatingResponseModel> addOrUpdateRecipeRating( // CHANGED RETURN TYPE
+  @override
+  Future<RecipeRatingResponseModel> addOrUpdateRecipeRating(
       String userId, int? spoonacularId, int score, RecipeModel recipe, {String? comment}) async {
     try {
       final String endpoint = '/recipes/ratings';
@@ -182,9 +198,7 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
         debugPrint('Content of response.data: ${response.data}');
 
         final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
-
-        // Now parse the entire response with the new RecipeRatingResponseModel
-        return RecipeRatingResponseModel.fromJson(responseData); // Pass the whole responseData
+        return RecipeRatingResponseModel.fromJson(responseData);
       } else {
         throw ServerException('Unexpected status code: ${response.statusCode}');
       }
@@ -201,9 +215,7 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
   Future<RecipeRatingModel?> getUserRecipeRating(
       String userId, String recipeId) async {
     try {
-      // Backend-Route: GET /api/recipes/:recipeId/rating
-      // :recipeId ist hier die interne DB-UUID des Rezepts
-      final String endpoint = '/recipes/$recipeId/rating'; // Relative URL
+      final String endpoint = '/recipes/$recipeId/rating';
       debugPrint('[Frontend Data] Calling GET $endpoint');
 
       final Response response = await _apiClient.get(
@@ -211,20 +223,18 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
       );
 
       if (response.statusCode == 200) {
-        // return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>);
-      
         if (response.data == null || !(response.data is Map<String, dynamic>)) {
           return null; // Return null if the data is null or not in the expected format
         }
-        return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>); // Cast safely if not null
-      } else if (response.statusCode == 404) { // Angenommen, 404 bedeutet keine Bewertung gefunden
+        return RecipeRatingModel.fromJson(response.data as Map<String, dynamic>);
+      } else if (response.statusCode == 404) {
         debugPrint('No rating found for recipe $recipeId by user $userId (404 Not Found).');
         return null;
       } else {
         throw ServerException('Failed to get user recipe rating: Unexpected status code ${response.statusCode}');
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) { // Konkrete Behandlung für 404
+      if (e.response?.statusCode == 404) {
         return null;
       }
       _handleDioError(e, 'Failed to get user recipe rating');

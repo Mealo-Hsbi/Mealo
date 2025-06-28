@@ -1,7 +1,5 @@
-// lib/features/recipe/presentation/provider/favorite_notifier.dart
-
 import 'package:flutter/material.dart';
-import 'package:frontend/core/error/failures.dart'; // Ihre Failure-Klassen
+import 'package:frontend/core/error/failures.dart';
 import 'package:frontend/features/recipe/domain/entities/favorite.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart';
 import 'package:frontend/features/recipe/domain/usecases/add_favorite_recipe.dart';
@@ -9,17 +7,14 @@ import 'package:frontend/features/recipe/domain/usecases/remove_favorite_recipe.
 import 'package:frontend/features/recipe/domain/usecases/get_favorite_recipes.dart';
 import 'package:frontend/features/recipe/domain/usecases/is_recipe_favorited.dart';
 
-// Enum für den Zustand, falls Sie detailliertere Lade-/Fehlerzustände abbilden möchten
 enum FavoriteStatus { initial, loading, loaded, error }
 
 class FavoriteNotifier extends ChangeNotifier {
-  // Use Cases, die über den Konstruktor injiziert werden
   final AddFavoriteRecipe addFavoriteRecipeUseCase;
   final RemoveFavoriteRecipe removeFavoriteRecipeUseCase;
   final GetFavoriteRecipes getFavoriteRecipesUseCase;
   final IsRecipeFavorited isRecipeFavoritedUseCase;
 
-  // Zustand der Favoriten
   List<Favorite> _favoriteRecipes = [];
   List<Favorite> get favoriteRecipes => _favoriteRecipes;
 
@@ -29,14 +24,19 @@ class FavoriteNotifier extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  bool get hasRecipeStatusInCache => _recipeFavoritedStatus.isNotEmpty; // Oder eine spezifischere Prüfung, siehe unten
+
+  // Eine genauere Prüfung, die du stattdessen verwenden könntest:
+  bool isRecipeStatusInCache(String recipeId) => _recipeFavoritedStatus.containsKey(recipeId);
+
   FavoriteStatus _status = FavoriteStatus.initial;
   FavoriteStatus get status => _status;
 
-  // Ein Map, um den Favoritenstatus einzelner Rezepte schnell nachzuschlagen
-  // Key: interne recipeId (UUID), Value: true/false
   final Map<String, bool> _recipeFavoritedStatus = {};
   bool isRecipeCurrentlyFavorited(String recipeId) => _recipeFavoritedStatus[recipeId] ?? false;
 
+  final Map<String, String?> _recipeFavoriteIds = {};
+  String? getFavoriteIdForRecipe(String recipeId) => _recipeFavoriteIds[recipeId];
 
   FavoriteNotifier({
     required this.addFavoriteRecipeUseCase,
@@ -45,92 +45,12 @@ class FavoriteNotifier extends ChangeNotifier {
     required this.isRecipeFavoritedUseCase,
   });
 
-  // --- Methoden für Favoriten ---
-
-  Future<void> addFavorite(String userId, int? spoonacularId, Recipe recipe) async {
-    _setLoading();
-    try {
-      // KORRIGIERTER AUFRUF: explizit benannte Parameter verwenden
-      await addFavoriteRecipeUseCase(
-        userId: userId,
-        spoonacularId: spoonacularId,
-        recipe: recipe,
-      );
-      // Wenn erfolgreich, Favoritenliste aktualisieren und Status für das spezifische Rezept setzen
-      _recipeFavoritedStatus[recipe.id!] = true; // Annahme: recipe.id ist die interne UUID nach dem Speichern
-      await fetchFavoriteRecipes(userId); // Liste aktualisieren
-      _setStatus(FavoriteStatus.loaded);
-    } on Failure catch (e) {
-      _setError(e.message);
-    }
-  }
-
-  Future<void> removeFavorite(String userId, String favoriteId) async {
-    _setLoading();
-    try {
-      // KORRIGIERTER AUFRUF
-      await removeFavoriteRecipeUseCase(
-        userId: userId,
-        favoriteId: favoriteId,
-      );
-      // Wenn erfolgreich, Favoritenliste aktualisieren und Status für das spezifische Rezept löschen
-      // Wir müssen hier die Recipe ID finden, da removeFavoriteUseCase nur die Favorite ID nimmt
-      _favoriteRecipes.removeWhere((fav) {
-        if (fav.id == favoriteId) {
-          _recipeFavoritedStatus.remove(fav.recipe.id); // Entferne den Status anhand der Recipe ID
-          return true;
-        }
-        return false;
-      });
-      _favoriteRecipes.removeWhere((fav) => fav.id == favoriteId); // Redundant, aber schadet nicht.
-      _setStatus(FavoriteStatus.loaded);
-      notifyListeners(); // Benachrichtige die Listener direkt nach dem Löschen
-    } on Failure catch (e) {
-      _setError(e.message);
-    }
-  }
-
-  Future<void> fetchFavoriteRecipes(String userId) async {
-    _setLoading();
-    try {
-      // KORRIGIERTER AUFRUF
-      _favoriteRecipes = await getFavoriteRecipesUseCase(
-        userId: userId,
-      );
-      // Beim Abrufen aller Favoriten, auch deren Status in der Map aktualisieren
-      _recipeFavoritedStatus.clear();
-      for (var fav in _favoriteRecipes) {
-        if (fav.recipe.id != null) { // Stelle sicher, dass die Recipe ID nicht null ist
-          _recipeFavoritedStatus[fav.recipe.id!] = true;
-        }
-      }
-      _setStatus(FavoriteStatus.loaded);
-    } on Failure catch (e) {
-      _setError(e.message);
-    }
-  }
-
-  Future<void> checkRecipeFavoritedStatus(String userId, String recipeId) async {
-    _setLoading();
-    try {
-      // KORRIGIERTER AUFRUF
-      final isFavorited = await isRecipeFavoritedUseCase(
-        userId: userId,
-        recipeId: recipeId,
-      );
-      _recipeFavoritedStatus[recipeId] = isFavorited;
-      _setStatus(FavoriteStatus.loaded);
-    } on Failure catch (e) {
-      _setError(e.message);
-    }
-  }
-
-  // --- Hilfsmethoden für den Zustand ---
   void _setLoading() {
     _isLoading = true;
     _errorMessage = null;
     _status = FavoriteStatus.loading;
     notifyListeners();
+    debugPrint('[FavoriteNotifier] State: Loading, _isLoading: true');
   }
 
   void _setError(String message) {
@@ -138,24 +58,160 @@ class FavoriteNotifier extends ChangeNotifier {
     _errorMessage = message;
     _status = FavoriteStatus.error;
     notifyListeners();
+    debugPrint('[FavoriteNotifier] State: Error, Message: $message');
   }
 
   void _setStatus(FavoriteStatus newStatus) {
-    _isLoading = false; // Normalerweise nicht mehr laden, wenn Status sich ändert
+    _isLoading = false;
     _status = newStatus;
     if (newStatus == FavoriteStatus.loaded) {
-      _errorMessage = null; // Fehler zurücksetzen bei Erfolg
+      _errorMessage = null;
     }
     notifyListeners();
+    debugPrint('[FavoriteNotifier] State: $newStatus, _isLoading: false');
   }
 
-  // Diese Methode kann nützlich sein, wenn sich der User ändert oder ausgeloggt wird
+  Future<void> toggleFavorite({
+    required String userId,
+    required int? spoonacularId,
+    required Recipe recipe,
+  }) async {
+    if (recipe.id == null) {
+      _setError("Recipe ID is missing for favoriting operation.");
+      return;
+    }
+
+    _setLoading();
+    final String recipeId = recipe.id!;
+    debugPrint('[FavoriteNotifier] toggleFavorite called for recipeId: $recipeId, current status: ${isRecipeCurrentlyFavorited(recipeId)}');
+
+    try {
+      if (isRecipeCurrentlyFavorited(recipeId)) {
+        final String? favoriteId = _recipeFavoriteIds[recipeId];
+        if (favoriteId == null) {
+          _setError('Cannot unfavorite: Favorite ID for this recipe is missing locally. Please reload the page.');
+          return;
+        }
+
+        await removeFavoriteRecipeUseCase(
+          userId: userId,
+          favoriteId: favoriteId,
+        );
+
+        _recipeFavoritedStatus[recipeId] = false;
+        _recipeFavoriteIds.remove(recipeId);
+        _favoriteRecipes.removeWhere((fav) => fav.id == favoriteId);
+        debugPrint('[FavoriteNotifier] Successfully unfavorited recipe: $recipeId');
+        _setStatus(FavoriteStatus.loaded);
+
+      } else {
+        final Favorite newFavorite = await addFavoriteRecipeUseCase(
+          userId: userId,
+          spoonacularId: spoonacularId,
+          recipe: recipe,
+        );
+
+        _recipeFavoritedStatus[recipeId] = true;
+        _recipeFavoriteIds[recipeId] = newFavorite.id;
+        _favoriteRecipes.add(newFavorite);
+        debugPrint('[FavoriteNotifier] Successfully favorited recipe: $recipeId with Favorite ID: ${newFavorite.id}');
+        _setStatus(FavoriteStatus.loaded);
+      }
+    } on Failure catch (e) {
+      _setError(e.message);
+      debugPrint('[FavoriteNotifier] Error in toggleFavorite: ${e.message}');
+    } catch (e) {
+      _setError('An unexpected error occurred during toggle: ${e.toString()}');
+      debugPrint('[FavoriteNotifier] Unexpected error in toggleFavorite: $e');
+    }
+    debugPrint('[FavoriteNotifier] After toggle, recipe $recipeId is now favorited: ${isRecipeCurrentlyFavorited(recipeId)}');
+  }
+
+  Future<void> checkInitialFavoriteStatus({
+    required String userId,
+    required String recipeId,
+  }) async {
+    // Prüfe, ob der Favoritenstatus für dieses Rezept bereits bekannt ist
+    // und ob der Notifier insgesamt "geladen" ist (was von fetchFavoriteRecipes gesetzt wird)
+    // und nicht gerade Daten lädt (z.B. von einem anderen toggle oder fetch).
+    if (_recipeFavoritedStatus.containsKey(recipeId) && _status == FavoriteStatus.loaded && !isLoading) {
+      debugPrint('[FavoriteNotifier] Initial status for $recipeId already known and loaded. Skipping API call.');
+      return; // Zustand ist bereits korrekt im Cache
+    }
+
+    _setLoading();
+    debugPrint('[FavoriteNotifier] checkInitialFavoriteStatus called for recipeId: $recipeId');
+    try {
+      final Favorite? favorite = await isRecipeFavoritedUseCase(
+        userId: userId,
+        recipeId: recipeId,
+      );
+
+      if (favorite != null) {
+        _recipeFavoritedStatus[recipeId] = true;
+        _recipeFavoriteIds[recipeId] = favorite.id;
+        debugPrint('[FavoriteNotifier] Recipe $recipeId is FAVORITED (from API check). Favorite ID: ${favorite.id}');
+      } else {
+        _recipeFavoritedStatus[recipeId] = false;
+        _recipeFavoriteIds[recipeId] = null;
+        debugPrint('[FavoriteNotifier] Recipe $recipeId is NOT favorited (from API check).');
+      }
+      _setStatus(FavoriteStatus.loaded);
+    } on Failure catch (e) {
+      _setError(e.message);
+      _recipeFavoritedStatus[recipeId] = false; // Setze es im Fehlerfall auf false, um korrekten UI-Zustand zu haben
+      _recipeFavoriteIds[recipeId] = null;
+      debugPrint('[FavoriteNotifier] Error checking initial favorite status for $recipeId: ${e.message}');
+    } catch (e) {
+      _setError('An unexpected error occurred during initial check: ${e.toString()}');
+      _recipeFavoritedStatus[recipeId] = false;
+      _recipeFavoriteIds[recipeId] = null;
+      debugPrint('[FavoriteNotifier] Unexpected error checking initial favorite status for $recipeId: $e');
+    }
+  }
+
+  @override
+  Future<void> fetchFavoriteRecipes(String userId) async {
+    _setLoading();
+    debugPrint('[FavoriteNotifier] fetchFavoriteRecipes called for userId: $userId');
+    try {
+      final List<Favorite> favorites = await getFavoriteRecipesUseCase(
+        userId: userId,
+      );
+
+      _favoriteRecipes = favorites;
+      _recipeFavoritedStatus.clear();
+      _recipeFavoriteIds.clear();
+      for (var fav in _favoriteRecipes) {
+        if (fav.recipe.id != null) {
+          _recipeFavoritedStatus[fav.recipe.id!] = true;
+          _recipeFavoriteIds[fav.recipe.id!] = fav.id;
+          debugPrint('[FavoriteNotifier] Added favorite (from fetchAll) for recipe ID: ${fav.recipe.id!} (Favorite ID: ${fav.id})');
+        } else {
+          debugPrint('[FavoriteNotifier] Warning: Favorite without recipe.id found: ${fav.id}');
+        }
+      }
+      _setStatus(FavoriteStatus.loaded);
+      debugPrint('[FavoriteNotifier] Successfully fetched ${favorites.length} favorite recipes. Current _recipeFavoritedStatus: $_recipeFavoritedStatus'); // <-- ADD THIS
+    } on Failure catch (e) {
+      _setError(e.message);
+      debugPrint('[FavoriteNotifier] Error fetching favorite recipes: ${e.message}');
+    } catch (e) {
+      _setError('An unexpected error occurred during fetching favorite recipes: ${e.toString()}');
+      _recipeFavoritedStatus.clear();
+      _recipeFavoriteIds.clear();
+      debugPrint('[FavoriteNotifier] Unexpected error fetching favorite recipes: $e');
+    }
+  }
+
   void reset() {
     _favoriteRecipes = [];
     _recipeFavoritedStatus.clear();
+    _recipeFavoriteIds.clear();
     _isLoading = false;
     _errorMessage = null;
     _status = FavoriteStatus.initial;
     notifyListeners();
+    debugPrint('[FavoriteNotifier] State Reset.');
   }
 }
