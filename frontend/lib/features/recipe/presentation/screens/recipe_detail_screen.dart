@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 // Importiere deine ausgelagerten Modelle
-import 'package:frontend/common/models/recipe/recipe_details.dart';
+import 'package:frontend/common/models/recipe/recipe_details.dart'; // Wichtig: Für RecipeDetails
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_detail_app_bar.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_detail_content.dart';
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
@@ -13,7 +13,7 @@ import 'package:frontend/services/api_client.dart';
 
 
 class RecipeDetailScreen extends StatefulWidget {
-  final int recipeId;
+  final int recipeId; // Dies ist die spoonacularId, die zum Laden der Details verwendet wird
   final String initialImageUrl;
   final String initialName;
   final String initialPlace;
@@ -33,7 +33,7 @@ class RecipeDetailScreen extends StatefulWidget {
 }
 
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
-  RecipeDetails? _recipeDetails;
+  RecipeDetails? _recipeDetails; // Dieses Objekt hält die geladenen Details
   bool _isLoading = true;
   String? _errorMessage;
 

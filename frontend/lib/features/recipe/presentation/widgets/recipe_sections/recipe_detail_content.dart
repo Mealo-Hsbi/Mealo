@@ -1,20 +1,34 @@
+// lib/features/recipeDetails/presentation/widgets/recipe_detail_content.dart
+
 import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart'; // NICHT MEHR BENÖTIGT
+// import 'package:provider/provider.dart'; // NICHT MEHR BENÖTIGT
+
 import 'package:frontend/common/models/recipe/recipe_details.dart';
+import 'package:frontend/common/models/recipe/extended_ingredient.dart';
+
+// Importe für Ihre anderen Sektionen
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_health_score_section.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_info_row.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_ingredients_section.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_instructions_section.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_nutrition_section.dart';
-import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_source_link.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_summary_section.dart';
-
-import 'package:frontend/common/models/recipe/extended_ingredient.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/servings_adjuster_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// NEU: Import der ausgelagerten Interaktions-Sektion
+import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_interaction_section.dart';
 
-// Ändere von StatelessWidget zu StatefulWidget
-class RecipeDetailContent extends StatefulWidget {
+// // Diese Imports sind jetzt im RecipeInteractionSection
+// import 'package:frontend/features/recipeDetails/presentation/widgets/recipe_rating_widget.dart';
+// import 'package:frontend/features/recipe/presentation/provider/favorite_notifier.dart';
+// import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart';
+// import 'package:frontend/features/recipe/domain/entities/recipe.dart';
+// import 'package:frontend/core/utils/extensions.dart';
+
+
+// ZURÜCK ZU StatelessWidget, da keine direkten Riverpod/Provider-Abhängigkeiten mehr
+class RecipeDetailContent extends StatefulWidget { // Korrektur: Kein ConsumerStatefulWidget mehr
   final String initialName;
   final String initialPlace;
   final bool isLoading;
@@ -35,37 +49,45 @@ class RecipeDetailContent extends StatefulWidget {
 }
 
 class _RecipeDetailContentState extends State<RecipeDetailContent> {
-  int _currentServings = 0; // Zustand für die aktuelle Portionsanzahl
+  int _currentServings = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialisiere _currentServings, falls recipeDetails direkt verfügbar sind
+    if (widget.recipeDetails != null) {
+      _currentServings = widget.recipeDetails!.servings ?? 0;
+    }
+    // Die Logik für _currentUserId und Favoriten ist jetzt in RecipeInteractionSection!
+  }
 
   @override
   void didUpdateWidget(covariant RecipeDetailContent oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Initialisiere _currentServings, sobald recipeDetails geladen wurden
     if (widget.recipeDetails != oldWidget.recipeDetails && widget.recipeDetails != null) {
       setState(() {
         _currentServings = widget.recipeDetails!.servings ?? 0;
       });
+      // Die Logik für Favoriten-Neuladen ist jetzt in RecipeInteractionSection!
     }
   }
 
-  // Callback-Funktion zum Aktualisieren der Portionsanzahl
   void _onServingsChanged(int newServings) {
     setState(() {
       _currentServings = newServings;
     });
   }
 
-  // Hilfsfunktion zum Anpassen der Zutatenmengen
   List<ExtendedIngredient>? _getAdjustedIngredients() {
     if (widget.recipeDetails == null || widget.recipeDetails!.extendedIngredients == null || _currentServings <= 0) {
       return null;
     }
 
-    final originalServings = widget.recipeDetails!.servings ?? 1; // Standard auf 1, falls null
-    if (originalServings <= 0) return widget.recipeDetails!.extendedIngredients; // Keine Anpassung möglich
+    final originalServings = widget.recipeDetails!.servings ?? 1;
+    if (originalServings <= 0) return widget.recipeDetails!.extendedIngredients;
 
     if (_currentServings == originalServings) {
-      return widget.recipeDetails!.extendedIngredients; // Keine Anpassung nötig
+      return widget.recipeDetails!.extendedIngredients;
     }
 
     final adjustmentFactor = _currentServings / originalServings;
@@ -83,7 +105,7 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
         name: ingredient.name,
         original: ingredient.original,
         originalName: ingredient.originalName,
-        amount: adjustedAmount, // Angepasster Betrag
+        amount: adjustedAmount,
         unit: ingredient.unit,
         meta: ingredient.meta,
       );
@@ -94,8 +116,6 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
   @override
   Widget build(BuildContext context) {
     final Color contentBackgroundColor = Theme.of(context).colorScheme.surface;
-
-    // Hole die angepassten Zutaten
     final List<ExtendedIngredient>? adjustedIngredients = _getAdjustedIngredients();
 
     return SliverList(
@@ -111,18 +131,15 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     widget.initialName,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                   ),
                 ),
                 Text(
                   widget.initialPlace,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 16),
                 if (widget.isLoading)
@@ -139,12 +156,15 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Servings und ReadyInMinutes (als einzelne Info-Boxen wie im Mockup)
-                      // Ersetze RecipeInfoRow durch die Grid-Darstellung im Mockup
+                      // NEU: Einfach das ausgelagerte Widget einfügen!
+                      RecipeInteractionSection(
+                        recipeDetails: widget.recipeDetails!,
+                      ),
+                      const SizedBox(height: 20),
+
                       _buildInfoGrid(context, widget.recipeDetails!),
                       const SizedBox(height: 20),
 
-                      // NEUE SEKTION: Portion Adjuster (wenn originalServings > 0)
                       if (widget.recipeDetails!.servings != null && widget.recipeDetails!.servings! > 0)
                         ServingsAdjusterSection(
                           originalServings: widget.recipeDetails!.servings!,
@@ -153,10 +173,7 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
                         ),
                       const SizedBox(height: 20),
 
-
                       RecipeHealthScoreSection(healthScore: widget.recipeDetails!.healthScore),
-
-                      // Zutaten mit angepassten Mengen übergeben
                       RecipeSummarySection(summary: widget.recipeDetails!.summary),
                       RecipeIngredientsSection(
                         ingredients: adjustedIngredients,
@@ -165,7 +182,6 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
                       ),
                       RecipeInstructionsSection(analyzedInstructions: widget.recipeDetails!.analyzedInstructions),
                       RecipeNutritionSection(recipeDetails: widget.recipeDetails!),
-                      // RecipeSourceLink(sourceUrl: widget.recipeDetails!.sourceUrl, sourceName: widget.recipeDetails!.sourceName),
                       const SizedBox(height: 40),
                     ],
                   )
@@ -179,7 +195,7 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
     );
   }
 
-  // Hilfsmethode zur Erstellung des Info-Grids
+  // Hilfsmethode zur Erstellung des Info-Grids (unverändert)
   Widget _buildInfoGrid(BuildContext context, RecipeDetails details) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
@@ -187,10 +203,10 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero, // Kein Padding um das Grid selbst
+      padding: EdgeInsets.zero,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1, // Startet mit 1 Spalte für kleine Screens
-        mainAxisExtent: 70, // Feste Höhe für die Elemente, um Überläufe zu vermeiden
+        crossAxisCount: 1,
+        mainAxisExtent: 70,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
       ),
@@ -198,42 +214,63 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
           (details.servings != null ? 1 : 0) +
           ((details.sourceUrl != null) ? 1 : 0),
       itemBuilder: (context, index) {
-        Widget content;
-        IconData icon;
-        String label;
-        String value;
+        // --- KORREKTUR: Initialisiere alle lokalen Variablen ---
+        IconData icon = Icons.info_outline; // Default icon
+        String label = 'N/A'; // Default label
+        String value = ''; // Default value
+        VoidCallback? onTap; // Nullable, default is null
 
-        if (index == 0 && details.readyInMinutes != null) {
-          icon = Icons.access_time;
-          label = 'Ready in:';
-          value = '${details.readyInMinutes} minutes';
-        } else if (index == (details.readyInMinutes != null ? 1 : 0) && details.servings != null) {
-          icon = Icons.people_alt;
-          label = 'Servings:';
-          value = '${details.servings}';
-        } else if (index == (details.readyInMinutes != null ? 1 : 0) + (details.servings != null ? 1 : 0) && (details.sourceUrl != null)) {
-          icon = Icons.open_in_new; // ExternalLink
-          label = 'View Source';
-          value = ''; // Kein expliziter Wert, der Link ist das Wichtige
-        } else {
-          return const SizedBox.shrink(); // Sollte nicht passieren
+        int currentCount = 0;
+
+        if (details.readyInMinutes != null) {
+          if (index == currentCount) {
+            icon = Icons.access_time;
+            label = 'Ready in:';
+            value = '${details.readyInMinutes} minutes';
+            onTap = null;
+          }
+          currentCount++;
+        }
+
+        if (details.servings != null) {
+          if (index == currentCount) {
+            icon = Icons.people_alt;
+            label = 'Servings:';
+            value = '${details.servings}';
+            onTap = null;
+          }
+          currentCount++;
+        }
+
+        if (details.sourceUrl != null) {
+          if (index == currentCount) {
+            icon = Icons.open_in_new;
+            label = 'View Source';
+            value = '';
+            onTap = () {
+              final url = details.sourceUrl;
+              if (url != null) {
+                launchUrl(Uri.parse(url));
+              }
+            };
+          }
+          currentCount++;
+        }
+
+        // If the index doesn't correspond to any valid item based on the details,
+        // we return an empty SizedBox. This handles cases where itemCount
+        // might not perfectly align with the conditional checks, or if some
+        // details are null.
+        if (index >= currentCount) {
+          return const SizedBox.shrink();
         }
 
         return Card(
           elevation: 0,
-          color: colorScheme.secondary.withOpacity(0.1), // Leichter Hintergrund
+          color: colorScheme.secondary.withOpacity(0.1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: InkWell( // Macht die ganze Karte klickbar
-            onTap: label == 'View Source'
-                ? () {
-                    final url = details.sourceUrl;
-                    if (url != null) {
-                      // TODO: Implement URL launch (z.B. mit url_launcher package)
-                      launchUrl(Uri.parse(url));
-                      
-                    }
-                  }
-                : null,
+          child: InkWell(
+            onTap: onTap,
             borderRadius: BorderRadius.circular(8),
             child: Padding(
               padding: const EdgeInsets.all(12.0),

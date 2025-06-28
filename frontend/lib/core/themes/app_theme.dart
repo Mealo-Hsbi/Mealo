@@ -7,9 +7,9 @@ class AppTheme {
     onPrimary: Colors.white,
     secondary: Colors.green.shade700,
     onSecondary: Colors.white,
-    background: Colors.grey[200]!,    // exakt wie im Widget
+    background: Colors.grey[200]!,
     onBackground: Colors.black,
-    surface: Colors.white,             // exakt wie im Widget
+    surface: Colors.white,
     onSurface: Colors.black,
     error: Colors.red,
     onError: Colors.white,
@@ -20,7 +20,7 @@ class AppTheme {
     colorScheme: lightColorScheme,
     primaryColor: Colors.green,
     primarySwatch: Colors.green,
-    scaffoldBackgroundColor: Colors.white, // bleibt weiß, da Scaffold unabhängig
+    scaffoldBackgroundColor: Colors.white,
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.green,
       foregroundColor: Colors.white,
@@ -44,6 +44,16 @@ class AppTheme {
     progressIndicatorTheme: ProgressIndicatorThemeData(
       color: Colors.green,
       circularTrackColor: Colors.grey.shade300,
+    ),
+    // NEU: SnackBarThemeData direkt hier im ThemeData definieren
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: lightColorScheme.primary, // Grüner Hintergrund
+      contentTextStyle: TextStyle(color: lightColorScheme.onPrimary), // Weißer Text
+      actionTextColor: lightColorScheme.onPrimary.withOpacity(0.8), // Aktionen z.B. für "Undo"
+      behavior: SnackBarBehavior.floating, // Macht die SnackBar schwebend
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))), // Abgerundete Ecken
+      elevation: 6, // Schatteneffekt
+      // stackSpacing: 10, // Abstand zwischen mehreren Snackbars
     ),
   );
 }
