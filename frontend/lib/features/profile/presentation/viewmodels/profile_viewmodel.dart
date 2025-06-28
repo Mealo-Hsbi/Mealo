@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../domain/entities/profile_dto.dart';
 import '../../domain/usecases/get_profile.dart';
 import '../../domain/usecases/upload_avatar.dart';
+import 'package:mime/mime.dart';
+import 'dart:io';
 
 class ProfileViewModel extends ChangeNotifier {
   final GetProfile   _getProfile;
@@ -52,4 +54,19 @@ class ProfileViewModel extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  Future<void> uploadAvatar(File file) async {
+  isLoading = true;
+  notifyListeners();
+
+  final bytes = await file.readAsBytes();
+  final mimeType = lookupMimeType(file.path) ?? 'image/png';
+  final filename = 'avatars/${DateTime.now().millisecondsSinceEpoch}.png';
+
+  await _uploadAvatar(filename, bytes, mimeType);
+  profile = await _getProfile();
+
+  isLoading = false;
+  notifyListeners();
+}
 }
