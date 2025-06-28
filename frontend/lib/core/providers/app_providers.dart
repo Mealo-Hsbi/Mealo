@@ -46,6 +46,7 @@ class AppProviders {
           return ProfileViewModel(
             GetProfile(profileRepository),
             UploadAvatar(profileRepository),
+            profileRepository,
           );
         },
       ),

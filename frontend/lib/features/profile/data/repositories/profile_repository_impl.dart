@@ -47,6 +47,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
     remote.getAvatarDownloadUrl(objectKey);
 
   @override
+  void invalidateCache() {
+    _cache = null;
+    _cacheTime = null;
+  }
+
+  @override
   Future<UploadInfo> getUploadInfo(String filename, String contentType) =>
     remote.getAvatarUploadInfo(filename, contentType);
 
