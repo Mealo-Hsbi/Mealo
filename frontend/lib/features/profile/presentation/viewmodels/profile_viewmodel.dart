@@ -25,15 +25,12 @@ class ProfileViewModel extends ChangeNotifier {
     final fresh = await _getProfile();
 
     // Logging zur Analyse
-    print('📥 Geladene Avatar-URL: ${fresh.avatarUrl}');
-    print('📦 Aktuelles Profil: ${profile?.avatarUrl}');
 
     if (profile == null || profile!.avatarUrl != fresh.avatarUrl) {
-      print('✅ Avatar-URL hat sich geändert. Profil wird aktualisiert.');
       profile = fresh;
       notifyListeners();
     } else {
-      print('⏸️ Avatar-URL ist gleich. Kein Update nötig.');
+      // Logging zur Analyse
     }
 
     isLoading = false;

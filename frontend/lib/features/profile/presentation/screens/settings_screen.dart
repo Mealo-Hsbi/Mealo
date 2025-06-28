@@ -35,11 +35,6 @@ class SettingsScreen extends StatelessWidget {
             onTap: () {/* TODO */},
           ),
           ListTile(
-            leading: const Icon(Icons.notifications),
-            title: const Text('Notifications'),
-            onTap: () {/* TODO */},
-          ),
-          ListTile(
             leading: const Icon(Icons.tune),
             title: const Text('Start Onboarding'),
             onTap: () {

@@ -45,7 +45,6 @@ class ProfileScreen extends StatelessWidget {
           }
 
           final profile = vm.profile!;
-          print('🖼️ Aktuelle Avatar-URL: ${profile.avatarUrl}');
 
           final recent = profile.recentRecipes.take(3).toList();
           final achievements = profile.achievements.take(3).toList();
