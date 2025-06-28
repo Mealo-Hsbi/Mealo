@@ -80,7 +80,6 @@ class AppProviders {
           addFavoriteRecipeUseCase: addFavoriteRecipeUseCase,
           removeFavoriteRecipeUseCase: removeFavoriteRecipeUseCase,
           getFavoriteRecipesUseCase: getFavoriteRecipesUseCase,
-          isRecipeFavoritedUseCase: isRecipeFavoritedUseCase,
         ),
       ),
       ChangeNotifierProvider(
