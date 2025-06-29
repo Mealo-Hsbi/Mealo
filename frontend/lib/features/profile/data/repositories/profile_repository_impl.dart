@@ -47,19 +47,30 @@ class ProfileRepositoryImpl implements ProfileRepository {
     remote.getAvatarDownloadUrl(objectKey);
 
   @override
+  void invalidateCache() {
+    _cache = null;
+    _cacheTime = null;
+  }
+
+  @override
   Future<UploadInfo> getUploadInfo(String filename, String contentType) =>
     remote.getAvatarUploadInfo(filename, contentType);
 
   @override
   Future<String> uploadAvatar(String filename, List<int> bytes, String contentType) async {
     final info = await remote.getAvatarUploadInfo(filename, contentType);
+
     await apiClient.put(
       info.uploadUrl,
       data: bytes,
       options: Options(headers: {'Content-Type': contentType}),
     );
+
+    await remote.updateAvatarKey(info.objectKey); // 👈 hier wird's gespeichert!
+
     return info.objectKey;
   }
+
 
   @override
   Future<void> saveAvatarKey(String objectKey) =>

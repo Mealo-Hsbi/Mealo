@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 import 'about-mealo_screen.dart';
+import 'edit_profile_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -22,16 +23,15 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Edit Profile'),
-            onTap: () {/* TODO: EditProfileScreen */},
+            onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+            );
+          },
           ),
           ListTile(
             leading: const Icon(Icons.lock),
             title: const Text('Change Password'),
-            onTap: () {/* TODO */},
-          ),
-          ListTile(
-            leading: const Icon(Icons.notifications),
-            title: const Text('Notifications'),
             onTap: () {/* TODO */},
           ),
           ListTile(

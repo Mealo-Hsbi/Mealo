@@ -8,5 +8,7 @@ abstract class ProfileRepository {
   Future<String>    fetchAvatarUrl(String objectKey);
   Future<UploadInfo> getUploadInfo(String filename, String contentType);
   Future<String>    uploadAvatar(String filename, List<int> bytes, String contentType);
-  Future<void>      saveAvatarKey(String objectKey);  // neu
+  Future<void>      saveAvatarKey(String objectKey);
+  void invalidateCache();
+  
 }
