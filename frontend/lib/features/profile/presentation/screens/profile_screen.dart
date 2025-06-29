@@ -149,6 +149,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: kSectionSpacing),
 
+                        // Rezepte-Sektion mit Fallback
                         ProfileSection(
                           title: 'My Recipes',
                           action: TextButton(
@@ -157,20 +158,26 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             child: const Text('View All'),
                           ),
-                          child: GridView.count(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 3 / 4,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: recent.map((r) => RecipePreviewItem(
-                              imageUrl: r.imageUrl,
-                              title: r.title,
-                            )).toList(),
-                          ),
+                          child: recent.isNotEmpty
+                              ? GridView.count(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 3 / 4,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: recent.map((r) => RecipePreviewItem(
+                                    imageUrl: r.imageUrl,
+                                    title: r.title,
+                                  )).toList(),
+                                )
+                              : const _EmptyStateWidget(
+                                  icon: Icons.no_food,
+                                  message: 'Du hast noch keine Rezepte erstellt.',
+                                ),
                         ),
 
+                        // Achievements-Sektion mit Fallback
                         ProfileSection(
                           title: 'Achievements',
                           action: TextButton(
@@ -179,14 +186,19 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             child: const Text('View All'),
                           ),
-                          child: GridView.count(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: achievements.map((a) => AchievementCard(achievement: a)).toList(),
-                          ),
+                          child: achievements.isNotEmpty
+                              ? GridView.count(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: achievements.map((a) => AchievementCard(achievement: a)).toList(),
+                                )
+                              : const _EmptyStateWidget(
+                                  icon: Icons.emoji_events_outlined,
+                                  message: 'Du hast noch keine Erfolge erreicht.',
+                                ),
                         ),
                       ],
                     ),
@@ -237,6 +249,34 @@ class ProfileSection extends StatelessWidget {
           const SizedBox(height: 12),
           child,
         ],
+      ),
+    );
+  }
+}
+
+class _EmptyStateWidget extends StatelessWidget {
+  final IconData icon;
+  final String message;
+
+  const _EmptyStateWidget({
+    Key? key,
+    required this.icon,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 40, color: Colors.grey),
+            const SizedBox(height: 8),
+            Text(message, style: TextStyle(color: Colors.grey[600])),
+          ],
+        ),
       ),
     );
   }
