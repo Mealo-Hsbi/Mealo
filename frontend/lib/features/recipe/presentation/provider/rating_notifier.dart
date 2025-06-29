@@ -38,8 +38,8 @@ class RatingNotifier extends ChangeNotifier {
   void setInitialAverageRating(double avg) {
     if (_averageRating != avg) { // Only update if value truly changes to avoid unnecessary rebuilds
       _averageRating = avg;
-      // No notifyListeners here; typically called on widget initState where the widget is already building.
-      // If needed, you can add notifyListeners(), but be mindful of rebuild cycles.
+      // No notifyListeners here for initial set; it's typically set during widget build/init.
+      // If you find the UI doesn't update immediately on first load, you might need notifyListeners() here.
     }
   }
 
@@ -47,7 +47,7 @@ class RatingNotifier extends ChangeNotifier {
   void setInitialRatingCount(int count) {
     if (_ratingCount != count) { // Only update if value truly changes
       _ratingCount = count;
-      // No notifyListeners here.
+      // No notifyListeners here for initial set.
     }
   }
 
@@ -135,12 +135,6 @@ class RatingNotifier extends ChangeNotifier {
     }
     return ServerFailure(message: 'An unexpected error occurred: ${e.toString()}');
   }
-
-  // This `_setLoading` is now replaced by the public `setLoading` method
-  // void _setLoading(bool loading) {
-  //   _isLoading = loading;
-  //   notifyListeners();
-  // }
 
   void _setError(Failure failure) {
     if (failure is ServerFailure) {

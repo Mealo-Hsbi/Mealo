@@ -67,4 +67,26 @@ class RecipeRepositoryImpl implements RecipeRepository {
       cancelToken: cancelToken, // <--- Wichtig: CancelToken hier weitergeben!
     );
   }
+
+  @override
+  Future<RecipeDetails> getInternalRecipeDetails(String internalRecipeId, {CancelToken? cancelToken}) async {
+    // TODO: Implement actual call to _internalApiClient to fetch internal recipe details
+    // For now, return a placeholder or throw an unimplemented error
+    // The route that needs to be called for image recognition is /api/image-recognition/recognize (post).
+    // For getting internal recipe details, you would typically use a GET request to a path like:
+    // final json = await _internalApiClient.get('/api/recipes/details/$internalRecipeId', cancelToken: cancelToken);
+    // return RecipeDetails.fromJson(json);
+
+    // Provisorische Lösung: Einen Fehler werfen, bis es implementiert ist
+    throw UnimplementedError('getInternalRecipeDetails has not been implemented yet.');
+
+    // Oder, wenn du ein leeres oder Standard-Objekt zurückgeben willst:
+    // return Future.value(RecipeDetails(
+    //   id: null, // Oder eine Dummy-ID, falls erforderlich
+    //   internalId: internalRecipeId,
+    //   name: 'Placeholder Internal Recipe',
+    //   imageUrl: '',
+    //   // ... andere Felder mit Standardwerten oder null
+    // ));
+  }
 }

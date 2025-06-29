@@ -1,13 +1,10 @@
-// lib/features/recipeDetails/presentation/widgets/recipe_detail_content.dart
-
 import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart'; // NICHT MEHR BENÖTIGT
-// import 'package:provider/provider.dart'; // NICHT MEHR BENÖTIGT
+import 'package:provider/provider.dart' as provider; // Import the provider package Consumer
 
 import 'package:frontend/common/models/recipe/recipe_details.dart';
 import 'package:frontend/common/models/recipe/extended_ingredient.dart';
 
-// Importe für Ihre anderen Sektionen
+// Import for other sections
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_health_score_section.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_ingredients_section.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_instructions_section.dart';
@@ -16,19 +13,11 @@ import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/re
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/servings_adjuster_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// NEU: Import der ausgelagerten Interaktions-Sektion
+// Import the extracted interaction section
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_interaction_section.dart';
+import 'package:frontend/features/recipe/presentation/provider/rating_notifier.dart'; // Import your RatingNotifier
 
-// // Diese Imports sind jetzt im RecipeInteractionSection
-// import 'package:frontend/features/recipeDetails/presentation/widgets/recipe_rating_widget.dart';
-// import 'package:frontend/features/recipe/presentation/provider/favorite_notifier.dart';
-// import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart';
-// import 'package:frontend/features/recipe/domain/entities/recipe.dart';
-// import 'package:frontend/core/utils/extensions.dart';
-
-
-// ZURÜCK ZU StatelessWidget, da keine direkten Riverpod/Provider-Abhängigkeiten mehr
-class RecipeDetailContent extends StatefulWidget { // Korrektur: Kein ConsumerStatefulWidget mehr
+class RecipeDetailContent extends StatefulWidget { // Stays StatefulWidget
   final String initialName;
   final String initialPlace;
   final bool isLoading;
@@ -45,20 +34,31 @@ class RecipeDetailContent extends StatefulWidget { // Korrektur: Kein ConsumerSt
   });
 
   @override
-  State<RecipeDetailContent> createState() => _RecipeDetailContentState();
+  State<RecipeDetailContent> createState() => _RecipeDetailContentState(); // Stays State
 }
 
-class _RecipeDetailContentState extends State<RecipeDetailContent> {
+class _RecipeDetailContentState extends State<RecipeDetailContent> { // Stays State
   int _currentServings = 0;
 
   @override
   void initState() {
     super.initState();
-    // Initialisiere _currentServings, falls recipeDetails direkt verfügbar sind
     if (widget.recipeDetails != null) {
       _currentServings = widget.recipeDetails!.servings ?? 0;
     }
-    // Die Logik für _currentUserId und Favoriten ist jetzt in RecipeInteractionSection!
+
+    // Initialize average rating in the notifier when recipe details are first available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.recipeDetails != null) {
+        // Use Provider.of to access the notifier
+        final ratingNotifier = provider.Provider.of<RatingNotifier>(context, listen: false);
+        ratingNotifier.setInitialAverageRating(widget.recipeDetails!.averageRating ?? 0.0);
+        ratingNotifier.setInitialRatingCount(widget.recipeDetails!.ratingCount ?? 0);
+        // No notifyListeners in these setInitial methods, as the Consumer below
+        // will handle the first render, and subsequent updates will come from
+        // addOrUpdateRecipeRating calling notifyListeners.
+      }
+    });
   }
 
   @override
@@ -68,7 +68,10 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
       setState(() {
         _currentServings = widget.recipeDetails!.servings ?? 0;
       });
-      // Die Logik für Favoriten-Neuladen ist jetzt in RecipeInteractionSection!
+      // Update average rating in the notifier if recipeDetails change
+      final ratingNotifier = provider.Provider.of<RatingNotifier>(context, listen: false);
+      ratingNotifier.setInitialAverageRating(widget.recipeDetails!.averageRating ?? 0.0);
+      ratingNotifier.setInitialRatingCount(widget.recipeDetails!.ratingCount ?? 0);
     }
   }
 
@@ -129,12 +132,59 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(
-                    widget.initialName,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.initialName,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                      ),
+                      // Display average rating dynamically using provider's Consumer
+                      if (widget.recipeDetails != null && !widget.isLoading && widget.errorMessage == null)
+                        provider.Consumer<RatingNotifier>( // Use provider's Consumer here
+                          builder: (context, ratingNotifier, child) {
+                            final double displayAverageRating = ratingNotifier.averageRating;
+                            final int displayRatingCount = ratingNotifier.ratingCount;
+
+                            if (ratingNotifier.isLoading && displayAverageRating == 0.0 && displayRatingCount == 0) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                // child: Text(
+                                //   'Loading ratings...',
+                                //   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                // ),
+                              );
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Row(
+                                children: [
+                                  // Display stars
+                                  ...List.generate(5, (index) {
+                                    return Icon(
+                                      index < displayAverageRating.round() ? Icons.star : Icons.star_border,
+                                      color: Colors.amber[700],
+                                      size: 18,
+                                    );
+                                  }),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      displayRatingCount > 0 ? '(${displayRatingCount} ratings)' : 'No ratings yet.',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
+                    ],
                   ),
                 ),
                 Text(
@@ -156,7 +206,7 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // NEU: Einfach das ausgelagerte Widget einfügen!
+                      const SizedBox(height: 16),
                       RecipeInteractionSection(
                         recipeDetails: widget.recipeDetails!,
                       ),
@@ -195,7 +245,7 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
     );
   }
 
-  // Hilfsmethode zur Erstellung des Info-Grids (unverändert)
+  // Helper method to build the info grid (unchanged)
   Widget _buildInfoGrid(BuildContext context, RecipeDetails details) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
@@ -214,11 +264,10 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
           (details.servings != null ? 1 : 0) +
           ((details.sourceUrl != null) ? 1 : 0),
       itemBuilder: (context, index) {
-        // --- KORREKTUR: Initialisiere alle lokalen Variablen ---
-        IconData icon = Icons.info_outline; // Default icon
-        String label = 'N/A'; // Default label
-        String value = ''; // Default value
-        VoidCallback? onTap; // Nullable, default is null
+        IconData icon = Icons.info_outline;
+        String label = 'N/A';
+        String value = '';
+        VoidCallback? onTap;
 
         int currentCount = 0;
 
@@ -257,10 +306,6 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> {
           currentCount++;
         }
 
-        // If the index doesn't correspond to any valid item based on the details,
-        // we return an empty SizedBox. This handles cases where itemCount
-        // might not perfectly align with the conditional checks, or if some
-        // details are null.
         if (index >= currentCount) {
           return const SizedBox.shrink();
         }

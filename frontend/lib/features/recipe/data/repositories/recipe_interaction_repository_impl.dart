@@ -53,6 +53,13 @@ class RecipeInteractionRepositoryImpl implements RecipeInteractionRepository {
   Future<List<Favorite>> getFavoriteRecipes(String userId) async {
     try {
       final favoriteModels = await remoteDataSource.getFavoriteRecipes(userId);
+
+      // <-- ADD THIS PRINT STATEMENT
+      // print('[RecipeRepositoryImpl] getFavoriteRecipes - favoriteModels BEFORE mapping:');
+      // for (var model in favoriteModels) {
+        // print('  FavoriteModel: recipeId=${model.recipeId}, recipe=${model.recipe}'); // Adjust keys as needed
+      // }
+
       return favoriteModels.map((model) => model.toEntity()).toList();
     } on ServerException catch (e) {
       throw ServerFailure(message: e.message);

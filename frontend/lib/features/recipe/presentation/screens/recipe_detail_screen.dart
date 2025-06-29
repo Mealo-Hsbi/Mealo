@@ -13,7 +13,10 @@ import 'package:frontend/services/api_client.dart';
 
 
 class RecipeDetailScreen extends StatefulWidget {
-  final int recipeId; // Dies ist die spoonacularId, die zum Laden der Details verwendet wird
+  final int? recipeId; // Dies ist die spoonacularId, die zum Laden der Details verwendet wird
+  final String? internalRecipeId;
+  final bool isInternal;
+
   final String initialImageUrl;
   final String initialName;
   final String initialPlace;
@@ -21,7 +24,9 @@ class RecipeDetailScreen extends StatefulWidget {
 
   const RecipeDetailScreen({
     super.key,
-    required this.recipeId,
+    this.recipeId,
+    this.internalRecipeId,
+    this.isInternal = false,
     required this.initialImageUrl,
     required this.initialName,
     required this.initialPlace,
@@ -57,7 +62,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     });
 
     try {
-      final details = await _getRecipeDetailsUseCase(widget.recipeId);
+      final details = await _getRecipeDetailsUseCase(
+        recipeId: widget.recipeId,
+        internalRecipeId: widget.internalRecipeId,
+        isInternal: widget.isInternal,
+      );
       setState(() {
         _recipeDetails = details;
       });

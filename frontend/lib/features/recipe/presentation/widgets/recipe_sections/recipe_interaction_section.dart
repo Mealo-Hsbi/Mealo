@@ -8,7 +8,7 @@ import 'package:frontend/common/models/recipe/recipe_details.dart';
 import 'package:frontend/features/recipe/presentation/provider/favorite_notifier.dart';
 import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart';
-import 'package:frontend/main.dart'; // Import main.dart for scaffoldMessengerKey
+import 'package:frontend/main.dart';
 
 class RecipeInteractionSection extends ConsumerStatefulWidget {
   final RecipeDetails recipeDetails;
@@ -23,74 +23,71 @@ class RecipeInteractionSection extends ConsumerStatefulWidget {
 }
 
 class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSection> {
+  String? _lastKnownUserId;
+
   @override
   void initState() {
     super.initState();
-    debugPrint('[RecipeInteractionSection] initState called.');
-    // Starte die Initialisierung des Notifiers sofort nach dem ersten Frame.
-    // Dies gibt Flutter Zeit, das Widget zu mounten und den Kontext verfügbar zu machen.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeFavoriteNotifier();
     });
   }
 
   void _initializeFavoriteNotifier() async {
-    final asyncAuthUser = ref.read(authStateChangesProvider); // Lese den aktuellen Wert
+    final asyncAuthUser = ref.read(authStateChangesProvider);
     final String? currentUserId = await asyncAuthUser.when(
       data: (user) => user?.uid,
       loading: () => null,
-      error: (err, stack) => null,
+      error: (_, __) => null,
     );
 
-    // Wenn keine User-ID verfügbar ist, können wir den Notifier nicht initialisieren.
-    if (currentUserId == null) {
-      debugPrint('[RecipeInteractionSection] _initializeFavoriteNotifier: No currentUserId, skipping FavoriteNotifier init.');
+    final favoriteNotifier = provider.Provider.of<FavoriteNotifier>(context, listen: false);
+    final String? internalRecipeId = widget.recipeDetails.id;
+
+    if (currentUserId == null || internalRecipeId == null) {
+      debugPrint('[RecipeInteractionSection] Skipping: currentUserId or recipeId is null');
+      if (_lastKnownUserId != currentUserId) {
+        _lastKnownUserId = currentUserId;
+        if (currentUserId == null) favoriteNotifier.reset();
+      }
       return;
     }
 
-    // Holen Sie den Notifier mit listen: false, da wir ihn nur initial triggern wollen.
-    final favoriteNotifier = provider.Provider.of<FavoriteNotifier>(context, listen: false);
-    
-    // Rufen Sie die neue `init` Methode des Notifiers auf.
-    // Diese Methode enthält die Logik, ob die Favoriten neu geladen werden müssen.
-    debugPrint('[RecipeInteractionSection] Calling favoriteNotifier.init with userId: $currentUserId');
-    await favoriteNotifier.init(currentUserId);
-    debugPrint('[RecipeInteractionSection] favoriteNotifier.init completed.');
+    if (_lastKnownUserId != currentUserId) {
+      favoriteNotifier.reset();
+      _lastKnownUserId = currentUserId;
+      await favoriteNotifier.init(currentUserId);
+    } else if (!favoriteNotifier.isRecipeStatusInCache(internalRecipeId) &&
+               !favoriteNotifier.isRecipeCheckingFavoriteStatus(internalRecipeId)) {
+      // Optional: spezifischen Check nachreichen
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final asyncAuthUser = ref.watch(authStateChangesProvider);
     final String? currentUserId = asyncAuthUser.when(
       data: (user) => user?.uid,
       loading: () => null,
-      error: (err, stack) => null,
+      error: (_, __) => null,
     );
 
-    // Hier lauschen wir auf den FavoriteNotifier, um bei Änderungen neu zu rendern.
     final favoriteNotifier = provider.Provider.of<FavoriteNotifier>(context);
     final String? internalRecipeId = widget.recipeDetails.id;
-    final theme = Theme.of(context);
-
-    // Bestimme, ob Interaktionen möglich sind (User angemeldet, Rezept-ID vorhanden)
     final bool canInteract = currentUserId != null && internalRecipeId != null;
 
-    // --- Allgemeine Lade- und Fehlerbehandlung (für Auth-Status oder fehlende Interaktionsdaten) ---
-    // Dies ist der Ladekreis, wenn der Anmeldestatus des Benutzers noch ermittelt wird,
-    // ODER wenn die notwendigen IDs fehlen.
+    final bool showFavoriteLoader = favoriteNotifier.isLoading ||
+        favoriteNotifier.isRecipeCheckingFavoriteStatus(internalRecipeId ?? '');
+    final bool isFavorited = showFavoriteLoader
+        ? false
+        : favoriteNotifier.isRecipeCurrentlyFavorited(internalRecipeId ?? '');
+
     if (asyncAuthUser.isLoading) {
-      debugPrint('[RecipeInteractionSection] Build: Auth loading, show general loader.');
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: Center(
-          child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary),
-        ),
-      );
+      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
     }
-    
-    // Wenn Interaktion nicht möglich (z.B. nicht eingeloggt oder Rezept-ID fehlt)
+
     if (!canInteract) {
-      debugPrint('[RecipeInteractionSection] Build: Cannot interact. UserID: $currentUserId, RecipeID: $internalRecipeId. Show login message.');
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: Center(
@@ -103,77 +100,62 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
       );
     }
 
-    // --- Favoriten-UI mit Ladeanzeige für den initialen Fetch des Herzens ---
-    // `favoriteNotifier.isLoading` spiegelt den Ladezustand wider (initialer Fetch oder toggle).
-    // `favoriteNotifier.status == FavoriteStatus.initial` stellt sicher, dass wir laden,
-    // wenn der Notifier noch keine Daten hat.
-    final bool showFavoriteLoader = favoriteNotifier.isLoading || favoriteNotifier.status == FavoriteStatus.initial;
-    
-    // Favoritenstatus: Wenn geladen wird, ist es standardmäßig false, sonst der tatsächliche Status.
-    final bool isFavorited = showFavoriteLoader
-        ? false 
-        : favoriteNotifier.isRecipeCurrentlyFavorited(internalRecipeId!);
-
-    debugPrint('[RecipeInteractionSection] Build: Recipe ${internalRecipeId ?? 'N/A'} showFavoriteLoader: $showFavoriteLoader, isFavorited: $isFavorited (Notifier status: ${favoriteNotifier.status})');
-
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Column(
-              children: [
-                RecipeRatingWidget(
-                  recipeDetails: widget.recipeDetails,
+            flex: 4,
+            child: RecipeRatingWidget(recipeDetails: widget.recipeDetails),
+          ),
+          const SizedBox(width: 24),
+          InkWell(
+            borderRadius: BorderRadius.circular(30),
+            onTap: showFavoriteLoader
+                ? null
+                : () async {
+                    if (internalRecipeId == null || currentUserId == null) return;
+
+                    await favoriteNotifier.toggleFavorite(
+                      userId: currentUserId,
+                      spoonacularId: widget.recipeDetails.spoonacularId,
+                      recipe: widget.recipeDetails.toRecipe(),
+                    );
+
+                    if (mounted && favoriteNotifier.errorMessage != null) {
+                      scaffoldMessengerKey.currentState?.showSnackBar(
+                        SnackBar(content: Text(favoriteNotifier.errorMessage!)),
+                      );
+                    }
+                  },
+            child: Container(
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceVariant.withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  width: 1,
                 ),
-              ],
+              ),
+              child: showFavoriteLoader
+                  ? SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary.withOpacity(0.6)),
+                      ),
+                    )
+                  : Icon(
+                      isFavorited ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorited ? Colors.redAccent : theme.colorScheme.primary,
+                      size: 28,
+                    ),
             ),
           ),
           const SizedBox(width: 16),
-          Column(
-            children: [
-              // Conditional rendering: Loader or Heart Icon
-              showFavoriteLoader
-                  ? SizedBox( // Bietet Platz für den Ladeindikator
-                      width: 30, 
-                      height: 30,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.primary),
-                    )
-                  : IconButton(
-                      icon: Icon(
-                        isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorited ? Colors.redAccent : theme.colorScheme.onSurface.withOpacity(0.6),
-                        size: 30,
-                      ),
-                      // Der Button ist deaktiviert, wenn Interaktion nicht möglich
-                      // oder wenn der Notifier gerade eine Operation ausführt (`isLoading`).
-                      onPressed: (!canInteract || favoriteNotifier.isLoading) 
-                          ? null 
-                          : () async {
-                              if (internalRecipeId == null || currentUserId == null) {
-                                scaffoldMessengerKey.currentState?.showSnackBar(
-                                  const SnackBar(content: Text('Cannot interact: Recipe ID or User ID missing.')),
-                                );
-                                return;
-                              }
-                              await favoriteNotifier.toggleFavorite(
-                                userId: currentUserId,
-                                spoonacularId: widget.recipeDetails.spoonacularId,
-                                recipe: widget.recipeDetails.toRecipe(),
-                              );
-
-                              if (mounted) {
-                                if (favoriteNotifier.errorMessage != null) {
-                                  scaffoldMessengerKey.currentState?.showSnackBar(
-                                    SnackBar(content: Text(favoriteNotifier.errorMessage!)),
-                                  );
-                                }
-                              }
-                            },
-                    ),
-            ],
-          ),
         ],
       ),
     );

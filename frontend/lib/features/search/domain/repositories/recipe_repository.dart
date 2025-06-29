@@ -28,5 +28,7 @@ abstract class RecipeRepository {
     CancelToken? cancelToken, // <--- Hinzufügen des optionalen CancelToken
   });
 
-  Future<RecipeDetails> getRecipeDetails(int recipeId, {CancelToken? cancelToken}); // <--- Hinzufügen des optionalen CancelToken
+  Future<RecipeDetails> getRecipeDetails(int recipeId, {CancelToken? cancelToken});
+
+  Future<RecipeDetails> getInternalRecipeDetails(String internalRecipeId, {CancelToken? cancelToken});
 }

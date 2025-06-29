@@ -1,14 +1,7 @@
-// lib/features/recipeList/parallax_recipes.dart
-
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart'; // Ensure RecipeDetailScreen is imported
 import 'package:flutter/services.dart'; // Import for rootBundle in RecipeItem
-
-// Note: If RecipeItem and ParallaxFlowDelegate are in separate files,
-// you would import 'package:frontend/features/recipeList/recipe_item.dart'; here
-// and keep RecipeItem and ParallaxFlowDelegate in that separate file.
-// For simplicity in this answer, I'm keeping them together in this file.
 
 class ParallaxRecipes extends StatefulWidget {
   const ParallaxRecipes({
@@ -51,6 +44,8 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
         final recipe = widget.recipes[index];
         return RecipeItem(
           id: recipe.id,
+          internalId: recipe.internalId, // Assuming internalId is part of Recipe
+          isInternal: recipe.isInternal ?? false, // Assuming isInternal is part of Recipe
           imageUrl: recipe.imageUrl,
           name: recipe.name,
           country: recipe.place ?? '',
@@ -65,21 +60,24 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           healthScore: recipe.healthScore,
           matchingIngredientsCount: recipe.usedIngredientCount,
           missingIngredientsCount: recipe.missedIngredientCount,
+          averageRating: recipe.averageRating,
+          ratingCount: recipe.ratingCount,
         );
       },
     );
   }
 }
 
-// Keep RecipeItem and ParallaxFlowDelegate as they are (or move to recipe_item.dart)
 @immutable
 class RecipeItem extends StatelessWidget {
   RecipeItem({
     super.key,
-    required this.id, // Bleibt bestehen
-    required this.imageUrl, // Wird jetzt übergeben
-    required this.name, // Wird jetzt übergeben
-    required this.country, // Wird jetzt übergeben
+    this.id,
+    this.internalId, // Optional: Interne ID für eigene Rezepte
+    this.isInternal = false, // Default: false, wenn nicht angegeben
+    required this.imageUrl,
+    required this.name,
+    required this.country,
     this.readyInMinutes,
     this.servings,
     this.currentSortOption,
@@ -91,9 +89,13 @@ class RecipeItem extends StatelessWidget {
     this.healthScore,
     this.matchingIngredientsCount,
     this.missingIngredientsCount,
+    this.averageRating,
+    this.ratingCount,
   });
 
-  final int id;
+  final int? id;
+  final String? internalId; // Optional: Interne ID für eigene Rezepte
+  final bool isInternal; // Default: false, wenn nicht angegeben
   final String imageUrl;
   final String name;
   final String country;
@@ -108,6 +110,8 @@ class RecipeItem extends StatelessWidget {
   final int? healthScore;
   final int? matchingIngredientsCount;
   final int? missingIngredientsCount;
+  final double? averageRating;
+  final int? ratingCount;
 
   final GlobalKey _backgroundImageKey = GlobalKey();
 
@@ -119,10 +123,11 @@ class RecipeItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => RecipeDetailScreen(
               recipeId: id,
-              initialImageUrl: imageUrl, // Neu: Initiales Bild
-              initialName: name,         // Neu: Initialer Name
-              initialPlace: country,     // Neu: Initialer Ort/Land
-              // Optional: Wenn du readyInMinutes auch sofort anzeigen willst
+              internalRecipeId: internalId, // Pass the internal ID if available
+              isInternal: isInternal, // Pass the internal flag
+              initialImageUrl: imageUrl,
+              initialName: name,
+              initialPlace: country,
               initialReadyInMinutes: readyInMinutes,
             ),
           ),
@@ -131,6 +136,7 @@ class RecipeItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: AspectRatio(
+          // Bleibt beim ursprünglichen 16/9, damit Parallax sichtbar ist
           aspectRatio: 16 / 9,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
@@ -139,6 +145,7 @@ class RecipeItem extends StatelessWidget {
                 _buildParallaxBackground(context),
                 _buildGradient(),
                 _buildTitleAndSubtitle(),
+                _buildRatingOverlay(),
               ],
             ),
           ),
@@ -150,7 +157,7 @@ class RecipeItem extends StatelessWidget {
   Widget _buildParallaxBackground(BuildContext context) {
     return Flow(
       delegate: ParallaxFlowDelegate(
-        scrollable: Scrollable.of(context), // This will now correctly find the ListView.builder inside ParallaxRecipes
+        scrollable: Scrollable.of(context),
         listItemContext: context,
         backgroundImageKey: _backgroundImageKey,
       ),
@@ -196,6 +203,8 @@ class RecipeItem extends StatelessWidget {
             colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
+            // HIER KÖNNTEST DU DIE STOPS ANPASSEN, WENN DU MEHR ODER WENIGER VERDECKUNG UNTEN MÖCHTEST
+            // Aktuell 0.6 -> transparent bis 0.95 -> 70% schwarz
             stops: const [0.6, 0.95],
           ),
         ),
@@ -270,6 +279,7 @@ class RecipeItem extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
+          const SizedBox(height: 8), // Abstand zu den unteren Infos
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -287,6 +297,52 @@ class RecipeItem extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRatingOverlay() {
+    // Nur anzeigen, wenn Bewertungsdaten vorhanden sind und es Bewertungen gibt
+    if (averageRating == null || ratingCount == null || ratingCount! == 0) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      top: 12, // Abstand vom oberen Rand
+      right: 12, // Abstand vom rechten Rand
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5), // Leichter, dunkler Hintergrund
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min, // Damit der Row nur so breit wie nötig ist
+          children: [
+            const Icon(Icons.star, color: Colors.amber, size: 14), // Kleines Stern-Icon
+            const SizedBox(width: 4),
+            Text(
+              // averageRating auf eine Dezimalstelle gerundet
+              '${averageRating!.toStringAsFixed(1)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Nur die Anzahl der Bewertungen anzeigen, wenn größer 0
+            if (ratingCount! > 0) ...[
+              const SizedBox(width: 4),
+              Text(
+                '($ratingCount)',
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
