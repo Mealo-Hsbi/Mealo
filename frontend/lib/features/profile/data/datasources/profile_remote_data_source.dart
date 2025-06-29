@@ -39,8 +39,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<void> updateAvatarKey(String objectKey) async {
     await apiClient.patch(
-      '/profile/avatar',
-      data: {'objectKey': objectKey},
+      '/profile',
+      data: {'avatarUrl': objectKey},
     );
   }
 }

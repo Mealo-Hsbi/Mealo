@@ -1,9 +1,7 @@
-// lib/core/providers/app_providers.dart
 
+// lib/core/providers/app_providers.dart
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-
-// Bestehende Imports
 import 'package:frontend/features/search/data/datasources/recipe_api_data_source.dart';
 import 'package:frontend/features/search/data/repository/recipe_repository_impl.dart';
 import 'package:frontend/features/search/domain/usecases/search_recipes_by_ingredients.dart';
@@ -29,42 +27,42 @@ import 'package:frontend/features/recipe/domain/usecases/add_or_update_recipe_ra
 import 'package:frontend/features/recipe/domain/usecases/get_user_recipe_rating.dart';
 
 
+// 🔽 NEU: Imports für ProfileViewModel und seine Abhängigkeiten
+import 'package:frontend/features/profile/presentation/viewmodels/profile_viewmodel.dart';
+import 'package:frontend/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:frontend/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:frontend/features/profile/domain/usecases/get_profile.dart';
+import 'package:frontend/features/profile/domain/usecases/upload_avatar.dart';
+
 class AppProviders {
   static List<SingleChildWidget> get providers {
     final ApiClient apiClient = ApiClient();
 
-    // Instanziierung der DataSource-Implementierung (bestehend)
+    // 🔎 SEARCH Feature
     final RecipeApiDataSourceImpl recipeApiDataSource = RecipeApiDataSourceImpl(apiClient);
-
-    // Instanziierung des RecipeRepository (bestehend)
     final RecipeRepositoryImpl recipeRepository = RecipeRepositoryImpl(remoteDataSource: recipeApiDataSource);
-
-    // Instanziierung BEIDER Search Use Cases (bestehend)
     final SearchRecipesByQuery searchRecipesByQueryUsecase = SearchRecipesByQuery(recipeRepository);
     final SearchRecipesByIngredients searchRecipesByIngredientsUsecase = SearchRecipesByIngredients(recipeRepository);
 
-
-    // --- KORRIGIERTE INSTANZIIERUNG FÜR FAVORITEN/BEWERTUNGEN ---
-    // Sie haben bereits RecipeInteractionRemoteDataSourceImpl, also instanziieren wir diese
+    // ⭐ FAVORITEN & ⭐ BEWERTUNGEN
     final RecipeInteractionRemoteDataSourceImpl recipeInteractionDataSource = RecipeInteractionRemoteDataSourceImpl(apiClient);
+    final RecipeInteractionRepositoryImpl recipeInteractionRepository = RecipeInteractionRepositoryImpl(
+      remoteDataSource: recipeInteractionDataSource,
+    );
 
-    // Instanziierung des RecipeInteractionRepository, das jetzt die KORREKTE DataSource erhält
-    final RecipeInteractionRepositoryImpl recipeInteractionRepository = RecipeInteractionRepositoryImpl(remoteDataSource: recipeInteractionDataSource);
-
-
-    // NEU: Use Cases für Favoriten
     final AddFavoriteRecipe addFavoriteRecipeUseCase = AddFavoriteRecipe(recipeInteractionRepository);
     final RemoveFavoriteRecipe removeFavoriteRecipeUseCase = RemoveFavoriteRecipe(recipeInteractionRepository);
     final GetFavoriteRecipes getFavoriteRecipesUseCase = GetFavoriteRecipes(recipeInteractionRepository);
     final IsRecipeFavorited isRecipeFavoritedUseCase = IsRecipeFavorited(recipeInteractionRepository);
 
-    // NEU: Use Cases für Bewertungen
     final AddOrUpdateRecipeRating addOrUpdateRecipeRatingUseCase = AddOrUpdateRecipeRating(recipeInteractionRepository);
     final GetUserRecipeRating getUserRecipeRatingUseCase = GetUserRecipeRating(recipeInteractionRepository);
 
+    // 👤 PROFILE Feature
+    final profileRemoteDataSource = ProfileRemoteDataSourceImpl(apiClient);
+    final profileRepository = ProfileRepositoryImpl(profileRemoteDataSource, apiClient);
 
     return [
-      // Bestehende Provider
       ChangeNotifierProvider(create: (_) => SelectedIngredientsProvider()),
       ChangeNotifierProvider(create: (_) => CurrentTabProvider()),
       ChangeNotifierProvider(
@@ -73,8 +71,6 @@ class AppProviders {
           searchRecipesByIngredientsUsecase: searchRecipesByIngredientsUsecase,
         ),
       ),
-
-      // NEUE PROVIDER für Favoriten und Bewertungen
       ChangeNotifierProvider(
         create: (_) => FavoriteNotifier(
           addFavoriteRecipeUseCase: addFavoriteRecipeUseCase,
@@ -88,11 +84,14 @@ class AppProviders {
           getUserRecipeRatingUseCase: getUserRecipeRatingUseCase,
         ),
       ),
-
-      // Wichtiger Hinweis:
-      // Die Riverpod-Provider (authRepositoryProvider, authStateChangesProvider, currentUserIdProvider)
-      // werden HIER NICHT hinzugefügt. Sie sind globale Provider und werden durch den ProviderScope
-      // in main.dart verfügbar gemacht.
+      ChangeNotifierProvider<ProfileViewModel>(
+        create: (_) => ProfileViewModel(
+          GetProfile(profileRepository),
+          UploadAvatar(profileRepository),
+          profileRepository,
+        ),
+      ),
     ];
   }
 }
+

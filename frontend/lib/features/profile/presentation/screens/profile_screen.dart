@@ -14,7 +14,6 @@ import '../widgets/stat_item.dart';
 import '../widgets/tag_chip.dart';
 import '../widgets/achievement_card.dart';
 import '../screens/achievements_overview_screen.dart';
-import '../screens/pantry_screen.dart';
 import '../screens/settings_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
 
@@ -33,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
         final api = ApiClient();
         final remote = ProfileRemoteDataSourceImpl(api);
         final repo = ProfileRepositoryImpl(remote, api);
-        final vm = ProfileViewModel(GetProfile(repo), UploadAvatar(repo));
+        final vm = ProfileViewModel(GetProfile(repo), UploadAvatar(repo), repo);
         vm.loadProfile();
         return vm;
       },
@@ -46,6 +45,7 @@ class ProfileScreen extends StatelessWidget {
           }
 
           final profile = vm.profile!;
+
           final recent = profile.recentRecipes.take(3).toList();
           final achievements = profile.achievements.take(3).toList();
 
@@ -73,7 +73,16 @@ class ProfileScreen extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         if (profile.avatarUrl != null)
-                          Image.network(profile.avatarUrl!, fit: BoxFit.cover),
+                          Image.network(
+                            profile.avatarUrl!,
+                            key: UniqueKey(),
+                            fit: BoxFit.cover,
+                            headers: {
+                              'Cache-Control': 'no-cache',
+                              'Pragma': 'no-cache',
+                              'Expires': '0',
+                            },
+                          ),
                         BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                           child: Container(color: Colors.black.withOpacity(0.2)),
@@ -82,7 +91,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Transform.translate(
-                    offset: Offset(0, -kAvatarRadius),
+                    offset: const Offset(0, -kAvatarRadius),
                     child: Column(
                       children: [
                         Stack(
@@ -92,8 +101,11 @@ class ProfileScreen extends StatelessWidget {
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.fromLTRB(
-                                kSectionPadding, kAvatarRadius + kSectionSpacing,
-                                kSectionPadding, kSectionPadding),
+                                kSectionPadding,
+                                kAvatarRadius + kSectionSpacing,
+                                kSectionPadding,
+                                kSectionPadding,
+                              ),
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.surface,
                                 borderRadius: const BorderRadius.vertical(
@@ -102,8 +114,10 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               child: Column(
                                 children: [
-                                  Text(profile.name,
-                                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                  Text(
+                                    profile.name,
+                                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
                                   const SizedBox(height: kSectionSpacing),
                                   Wrap(
                                     spacing: kSectionSpacing,
@@ -126,6 +140,7 @@ class ProfileScreen extends StatelessWidget {
                             Positioned(
                               top: -kAvatarRadius,
                               child: AvatarWidget(
+                                key: UniqueKey(), // zwingt komplettes Neuladen des Bildes
                                 url: profile.avatarUrl,
                                 loading: vm.isLoading,
                               ),
@@ -134,12 +149,12 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: kSectionSpacing),
 
-                        // 🍽️ My Recipes
                         ProfileSection(
                           title: 'My Recipes',
                           action: TextButton(
                             onPressed: () => Navigator.of(context).push(
-                                _createSlideRoute(const RecipeListScreen())),
+                              _createSlideRoute(const RecipeListScreen()),
+                            ),
                             child: const Text('View All'),
                           ),
                           child: GridView.count(
@@ -156,12 +171,12 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // 🏆 Achievements
                         ProfileSection(
                           title: 'Achievements',
                           action: TextButton(
                             onPressed: () => Navigator.of(context).push(
-                                _createSlideRoute(const AchievementsOverviewScreen())),
+                              _createSlideRoute(const AchievementsOverviewScreen()),
+                            ),
                             child: const Text('View All'),
                           ),
                           child: GridView.count(
