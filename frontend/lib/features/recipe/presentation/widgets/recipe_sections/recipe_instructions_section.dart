@@ -1,5 +1,3 @@
-// lib/features/recipeDetails/presentation/widgets/recipe_instructions_section.dart
-
 import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe/analyzed_instruction_set.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_sections/recipe_timer_button.dart'; // Importiere das Timer-Widget
@@ -96,6 +94,8 @@ class RecipeInstructionsSection extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Container(
+                      // NEUE ZEILE HINZUGEFÜGT: Erzwingt die volle Breite
+                      width: double.infinity,
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         color: colorScheme.surface,
@@ -109,11 +109,11 @@ class RecipeInstructionsSection extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Wrap( // NEU: Wrap Widget für flexiblen Zeilenumbruch
+                      child: Wrap(
                         alignment: WrapAlignment.start,
                         crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 12.0, // Abstand zwischen den Elementen im Wrap
-                        runSpacing: 8.0, // Abstand zwischen den Zeilen im Wrap
+                        spacing: 12.0,
+                        runSpacing: 8.0,
                         children: [
                           // Schrittnummer als "Badge"
                           Container(
@@ -131,16 +131,16 @@ class RecipeInstructionsSection extends StatelessWidget {
                             ),
                           ),
                           // Der eigentliche Anweisungstext (HTML-formatiert)
-                          Flexible( // Wichtig, damit der Text umbricht und den Timer nicht verdrängt
+                          Flexible(
                             child: Text.rich(
                               TextSpan(
                                 children: _parseHtmlToTextSpans(
                                   step.step,
                                   textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.onSurface,
-                                        height: 1.5,
-                                      ) ??
-                                      const TextStyle(), // Fallback für TextStyle
+                                    color: colorScheme.onSurface,
+                                    height: 1.5,
+                                  ) ??
+                                  const TextStyle(), // Fallback für TextStyle
                                 ),
                               ),
                             ),
@@ -149,7 +149,6 @@ class RecipeInstructionsSection extends StatelessWidget {
                           if (hasTimer)
                             RecipeTimerButton(
                               initialDurationInSeconds: durationInSeconds,
-                              // Optional: Text- und Icon-Stile vom Eltern-Widget übergeben
                               textStyle: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
