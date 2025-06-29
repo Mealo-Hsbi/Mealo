@@ -1,4 +1,5 @@
-// lib/features/recipe/data/models/recipe_model.dart
+// lib/features/recipe/data/models/recipe_model.dart (ADJUSTED)
+
 import 'package:equatable/equatable.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart'; // Unsere Domain-Entität
 
@@ -42,26 +43,34 @@ class RecipeModel extends Equatable {
 
   // Factory-Methode zum Erstellen eines RecipeModel aus JSON (von Ihrem Backend)
   factory RecipeModel.fromJson(Map<String, dynamic> json) {
+    // --- ADD DEBUG PRINT HERE TO SEE INCOMING JSON FOR RECIPEMODEL ---
+    print('[RecipeModel.fromJson] Processing JSON: $json');
+
     return RecipeModel(
-      id: json['id'] as String?, // Kann null sein, wenn neu erstellt
-      spoonacularId: json['spoonacularId'] as int?,
-      title: json['title'] as String,
-      imageUrl: json['imageUrl'] as String?,
-      servings: json['servings'] as int?,
-      readyInMinutes: json['readyInMinutes'] as int?,
-      summary: json['summary'] as String?,
-      healthScore: (json['healthScore'] as num?)?.toDouble(),
-      dishTypes: (json['dishTypes'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      diets: (json['diets'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      intolerances: (json['intolerances'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      isVegan: json['isVegan'] as bool?,
-      isVegetarian: json['isVegetarian'] as bool?,
-      isGlutenFree: json['isGlutenFree'] as bool?,
-      isDairyFree: json['isDairyFree'] as bool?,
+      id: json['id'] as String?, // This seems to be correct for your internal ID (UUID)
+      spoonacularId: json['spoonacular_id'] as int?, // <-- Change to snake_case
+      title: json['title'] as String, // This is already correct
+      imageUrl: json['image_url'] as String?, // <-- Change to snake_case
+      servings: json['servings'] as int?, // This is already correct
+      readyInMinutes: json['ready_in_minutes'] as int?, // <-- Change to snake_case
+      summary: json['summary'] as String?, // This is already correct
+      healthScore: (json['health_score'] as num?)?.toDouble(), // <-- Change to snake_case
+      
+      // For lists, ensure the parsing is robust for nulls
+      dishTypes: (json['dish_types'] as List<dynamic>?)?.map((e) => e as String).toList(), // <-- Change to snake_case
+      diets: (json['diets'] as List<dynamic>?)?.map((e) => e as String).toList(), // <-- Change to snake_case
+      intolerances: (json['intolerances'] as List<dynamic>?)?.map((e) => e as String).toList(), // <-- Change to snake_case
+
+      isVegan: json['vegan'] as bool?, // <-- Change to snake_case
+      isVegetarian: json['vegetarian'] as bool?, // <-- Change to snake_case
+      isGlutenFree: json['gluten_free'] as bool?, // <-- Change to snake_case
+      isDairyFree: json['dairy_free'] as bool?, // <-- Change to snake_case
     );
   }
 
-  // Methode zur Umwandlung des RecipeModel in die Recipe Domain-Entität
+  // Rest of the class (toEntity, fromEntity, toJson, props) remains the same
+  // as it's already using the camelCase properties of the Dart class.
+
   Recipe toEntity() {
     return Recipe(
       id: id,
@@ -82,8 +91,6 @@ class RecipeModel extends Equatable {
     );
   }
 
-  // Factory-Methode zur Umwandlung der Recipe Domain-Entität in ein RecipeModel
-  // Nützlich, wenn Sie ein Recipe an Ihr Backend senden müssen (z.B. beim Hinzufügen als Favorit)
   factory RecipeModel.fromEntity(Recipe entity) {
     return RecipeModel(
       id: entity.id,
@@ -104,12 +111,10 @@ class RecipeModel extends Equatable {
     );
   }
 
-  // Methode, um dieses Modell in ein JSON-Objekt für den Backend-Aufruf umzuwandeln
-  // Wichtig, wenn Sie Rezepte an Ihr Backend senden (z.B. für eigene Rezepte oder als Teil eines Favoriten)
   Map<String, dynamic> toJson() {
     return {
-      'id': id, // Wird vom Backend generiert, wenn es ein neues Rezept ist
-      'spoonacularId': spoonacularId,
+      'id': id,
+      'spoonacularId': spoonacularId, // Keep camelCase for toJson if that's what backend expects for sending
       'title': title,
       'imageUrl': imageUrl,
       'servings': servings,

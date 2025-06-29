@@ -44,6 +44,8 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
         final recipe = widget.recipes[index];
         return RecipeItem(
           id: recipe.id,
+          internalId: recipe.internalId, // Assuming internalId is part of Recipe
+          isInternal: recipe.isInternal ?? false, // Assuming isInternal is part of Recipe
           imageUrl: recipe.imageUrl,
           name: recipe.name,
           country: recipe.place ?? '',
@@ -70,7 +72,9 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
 class RecipeItem extends StatelessWidget {
   RecipeItem({
     super.key,
-    required this.id,
+    this.id,
+    this.internalId, // Optional: Interne ID für eigene Rezepte
+    this.isInternal = false, // Default: false, wenn nicht angegeben
     required this.imageUrl,
     required this.name,
     required this.country,
@@ -89,7 +93,9 @@ class RecipeItem extends StatelessWidget {
     this.ratingCount,
   });
 
-  final int id;
+  final int? id;
+  final String? internalId; // Optional: Interne ID für eigene Rezepte
+  final bool isInternal; // Default: false, wenn nicht angegeben
   final String imageUrl;
   final String name;
   final String country;
@@ -117,6 +123,8 @@ class RecipeItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => RecipeDetailScreen(
               recipeId: id,
+              internalRecipeId: internalId, // Pass the internal ID if available
+              isInternal: isInternal, // Pass the internal flag
               initialImageUrl: imageUrl,
               initialName: name,
               initialPlace: country,

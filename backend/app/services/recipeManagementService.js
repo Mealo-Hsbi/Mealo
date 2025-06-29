@@ -113,10 +113,12 @@ async function removeFavoriteRecipe(userId, favoriteId) {
 }
 
 async function getFavoriteRecipesForUser(userId) {
-    return prisma.favorites.findMany({
+    const favoriteRecipes = await prisma.favorites.findMany({
         where: { user_id: userId },
         include: { recipes: true },
     });
+
+    return favoriteRecipes;
 }
 
 async function isRecipeFavoritedByUser(userId, recipeId) {

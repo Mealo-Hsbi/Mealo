@@ -4,6 +4,7 @@ const allSpoonacularKeys = [
     process.env.SPOONACULAR_API_KEY,
     process.env.SPOONACULAR_API_KEY_1,
     process.env.SPOONACULAR_API_KEY_2,
+    process.env.SPOONACULAR_API_KEY_3,
 ];
 
 // Filtere alle undefined- oder leeren String-Werte heraus
