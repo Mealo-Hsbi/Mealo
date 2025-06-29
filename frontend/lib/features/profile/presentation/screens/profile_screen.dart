@@ -15,7 +15,7 @@ import '../widgets/tag_chip.dart';
 import '../widgets/achievement_card.dart';
 import '../screens/achievements_overview_screen.dart';
 import '../screens/settings_screen.dart';
-import 'package:frontend/features/recipeList/recipe_list_screen.dart';
+import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;

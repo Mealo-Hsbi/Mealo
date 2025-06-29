@@ -1,10 +1,9 @@
 // controllers/recipeController.js
 const { searchRecipesByQuery, searchRecipesByIngredients, getSpoonacularRecipeDetails } = require('../services/spoonacularService');
-
+const recipeManagementService = require('../services/recipeManagementService');
 
 const getRecipesByQuery = async (req, res) => {
     try {
-        // Parameter für die Textsuche kommen aus req.query
         const { query, offset, number, sortBy, sortDirection } = req.query;
         const filters = {
             minCalories: req.query.minCalories,
@@ -15,8 +14,8 @@ const getRecipesByQuery = async (req, res) => {
 
         const recipes = await searchRecipesByQuery({
             query,
-            offset: parseInt(offset) || 0, // Standardwert 0, falls nicht gesetzt
-            number: parseInt(number) || 10, // Standardwert 10, falls nicht gesetzt
+            offset: parseInt(offset) || 0,
+            number: parseInt(number) || 10,
             filters,
             sortBy,
             sortDirection,
@@ -34,18 +33,13 @@ const getRecipesByQuery = async (req, res) => {
 
 const getRecipesByIngredients = async (req, res) => {
     try {
-        // Parameter für die Zutatensuche kommen aus req.query
         const { ingredients, offset, number, maxMissingIngredients } = req.query;
-
-        // Zutaten kommen als kommaseparierter String, hier als Array splitten
-        // Nur splitten, wenn ingredients vorhanden ist, sonst bleibt es ein leeres Array
         const ingredientsArray = ingredients ? ingredients.split(',') : [];
 
         const recipes = await searchRecipesByIngredients({
             ingredients: ingredientsArray,
-            offset: parseInt(offset) || 0, // Standardwert 0, falls nicht gesetzt
-            number: parseInt(number) || 10, // Standardwert 10, falls nicht gesetzt
-            // maxMissingIngredients als Zahl parsen. undefined, wenn nicht gesetzt, damit der Service-Standard greift.
+            offset: parseInt(offset) || 0,
+            number: parseInt(number) || 10,
             maxMissingIngredients: maxMissingIngredients !== undefined ? parseInt(maxMissingIngredients) : undefined,
         });
 
@@ -61,31 +55,248 @@ const getRecipesByIngredients = async (req, res) => {
 
 const getRecipeDetails = async (req, res) => {
     try {
-        const { id } = req.params; // Die ID kommt aus der URL (z.B. /api/recipes/123)
-        const recipeId = parseInt(id); // Sicherstellen, dass es eine Zahl ist
+        const { id } = req.params; // Die ID kommt aus der URL (Spoonacular ID)
+        const spoonacularId = parseInt(id); // Sicherstellen, dass es eine Zahl ist
 
-        if (isNaN(recipeId)) {
-            return res.status(400).json({ message: 'Invalid recipe ID provided.' });
+
+        if (isNaN(spoonacularId)) {
+            console.warn('[BACKEND DEBUG - CONTROLLER] Invalid Spoonacular ID provided:', id);
+            return res.status(400).json({ message: 'Invalid Spoonacular recipe ID provided.' });
         }
 
-        const recipeDetails = await getSpoonacularRecipeDetails(recipeId);
+        // 1. Spoonacular Rezeptdetails abrufen
+        const recipeDetails = await getSpoonacularRecipeDetails(spoonacularId);
 
         if (!recipeDetails) {
-            return res.status(404).json({ message: 'Recipe not found.' });
+            console.warn('[BACKEND DEBUG - CONTROLLER] Recipe not found from Spoonacular for ID:', spoonacularId);
+            return res.status(404).json({ message: 'Recipe not found from Spoonacular.' });
         }
 
-        res.json(recipeDetails);
+
+        // 2. userId aus der Authentifizierung holen (wenn vorhanden)
+        const userId = req.user?.id; // Optionaler Chaining Operator für den Fall, dass req.user nicht existiert
+
+        let userRating = null;
+        let averageRating = null;
+        let ratingCount = 0;
+        let internalRecipeId = null; // Für die interne ID des Rezepts in unserer DB
+
+        // Dieser Block versucht, interne DB-Daten zu holen, wenn die Spoonacular-Details vorhanden sind
+        // oder ein userId vorhanden ist (falls wir ein Rezept ohne Spoonacular-ID speichern wollten,
+        // was hier aber nicht der Fall ist, da wir immer von Spoonacular-ID ausgehen)
+        try {
+            const recipeDataForDbUpsert = {
+                title: recipeDetails.title,
+                imageUrl: recipeDetails.imageUrl,
+                servings: recipeDetails.servings,
+                readyInMinutes: recipeDetails.readyInMinutes,
+                isVegetarian: recipeDetails.vegetarian, // Mapping von Spoonacular zu unserem 'isVegetarian'
+                isVegan: recipeDetails.vegan,
+                isGlutenFree: recipeDetails.glutenFree,
+                isDairyFree: recipeDetails.dairyFree,
+                dishTypes: recipeDetails.dishTypes || [], // Sicherstellen, dass es ein Array ist
+                summary: recipeDetails.summary,
+                healthScore: recipeDetails.healthScore,
+                // Füge hier weitere relevante Felder hinzu, die in deine Recipe-Tabelle passen
+                // und die von Spoonacular verfügbar sind.
+            };
+
+            const internalRecipe = await recipeManagementService.getOrCreateRecipeInDb(
+                spoonacularId,
+                recipeDataForDbUpsert
+            );
+
+            internalRecipeId = internalRecipe?.id;
+
+            // 4. Benutzerbewertung abrufen, falls angemeldet UND interne Rezept-ID vorhanden
+            if (userId && internalRecipeId) {
+                userRating = await recipeManagementService.getUserRecipeRating(userId, internalRecipeId);
+            } else {
+            }
+
+            // 5. Durchschnittliche Bewertung und Anzahl abrufen, falls interne Rezept-ID vorhanden
+            if (internalRecipeId) {
+                const avgData = await recipeManagementService.getAverageRecipeRating(internalRecipeId);
+                averageRating = avgData.averageRating;
+                ratingCount = avgData.ratingCount;
+            } else {
+            }
+
+        } catch (dbError) {
+            console.error('[BACKEND DEBUG - CONTROLLER] ERROR in DB operations (getOrCreateRecipeInDb, getUserRecipeRating, getAverageRecipeRating):', dbError);
+        }
+
+        // 6. Alle Informationen zusammenführen und senden
+        const fullRecipeDetails = {
+            ...recipeDetails, // Spoonacular Details
+            userRating: userRating, // Eigene Bewertung des Nutzers (oder null)
+            averageRating: averageRating, // Durchschnittliche Bewertung (oder null)
+            ratingCount: ratingCount, // Anzahl der Bewertungen (oder 0)
+            internalRecipeId: internalRecipeId, // Die interne ID, falls Frontend sie benötigt
+        };
+
+
+        return res.json(fullRecipeDetails);
+
     } catch (error) {
-        console.error('Error in getRecipeDetails controller:', error.message);
+        console.error('[BACKEND DEBUG - CONTROLLER] UNEXPECTED GLOBAL ERROR in getRecipeDetails controller:', error);
         // Anpassung der Fehlerantwort, um konsistent zu sein
         const statusCode = error.status || error.response?.status || 500;
         const errorMessage = error.message || error.response?.data?.message || 'Failed to fetch recipe details.';
-        res.status(statusCode).json({ message: errorMessage });
+        return res.status(statusCode).json({ message: errorMessage });
+    }
+};
+
+const addFavoriteRecipe = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { spoonacularId, recipeData } = req.body;
+
+        if (!userId || !spoonacularId || !recipeData) {
+            return res.status(400).json({ message: 'Missing user ID, Spoonacular ID or recipe data.' });
+        }
+        
+        const favorite = await recipeManagementService.addFavoriteRecipe(userId, spoonacularId, recipeData);
+        return res.status(201).json(favorite);
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in addFavoriteRecipe:', error);
+        if (error.code === 'P2002') {
+            return res.status(409).json({ message: 'Recipe already favorited by this user.' });
+        }
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to add favorite recipe.';
+        return res.status(statusCode).json({ message });
+    }
+};
+
+const removeFavoriteRecipe = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { favoriteId } = req.params; // Verwende die ID des Favoriten-Eintrags
+        if (!userId || !favoriteId) {
+            return res.status(400).json({ message: 'Missing user ID or favorite ID.' });
+        }
+
+        await recipeManagementService.removeFavoriteRecipe(userId, favoriteId);
+        return res.status(204).send();
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in removeFavoriteRecipe:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to remove favorite recipe.';
+        return res.status(statusCode).json({ message });
+    }
+};
+
+const getFavoriteRecipes = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'Missing user ID.' });
+        }
+
+        const favoriteRecipes = await recipeManagementService.getFavoriteRecipesForUser(userId);
+        return res.status(200).json(favoriteRecipes);
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in getFavoriteRecipes:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to retrieve favorite recipes.';
+        return res.status(statusCode).json({ message });
+    }
+};
+
+const getRecipeIsFavorited = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { recipeId } = req.params;
+
+        if (!userId || !recipeId) {
+            return res.status(400).json({ message: 'Missing user ID or recipe ID.' });
+        }
+
+        // Rufe den Service auf; er gibt jetzt das Favoriten-Objekt oder null zurück
+        const favorite = await recipeManagementService.isRecipeFavoritedByUser(userId, recipeId);
+
+        if (favorite) {
+            // Wenn favorisiert, sende HTTP 200 OK und das Favoriten-Objekt
+            return res.status(200).json(favorite);
+        } else {
+            // Wenn nicht favorisiert, sende HTTP 404 Not Found
+            return res.status(404).json({ message: 'Recipe not favorited by this user.' });
+        }
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in getRecipeIsFavorited:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to check favorite status.';
+        return res.status(statusCode).json({ message });
+    }
+};
+
+const addOrUpdateRecipeRating = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { spoonacularId, rating, comment, recipeData } = req.body;
+
+        if (!userId || !spoonacularId || typeof rating !== 'number' || rating < 1 || rating > 5 || !recipeData) {
+            return res.status(400).json({ message: 'Missing user ID, Spoonacular ID, valid rating (1-5), or recipe data.' });
+        }
+
+        // Rufe den Service auf, der jetzt die aggregierten Daten zurückgibt
+        const { userRating, averageRating, ratingCount } = await recipeManagementService.addOrUpdateRecipeRating(
+            userId,
+            spoonacularId,
+            rating,
+            recipeData,
+            comment // Kommentar übergeben
+        );
+
+        // Sende die spezifische Nutzerbewertung und die aggregierten Werte im Response
+        return res.status(200).json({
+            userRating: userRating,
+            averageRating: averageRating,
+            ratingCount: ratingCount,
+        });
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in addOrUpdateRecipeRating:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to add or update recipe rating.';
+        return res.status(statusCode).json({ message });
+    }
+};
+
+const getUserRecipeRating = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { recipeId } = req.params;
+
+        if (!userId || !recipeId) {
+            return res.status(400).json({ message: 'Missing user ID or recipe ID.' });
+        }
+
+        const userRating = await recipeManagementService.getUserRecipeRating(userId, recipeId);
+        return res.status(200).json(userRating);
+
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in getUserRecipeRating:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to retrieve user recipe rating.';
+        return res.status(statusCode).json({ message });
     }
 };
 
 module.exports = {
-    getRecipesByQuery,      // Exportiere die neue Funktion für Query-Suche
-    getRecipesByIngredients, // Exportiere die neue Funktion für Zutatensuche
+    getRecipesByQuery,
+    getRecipesByIngredients,
     getRecipeDetails,
+    addFavoriteRecipe,
+    removeFavoriteRecipe,
+    getFavoriteRecipes,
+    getRecipeIsFavorited,
+    addOrUpdateRecipeRating,
+    getUserRecipeRating,
 };

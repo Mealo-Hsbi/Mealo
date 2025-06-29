@@ -1,8 +1,8 @@
 // lib/features/recipeList/recipe_list_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:frontend/features/recipeList/recipe_service.dart';
-import 'package:frontend/features/recipeList/parallax_recipes.dart';
+import 'package:frontend/features/recipe/recipe_service.dart';
+import 'package:frontend/features/recipe/presentation/widgets/recipe_list/parallax_recipes.dart';
 import 'package:frontend/common/models/recipe.dart';
 
 class RecipeListScreen extends StatelessWidget {
