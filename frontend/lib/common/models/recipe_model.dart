@@ -28,6 +28,9 @@ class RecipeModel {
   final List<Ingredient>? usedIngredients;
   final List<Ingredient>? missedIngredients;
 
+  final double? averageRating;
+  final int? ratingCount;
+
 
   RecipeModel({
     required this.id,
@@ -42,10 +45,12 @@ class RecipeModel {
     this.carbs,
     this.sugar,
     this.healthScore,
-    this.usedIngredientCount, // Feldnamen im Konstruktor anpassen
-    this.missedIngredientCount, // Feldnamen im Konstruktor anpassen
-    this.usedIngredients, // NEU
-    this.missedIngredients, // NEU
+    this.usedIngredientCount,
+    this.missedIngredientCount,
+    this.usedIngredients,
+    this.missedIngredients,
+    this.averageRating,
+    this.ratingCount,
   });
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) {
@@ -73,9 +78,11 @@ class RecipeModel {
       usedIngredientCount: json['usedIngredientCount'] as int?, // Angepasster JSON-Key
       missedIngredientCount: json['missedIngredientCount'] as int?, // Angepasster JSON-Key
 
-      // NEU: Die detaillierten Listen parsen
       usedIngredients: parseIngredientList(json['usedIngredients'] as List?),
       missedIngredients: parseIngredientList(json['missedIngredients'] as List?),
+    
+      averageRating: (json['averageRating'] as num?)?.toDouble(),
+      ratingCount: json['ratingCount'] as int?,
     );
   }
 
@@ -94,10 +101,12 @@ class RecipeModel {
       carbs: carbs,
       sugar: sugar,
       healthScore: healthScore,
-      usedIngredientCount: usedIngredientCount, // Feldnamen anpassen
-      missedIngredientCount: missedIngredientCount, // Feldnamen anpassen
-      usedIngredients: usedIngredients, // NEU
-      missedIngredients: missedIngredients, // NEU
+      usedIngredientCount: usedIngredientCount,
+      missedIngredientCount: missedIngredientCount,
+      usedIngredients: usedIngredients,
+      missedIngredients: missedIngredients,
+      averageRating: averageRating,
+      ratingCount: ratingCount,
     );
   }
 }

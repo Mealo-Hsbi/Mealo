@@ -23,6 +23,9 @@ class Recipe {
   final List<Ingredient>? usedIngredients;
   final List<Ingredient>? missedIngredients;
 
+  final double? averageRating;
+  final int? ratingCount;
+
   const Recipe({
     required this.id,
     required this.name,
@@ -40,6 +43,8 @@ class Recipe {
     this.missedIngredientCount,
     this.usedIngredients,
     this.missedIngredients,
+    this.averageRating,
+    this.ratingCount,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
@@ -66,6 +71,8 @@ class Recipe {
       missedIngredientCount: json['missedIngredientCount'] as int?,
       usedIngredients: parseIngredientList(json['usedIngredients'] as List?),
       missedIngredients: parseIngredientList(json['missedIngredients'] as List?),
+      averageRating: (json['averageRating'] as num?)?.toDouble(),
+      ratingCount: json['ratingCount'] as int?,
     );
   }
 

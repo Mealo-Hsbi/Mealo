@@ -58,9 +58,8 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           healthScore: recipe.healthScore,
           matchingIngredientsCount: recipe.usedIngredientCount,
           missingIngredientsCount: recipe.missedIngredientCount,
-          // HIER SIND DIE HARDCODED BEWERTUNGSDATEN
-          averageRating: 4.5, // Beispielwert
-          ratingCount: 12,    // Beispielwert
+          averageRating: recipe.averageRating,
+          ratingCount: recipe.ratingCount,
         );
       },
     );
@@ -86,7 +85,6 @@ class RecipeItem extends StatelessWidget {
     this.healthScore,
     this.matchingIngredientsCount,
     this.missingIngredientsCount,
-    // NEU: Initialisiere Bewertungsdaten
     this.averageRating,
     this.ratingCount,
   });
@@ -106,7 +104,6 @@ class RecipeItem extends StatelessWidget {
   final int? healthScore;
   final int? matchingIngredientsCount;
   final int? missingIngredientsCount;
-  // NEUE PROPERTIES FÜR BEWERTUNGEN
   final double? averageRating;
   final int? ratingCount;
 
@@ -140,7 +137,6 @@ class RecipeItem extends StatelessWidget {
                 _buildParallaxBackground(context),
                 _buildGradient(),
                 _buildTitleAndSubtitle(),
-                // NEU: Hier wird das Bewertungs-Overlay hinzugefügt
                 _buildRatingOverlay(),
               ],
             ),
@@ -297,7 +293,6 @@ class RecipeItem extends StatelessWidget {
     );
   }
 
-  // NEUE METHODE: _buildRatingOverlay für die Anzeige der Bewertung
   Widget _buildRatingOverlay() {
     // Nur anzeigen, wenn Bewertungsdaten vorhanden sind und es Bewertungen gibt
     if (averageRating == null || ratingCount == null || ratingCount! == 0) {

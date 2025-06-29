@@ -1,6 +1,8 @@
 // services/spoonacularService.js
 const axios = require('axios');
 const { spoonacularKeys } = require('../config/apiKeys');
+const recipeManagementService = require('./recipeManagementService');
+
 
 const SPOONACULAR_COMPLEX_SEARCH_BASE_URL = 'https://api.spoonacular.com/recipes/complexSearch';
 const SPOONACULAR_FIND_BY_INGREDIENTS_BASE_URL = 'https://api.spoonacular.com/recipes/findByIngredients';
@@ -117,10 +119,13 @@ const searchRecipesByQuery = async ({
             missedIngredientCount: recipe.missedIngredientCount,
             usedIngredients: recipe.usedIngredients,
             missedIngredients: recipe.missedIngredients,
+            averageRating: null,
+            ratingCount: 0,
         };
     });
 
-    return recipes;
+    const recipesWithRatings = await enrichRecipesWithRatings(recipes);
+    return recipesWithRatings;
 };
 
 
@@ -190,10 +195,13 @@ const searchRecipesByIngredients = async ({
             missedIngredientCount: recipe.missedIngredientCount,
             usedIngredients: recipe.usedIngredients,
             missedIngredients: recipe.missedIngredients,
+            averageRating: null, // Wird später ergänzt
+            ratingCount: 0, // Wird später ergänzt
         };
     });
 
-    return recipes;
+    const recipesWithRatings = await enrichRecipesWithRatings(recipes);
+    return recipesWithRatings;
 };
 
 
@@ -268,6 +276,40 @@ const getSpoonacularRecipeDetails = async (recipeId) => {
     // console.log('-----------------------------------------------------');
 
     return mappedRecipeDetails;
+};
+
+/**
+ * Ergänzt eine Liste von Rezepten mit Bewertungsdaten aus der internen Datenbank.
+ * @param {Array<Object>} recipes - Eine Liste von Rezeptobjekten (von Spoonacular).
+ * @returns {Promise<Array<Object>>} - Die angereicherte Liste von Rezeptobjekten.
+ */
+const enrichRecipesWithRatings = async (recipes) => {
+    const recipesWithRatings = await Promise.all(recipes.map(async (recipe) => {
+        try {
+            // Stellen Sie sicher, dass das Rezept in unserer DB existiert und holen Sie dessen interne ID
+            // Die minimalen Daten reichen für getOrCreateRecipeInDb
+            const internalRecipe = await recipeManagementService.getOrCreateRecipeInDb(
+                recipe.id, // Die Spoonacular ID
+                { title: recipe.name, imageUrl: recipe.imageUrl } // Minimale RecipeData für das Upsert
+            );
+
+            if (internalRecipe) {
+                // Holen Sie die aggregierten Bewertungsdaten aus unserer DB
+                const avgData = await recipeManagementService.getAverageRecipeRating(internalRecipe.id);
+                return {
+                    ...recipe, // Alle ursprünglichen Spoonacular-Daten
+                    averageRating: avgData.averageRating, // Ergänzen Sie die durchschnittliche Bewertung
+                    ratingCount: avgData.ratingCount,     // Ergänzen Sie die Anzahl der Bewertungen
+                };
+            }
+        } catch (dbError) {
+            console.error(`[BACKEND DEBUG - SERVICE] Error fetching ratings for recipe ID ${recipe.id} (Spoonacular ID):`, dbError);
+            // Bei einem Fehler einfach das Rezept ohne Bewertungsdaten zurückgeben
+        }
+        return recipe; // Geben Sie das Rezept so zurück, wie es war, wenn keine Bewertungen hinzugefügt werden konnten
+    }));
+
+    return recipesWithRatings;
 };
 
 module.exports = {
