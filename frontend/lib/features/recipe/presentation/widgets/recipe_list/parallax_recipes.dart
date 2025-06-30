@@ -13,6 +13,7 @@ class ParallaxRecipes extends StatefulWidget {
     required this.isLoadingMore, // NOW REQUIRED: Receive loading state
     required this.hasMore, // NOW REQUIRED: Receive hasMore state
     this.showAds = true, // Add showAds flag, default true
+    this.onRecipeRatingUpdated,
   });
 
   final List<Recipe> recipes;
@@ -21,6 +22,7 @@ class ParallaxRecipes extends StatefulWidget {
   final bool isLoadingMore;
   final bool hasMore;
   final bool showAds; // Add showAds flag
+  final void Function(int recipeIndex, double newRating, int newRatingCount)? onRecipeRatingUpdated;
 
   @override
   State<ParallaxRecipes> createState() => _ParallaxRecipesState();
@@ -78,6 +80,9 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           missingIngredientsCount: recipe.missedIngredientCount,
           averageRating: recipe.averageRating,
           ratingCount: recipe.ratingCount,
+          onRatingUpdated: widget.onRecipeRatingUpdated == null ? null : (double newRating, int newRatingCount) {
+            widget.onRecipeRatingUpdated!(recipeIndex, newRating, newRatingCount);
+          },
         );
       },
     );
@@ -86,6 +91,7 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
 
 @immutable
 class RecipeItem extends StatelessWidget {
+  final void Function(double newRating, int newRatingCount)? onRatingUpdated;
   RecipeItem({
     super.key,
     this.id,
@@ -107,6 +113,7 @@ class RecipeItem extends StatelessWidget {
     this.missingIngredientsCount,
     this.averageRating,
     this.ratingCount,
+    this.onRatingUpdated,
   });
 
   final int? id;
@@ -134,8 +141,8 @@ class RecipeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
+      onTap: () async {
+        final result = await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => RecipeDetailScreen(
               recipeId: id,
@@ -148,6 +155,13 @@ class RecipeItem extends StatelessWidget {
             ),
           ),
         );
+        if (result is Map<String, dynamic> && onRatingUpdated != null) {
+          final double? newRating = result['averageRating'] as double?;
+          final int? newRatingCount = result['ratingCount'] as int?;
+          if (newRating != null && newRatingCount != null) {
+            onRatingUpdated!(newRating, newRatingCount);
+          }
+        }
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),

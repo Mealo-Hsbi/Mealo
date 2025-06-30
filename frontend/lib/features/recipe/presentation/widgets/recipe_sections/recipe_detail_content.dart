@@ -23,6 +23,7 @@ class RecipeDetailContent extends StatefulWidget { // Stays StatefulWidget
   final bool isLoading;
   final String? errorMessage;
   final RecipeDetails? recipeDetails;
+  final void Function(double newAverage, int newCount)? onRatingChanged;
 
   const RecipeDetailContent({
     super.key,
@@ -31,6 +32,7 @@ class RecipeDetailContent extends StatefulWidget { // Stays StatefulWidget
     required this.isLoading,
     this.errorMessage,
     this.recipeDetails,
+    this.onRatingChanged,
   });
 
   @override
@@ -209,6 +211,7 @@ class _RecipeDetailContentState extends State<RecipeDetailContent> { // Stays St
                       const SizedBox(height: 16),
                       RecipeInteractionSection(
                         recipeDetails: widget.recipeDetails!,
+                        onRatingChanged: widget.onRatingChanged,
                       ),
                       const SizedBox(height: 20),
 

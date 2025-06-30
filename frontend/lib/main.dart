@@ -5,20 +5,20 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as legacy_provider;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:frontend/core/themes/app_theme.dart';
 import 'package:frontend/features/auth/presentation/auth_gate.dart';
 import 'package:frontend/core/routes/app_router.dart';
 import 'package:frontend/core/config/app_config.dart';
 import 'package:frontend/core/config/environment.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:frontend/core/providers/app_providers.dart'; // Importiere deine Provider-Konfiguration
 // Importe für LoginScreen/RegisterScreen, falls direkt in routes verwendet
 import 'package:frontend/features/auth/presentation/login_screen.dart';
 import 'package:frontend/features/auth/presentation/register_screen.dart';
-
+import 'package:frontend/features/recipe/presentation/provider/favorite_notifier.dart';
+import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart';
 
 import 'firebase_options.dart';
 
@@ -48,14 +48,58 @@ void main() {
   _initializeAppServices().then((_) {
     runApp(
       // NEU: ProviderScope umschließt den MultiProvider
-      ProviderScope( // <-- HIER IST DER PROVIDERSCOPE
-        child: MultiProvider(
+      ProviderScope( // <-- HIER IST DER PROVIDERSCOPE (from flutter_riverpod)
+        child: legacy_provider.MultiProvider(
           providers: AppProviders.providers, // Hier kommt die saubere Liste von Providern her
           child: const MyApp(),
         ),
       ),
     );
   });
+}
+
+class FavoritesBootstrapper extends ConsumerStatefulWidget {
+  final Widget child;
+  const FavoritesBootstrapper({super.key, required this.child});
+
+  @override
+  ConsumerState<FavoritesBootstrapper> createState() => _FavoritesBootstrapperState();
+}
+
+class _FavoritesBootstrapperState extends ConsumerState<FavoritesBootstrapper> {
+  String? _lastUserId;
+
+  @override
+  void didUpdateWidget(covariant FavoritesBootstrapper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _maybeFetchFavorites();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _maybeFetchFavorites();
+  }
+
+  void _maybeFetchFavorites() {
+    final asyncAuthUser = ref.watch(authStateChangesProvider);
+    final userId = asyncAuthUser.asData?.value?.uid;
+    final favoriteNotifier = legacy_provider.Provider.of<FavoriteNotifier>(context, listen: false);
+
+    if (userId != null && userId != _lastUserId) {
+      _lastUserId = userId;
+      favoriteNotifier.fetchFavoriteRecipes(userId);
+    }
+    if (userId == null) {
+      _lastUserId = null;
+      favoriteNotifier.reset();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -67,18 +111,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mealo',
-      theme: AppTheme.lightTheme,
-      debugShowCheckedModeBanner: false,
-      home: const AuthGate(), // AuthGate wird dann intern den currentUserIdProvider nutzen
-      routes: {
-        '/login': (_) => const LoginScreen(),
-        '/register': (_) => const RegisterScreen(),
-        '/home': (_) => const AppNavigationShell(),
-      },
-      navigatorObservers: [observer],
-      scaffoldMessengerKey: scaffoldMessengerKey,
+    return FavoritesBootstrapper(
+      child: MaterialApp(
+        title: 'Mealo',
+        theme: AppTheme.lightTheme,
+        debugShowCheckedModeBanner: false,
+        home: const AuthGate(),
+        routes: {
+          '/login': (_) => const LoginScreen(),
+          '/register': (_) => const RegisterScreen(),
+          '/home': (_) => const AppNavigationShell(),
+        },
+        navigatorObservers: [observer],
+        scaffoldMessengerKey: scaffoldMessengerKey,
+      ),
     );
   }
 }

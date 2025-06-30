@@ -10,10 +10,12 @@ import 'package:frontend/main.dart'; // Import main.dart for scaffoldMessengerKe
 
 class RecipeRatingWidget extends ConsumerStatefulWidget { // Remains ConsumerStatefulWidget
   final RecipeDetails recipeDetails;
+  final void Function(double newAverage, int newCount)? onRatingChanged;
 
   const RecipeRatingWidget({
     super.key,
     required this.recipeDetails,
+    this.onRatingChanged,
   });
 
   @override

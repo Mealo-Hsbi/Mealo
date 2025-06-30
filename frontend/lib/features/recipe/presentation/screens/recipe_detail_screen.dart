@@ -44,6 +44,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   late GetRecipeDetails _getRecipeDetailsUseCase;
 
+  double? _latestAverageRating;
+  int? _latestRatingCount;
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +72,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       );
       setState(() {
         _recipeDetails = details;
+        _latestAverageRating = details.averageRating;
+        _latestRatingCount = details.ratingCount;
       });
     } catch (e) {
       setState(() {
@@ -81,25 +86,42 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     }
   }
 
+  void _onRatingChanged(double newAverage, int newCount) {
+    setState(() {
+      _latestAverageRating = newAverage;
+      _latestRatingCount = newCount;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Ausgelagerte AppBar
-          RecipeDetailAppBar(
-            imageUrl: widget.initialImageUrl,
-            title: widget.initialName,
-          ),
-          // Ausgelagerter Hauptinhalt
-          RecipeDetailContent(
-            initialName: widget.initialName,
-            initialPlace: widget.initialPlace,
-            isLoading: _isLoading,
-            errorMessage: _errorMessage,
-            recipeDetails: _recipeDetails,
-          ),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, {
+          'averageRating': _latestAverageRating ?? _recipeDetails?.averageRating,
+          'ratingCount': _latestRatingCount ?? _recipeDetails?.ratingCount,
+        });
+        return false;
+      },
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            // Ausgelagerte AppBar
+            RecipeDetailAppBar(
+              imageUrl: widget.initialImageUrl,
+              title: widget.initialName,
+            ),
+            // Ausgelagerter Hauptinhalt
+            RecipeDetailContent(
+              initialName: widget.initialName,
+              initialPlace: widget.initialPlace,
+              isLoading: _isLoading,
+              errorMessage: _errorMessage,
+              recipeDetails: _recipeDetails,
+              onRatingChanged: _onRatingChanged,
+            ),
+          ],
+        ),
       ),
     );
   }

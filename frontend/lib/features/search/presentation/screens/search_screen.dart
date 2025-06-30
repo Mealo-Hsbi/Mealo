@@ -9,6 +9,7 @@ import 'package:frontend/features/search/presentation/widgets/sort_options_botto
 import 'package:frontend/features/recipe/presentation/widgets/recipe_list/parallax_recipes.dart';
 import 'package:frontend/providers/selected_ingredients_provider.dart';
 import 'package:frontend/features/search/presentation/provider/search_notifier.dart';
+import 'package:frontend/common/models/recipe.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -223,7 +224,33 @@ class _SearchScreenState extends State<SearchScreen> {
                       isLoadingMore: searchNotifier.isFetchingMore,
                       hasMore: searchNotifier.hasMore,
                       currentSortOption: searchNotifier.currentSortOption,
-                      // KEIN itemExtent hier übergeben!
+                      onRecipeRatingUpdated: (int recipeIndex, double newRating, int newRatingCount) {
+                        setState(() {
+                          final recipe = searchNotifier.searchResults[recipeIndex];
+                          searchNotifier.searchResults[recipeIndex] = Recipe(
+                            id: recipe.id,
+                            internalId: recipe.internalId,
+                            isInternal: recipe.isInternal,
+                            name: recipe.name,
+                            imageUrl: recipe.imageUrl,
+                            place: recipe.place,
+                            readyInMinutes: recipe.readyInMinutes,
+                            servings: recipe.servings,
+                            calories: recipe.calories,
+                            protein: recipe.protein,
+                            fat: recipe.fat,
+                            carbs: recipe.carbs,
+                            sugar: recipe.sugar,
+                            healthScore: recipe.healthScore,
+                            usedIngredientCount: recipe.usedIngredientCount,
+                            missedIngredientCount: recipe.missedIngredientCount,
+                            usedIngredients: recipe.usedIngredients,
+                            missedIngredients: recipe.missedIngredients,
+                            averageRating: newRating,
+                            ratingCount: newRatingCount,
+                          );
+                        });
+                      },
                     );
                   },
                 ),

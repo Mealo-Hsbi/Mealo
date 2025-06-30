@@ -12,10 +12,12 @@ import 'package:frontend/main.dart'; // Import main.dart for scaffoldMessengerKe
 
 class RecipeInteractionSection extends ConsumerStatefulWidget {
   final RecipeDetails recipeDetails;
+  final void Function(double newAverage, int newCount)? onRatingChanged;
 
   const RecipeInteractionSection({
     super.key,
     required this.recipeDetails,
+    this.onRatingChanged,
   });
 
   @override
@@ -132,6 +134,7 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
             flex: 4,
             child: RecipeRatingWidget(
               recipeDetails: widget.recipeDetails,
+              onRatingChanged: widget.onRatingChanged,
             ),
           ),
           const SizedBox(width: 24),
@@ -173,20 +176,11 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
                   width: 1,
                 ),
               ),
-              child: isFavoriteButtonLoading
-                  ? SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary.withOpacity(0.6)),
-                      ),
-                    )
-                  : Icon(
-                      isFavorited ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorited ? Colors.redAccent : Theme.of(context).colorScheme.primary,
-                      size: 28,
-                    ),
+              child: Icon(
+                isFavorited ? Icons.favorite : Icons.favorite_border,
+                color: isFavorited ? Colors.redAccent : Theme.of(context).colorScheme.primary,
+                size: 28,
+              ),
             ),
           ),
           const SizedBox(width: 16),
