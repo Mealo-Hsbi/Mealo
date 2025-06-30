@@ -4,21 +4,23 @@ import '../../../onboarding/data/onboarding_api.dart';
 import '../../../onboarding/presentation/widget/preference_chips.dart';
 
 class PreferencesSettingsScreen extends StatefulWidget {
-  const PreferencesSettingsScreen({super.key});
+  final OnboardingApi? api;
+  const PreferencesSettingsScreen({super.key, this.api});
 
   @override
-  State<PreferencesSettingsScreen> createState() => _PreferencesSettingsScreenState();
+  State<PreferencesSettingsScreen> createState() => PreferencesSettingsScreenState();
 }
 
-class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
-  final OnboardingApi _api = OnboardingApi();
-  List<Map<String, Object>> _userPreferences = [];
-  bool _isLoading = true;
+class PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
+  late final OnboardingApi _api;
+  List<Map<String, Object>> userPreferences = [];
+  bool isLoading = true;
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
+    _api = widget.api ?? OnboardingApi();
     _loadUserPreferences();
   }
 
@@ -48,13 +50,13 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
         };
       }).toList();
       setState(() {
-        _userPreferences = merged;
-        _isLoading = false;
+        userPreferences = merged;
+        isLoading = false;
       });
     } catch (e) {
       print('DEBUG: Fehler beim Laden der Preferences: $e');
       setState(() {
-        _isLoading = false;
+        isLoading = false;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -73,7 +75,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
     try {
       // Sammle alle ausgewählten Optionen
       final allSelectedOptions = <String>[];
-      for (final preference in _userPreferences) {
+      for (final preference in userPreferences) {
         final selectedOptions = preference['selectedOptions'] as List;
         for (final option in selectedOptions) {
           allSelectedOptions.add(option['key'] as String);
@@ -104,9 +106,9 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
   void _updatePreference(String questionKey, String optionKey, String optionLabel, bool isSelected) {
     print('DEBUG: updatePreference: questionKey=$questionKey, optionKey=$optionKey, isSelected=$isSelected');
     setState(() {
-      final preferenceIndex = _userPreferences.indexWhere((p) => p['questionKey'] == questionKey);
+      final preferenceIndex = userPreferences.indexWhere((p) => p['questionKey'] == questionKey);
       if (preferenceIndex != -1) {
-        final preference = _userPreferences[preferenceIndex];
+        final preference = userPreferences[preferenceIndex];
         List<Map<String, Object>> selectedOptions = (preference['selectedOptions'] as List).cast<Map<String, Object>>().toList();
 
         if (questionKey == 'cooking_frequency') {
@@ -131,7 +133,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
           }
         }
 
-        _userPreferences[preferenceIndex] = {
+        userPreferences[preferenceIndex] = {
           ...preference,
           'selectedOptions': selectedOptions,
         };
@@ -150,7 +152,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
           // Ladeicon entfernt
         ],
       ),
-      body: _isLoading
+      body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -174,9 +176,9 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
                   ),
                   const SizedBox(height: 24),
                   ...onboardingQuestions.map((question) {
-                    final preferenceIndex = _userPreferences.indexWhere((p) => p['questionKey'] == question.questionKey);
+                    final preferenceIndex = userPreferences.indexWhere((p) => p['questionKey'] == question.questionKey);
                     final userPreference = preferenceIndex != -1
-                        ? _userPreferences[preferenceIndex]
+                        ? userPreferences[preferenceIndex]
                         : {
                             'questionKey': question.questionKey,
                             'questionLabel': question.title,
