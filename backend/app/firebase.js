@@ -63,7 +63,6 @@ if (process.env.NODE_ENV === 'test') {
     initializeApp: () => {},
   };
   console.log('Firebase is mocked for tests.');
-  return;
 }
 
 admin.initializeApp(initOpts);
