@@ -53,5 +53,18 @@ else {
   }
 }
 
+if (process.env.NODE_ENV === 'test') {
+  // Mock-Objekt für Tests
+  module.exports = {
+    auth: () => ({
+      verifyIdToken: async () => ({ uid: 'test-user-id' }),
+    }),
+    credential: { cert: () => ({}) },
+    initializeApp: () => {},
+  };
+  console.log('Firebase is mocked for tests.');
+  return;
+}
+
 admin.initializeApp(initOpts);
 module.exports = admin;
