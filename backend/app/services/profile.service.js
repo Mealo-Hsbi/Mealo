@@ -31,6 +31,8 @@ async function fetchProfile(firebaseUid) {
   // 4) recentRecipes zusammenstellen (Titel + Bild-URL)
   const recentRecipes = await Promise.all(
     user.recipes.map(async (recipe) => ({
+      id: recipe.id,
+      spoonacularId: recipe.spoonacular_id,
       title:    recipe.title,
       imageUrl: recipe.image_url
         ? await mediaService.getSignedDownloadUrl(recipe.image_url)

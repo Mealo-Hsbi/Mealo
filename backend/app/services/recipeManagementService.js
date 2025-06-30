@@ -142,14 +142,24 @@ async function isRecipeFavoritedByUser(userId, recipeId) {
  * aggregierten Bewertungen für das Rezept zurück.
  * @param {string} userId - Die ID des Benutzers.
  * @param {number} spoonacularId - Die Spoonacular ID des Rezepts.
+ * @param {number} internalRecipeId - Die interne ID des Rezepts.
  * @param {number} ratingScore - Der Bewertungswert (1-5).
- * @param {object} recipeDetailsFromSpoonacular - Die Rezeptdetails von Spoonacular (für getOrCreateRecipeInDb).
+ * @param {object} recipeDetailsFromFrontend - Die Rezeptdetails von Spoonacular (für getOrCreateRecipeInDb).
  * @param {string} [comment=''] - Optionaler Kommentar zur Bewertung.
  * @returns {Promise<{userRating: object, averageRating: number | null, ratingCount: number}>} - Das Bewertungsobjekt des Benutzers und die aggregierten Werte.
  */
-async function addOrUpdateRecipeRating(userId, spoonacularId, ratingScore, recipeDetailsFromSpoonacular, comment = '') {
-    // Stellen Sie sicher, dass das Rezept in unserer Datenbank existiert
-    const recipe = await getOrCreateRecipeInDb(spoonacularId, recipeDetailsFromSpoonacular);
+async function addOrUpdateRecipeRating(userId, spoonacularId, internalRecipeId, ratingScore, recipeDetailsFromFrontend, comment = '') {
+    let recipe;
+    if (spoonacularId) {
+        recipe = await getOrCreateRecipeInDb(spoonacularId, recipeDetailsFromFrontend);
+    } else if (internalRecipeId) {
+        recipe = await prisma.recipes.findUnique({ where: { id: internalRecipeId } });
+        if (!recipe) {
+            throw new Error('Internal recipe not found.');
+        }
+    } else {
+        throw new Error('No valid recipe identifier provided.');
+    }
 
     const ratingDataForPrisma = {
         user_id: userId,
@@ -248,6 +258,42 @@ async function getAverageRecipeRating(recipeId) {
     }
 }
 
+async function getInternalRecipeDetails(id) {
+    // Hole das Rezept anhand der internen UUID
+    const recipe = await prisma.recipes.findUnique({
+        where: { id },
+        // Hier ggf. weitere Relationen einbinden (z.B. Zutaten, Schritte)
+    });
+    if (!recipe) return null;
+    // Passe das Mapping ggf. an die Felder im Frontend an
+    return {
+        id: recipe.id,
+        title: recipe.title,
+        imageUrl: recipe.image_url,
+        servings: recipe.servings,
+        readyInMinutes: recipe.ready_in_minutes,
+        summary: recipe.summary,
+        // ... weitere Felder nach Bedarf
+    };
+}
+
+async function addFavoriteRecipeByRecipeId(userId, recipeId) {
+    try {
+        const newFavorite = await prisma.favorites.create({
+            data: {
+                user_id: userId,
+                recipe_id: recipeId,
+            },
+            include: {
+                recipes: true,
+            },
+        });
+        return newFavorite;
+    } catch (error) {
+        console.error('[Backend Service] Error adding favorite by recipeId:', error);
+        throw error;
+    }
+}
 
 module.exports = {
     getOrCreateRecipeInDb,
@@ -258,4 +304,6 @@ module.exports = {
     addOrUpdateRecipeRating,
     getUserRecipeRating,
     getAverageRecipeRating,
+    getInternalRecipeDetails,
+    addFavoriteRecipeByRecipeId,
 };

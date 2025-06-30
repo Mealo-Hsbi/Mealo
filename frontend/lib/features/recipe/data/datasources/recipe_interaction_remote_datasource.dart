@@ -57,13 +57,19 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
       final String endpoint = '/recipes/favorites';
       debugPrint('[Frontend Data] Calling POST $endpoint');
 
+      final data = <String, dynamic>{
+        'userId': userId,
+        'recipeData': recipe.toJson(),
+      };
+      if (recipe.id != null) {
+        data['internalRecipeId'] = recipe.id;
+      } else if (spoonacularId != null) {
+        data['spoonacularId'] = spoonacularId;
+      }
+
       final Response response = await _apiClient.post(
         endpoint,
-        data: {
-          'userId': userId,
-          'spoonacularId': spoonacularId,
-          'recipeData': recipe.toJson(),
-        },
+        data: data,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -182,14 +188,20 @@ class RecipeInteractionRemoteDataSourceImpl implements RecipeInteractionRemoteDa
       final String endpoint = '/recipes/ratings';
       debugPrint('[Frontend Data] Calling POST $endpoint');
 
+      final data = <String, dynamic>{
+        'rating': score,
+        'comment': comment,
+        'recipeData': recipe.toJson(),
+      };
+      if (recipe.id != null) {
+        data['internalRecipeId'] = recipe.id;
+      } else if (spoonacularId != null) {
+        data['spoonacularId'] = spoonacularId;
+      }
+
       final Response response = await _apiClient.post(
         endpoint,
-        data: {
-          'spoonacularId': spoonacularId,
-          'rating': score,
-          'comment': comment,
-          'recipeData': recipe.toJson(),
-        },
+        data: data,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

@@ -54,4 +54,24 @@ class Recipe extends Equatable {
         isGlutenFree,
         isDairyFree,
       ];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'spoonacularId': spoonacularId,
+      'title': title,
+      'imageUrl': imageUrl,
+      'servings': servings,
+      'readyInMinutes': readyInMinutes,
+      'summary': summary,
+      'healthScore': healthScore,
+      'dishTypes': dishTypes,
+      'diets': diets,
+      'intolerances': intolerances,
+      'isVegan': isVegan,
+      'isVegetarian': isVegetarian,
+      'isGlutenFree': isGlutenFree,
+      'isDairyFree': isDairyFree,
+    };
+  }
 }

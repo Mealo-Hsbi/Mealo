@@ -145,4 +145,31 @@ class Recipe {
 
   @override
   int get hashCode => effectiveId.hashCode;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'internalId': internalId,
+      'isInternal': isInternal,
+      'name': name,
+      'imageUrl': imageUrl,
+      'place': place,
+      'readyInMinutes': readyInMinutes,
+      'servings': servings,
+      'calories': calories,
+      'protein': protein,
+      'fat': fat,
+      'carbs': carbs,
+      'sugar': sugar,
+      'healthScore': healthScore,
+      'usedIngredientCount': usedIngredientCount,
+      'missedIngredientCount': missedIngredientCount,
+      'usedIngredients': usedIngredients?.map((e) => e.toJson()).toList(),
+      'missedIngredients': missedIngredients?.map((e) => e.toJson()).toList(),
+      'averageRating': averageRating,
+      'ratingCount': ratingCount,
+      'containsUserAllergens': containsUserAllergens,
+      'matchedAllergens': matchedAllergens,
+    };
+  }
 }

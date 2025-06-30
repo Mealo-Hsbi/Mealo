@@ -3,13 +3,25 @@
 import 'package:flutter/foundation.dart'; // für mapEquals
 
 class RecipePreviewDto {
+  final String? id;
+  final String? internalId;
+  final String? spoonacularId;
   final String imageUrl;
   final String title;
 
-  RecipePreviewDto({required this.imageUrl, required this.title});
+  RecipePreviewDto({
+    this.id,
+    this.internalId,
+    this.spoonacularId,
+    required this.imageUrl,
+    required this.title,
+  });
 
   factory RecipePreviewDto.fromJson(Map<String, dynamic> json) {
     return RecipePreviewDto(
+      id: json['id']?.toString(),
+      internalId: (json['internalId'] ?? json['id'])?.toString(),
+      spoonacularId: json['spoonacularId']?.toString(),
       imageUrl: json['imageUrl'] as String,
       title: json['title'] as String,
     );
@@ -17,6 +29,9 @@ class RecipePreviewDto {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
+      'internalId': internalId,
+      'spoonacularId': spoonacularId,
       'imageUrl': imageUrl,
       'title': title,
     };

@@ -1,6 +1,7 @@
 // controllers/recipeController.js
 const { searchRecipesByQuery, searchRecipesByIngredients, getSpoonacularRecipeDetails } = require('../services/spoonacularService');
 const recipeManagementService = require('../services/recipeManagementService');
+const prisma = require('../prisma');
 
 const getRecipesByQuery = async (req, res) => {
     try {
@@ -150,16 +151,45 @@ const getRecipeDetails = async (req, res) => {
     }
 };
 
+const getInternalRecipeDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const recipe = await recipeManagementService.getInternalRecipeDetails(id);
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+        return res.json(recipe);
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Error in getInternalRecipeDetails:', error);
+        const statusCode = error.status || 500;
+        const message = error.message || 'Failed to fetch internal recipe details.';
+        return res.status(statusCode).json({ message });
+    }
+};
+
 const addFavoriteRecipe = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { spoonacularId, recipeData } = req.body;
+        const { spoonacularId, internalRecipeId, recipeData } = req.body;
 
-        if (!userId || !spoonacularId || !recipeData) {
-            return res.status(400).json({ message: 'Missing user ID, Spoonacular ID or recipe data.' });
+        if (!userId || (!spoonacularId && !internalRecipeId) || !recipeData) {
+            return res.status(400).json({ message: 'Missing user ID, Spoonacular ID, internal recipe ID or recipe data.' });
         }
-        
-        const favorite = await recipeManagementService.addFavoriteRecipe(userId, spoonacularId, recipeData);
+
+        let recipeIdToUse = null;
+        if (spoonacularId) {
+            const recipe = await recipeManagementService.getOrCreateRecipeInDb(spoonacularId, recipeData);
+            recipeIdToUse = recipe.id;
+        } else if (internalRecipeId) {
+            // Prüfe, ob das Rezept existiert
+            const recipe = await prisma.recipes.findUnique({ where: { id: internalRecipeId } });
+            if (!recipe) {
+                return res.status(404).json({ message: 'Internal recipe not found.' });
+            }
+            recipeIdToUse = internalRecipeId;
+        }
+
+        const favorite = await recipeManagementService.addFavoriteRecipeByRecipeId(userId, recipeIdToUse);
         return res.status(201).json(favorite);
 
     } catch (error) {
@@ -242,16 +272,17 @@ const getRecipeIsFavorited = async (req, res) => {
 const addOrUpdateRecipeRating = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { spoonacularId, rating, comment, recipeData } = req.body;
+        const { spoonacularId, internalRecipeId, rating, comment, recipeData } = req.body;
 
-        if (!userId || !spoonacularId || typeof rating !== 'number' || rating < 1 || rating > 5 || !recipeData) {
-            return res.status(400).json({ message: 'Missing user ID, Spoonacular ID, valid rating (1-5), or recipe data.' });
+        if (!userId || (!spoonacularId && !internalRecipeId) || typeof rating !== 'number' || rating < 1 || rating > 5 || !recipeData) {
+            return res.status(400).json({ message: 'Missing user ID, Spoonacular ID or internal recipe ID, valid rating (1-5), or recipe data.' });
         }
 
         // Rufe den Service auf, der jetzt die aggregierten Daten zurückgibt
         const { userRating, averageRating, ratingCount } = await recipeManagementService.addOrUpdateRecipeRating(
             userId,
             spoonacularId,
+            internalRecipeId,
             rating,
             recipeData,
             comment // Kommentar übergeben
@@ -296,6 +327,7 @@ module.exports = {
     getRecipesByQuery,
     getRecipesByIngredients,
     getRecipeDetails,
+    getInternalRecipeDetails,
     addFavoriteRecipe,
     removeFavoriteRecipe,
     getFavoriteRecipes,
