@@ -1,6 +1,7 @@
 // services/recipeManagementService.js
 
 const prisma = require('../prisma');
+const { unlockAchievementIfNeeded } = require('./achievement.service');
 
 if (prisma && !prisma.recipes) {
     console.warn('[DEBUG] prisma.recipes is undefined. Is the Prisma schema correct and client regenerated? (Expected: "model recipes")');
@@ -9,7 +10,7 @@ if (prisma && !prisma.ratings) {
     console.warn('[DEBUG] prisma.ratings is undefined. Is the Prisma schema correct and client regenerated? (Expected: "model ratings")');
 }
 
-async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend) {
+async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, userId) {
     if (!prisma || !prisma.recipes || typeof prisma.recipes.upsert !== 'function') {
         console.error('[ERROR] Prisma client or prisma.recipes.upsert is not available. Check Prisma setup and "npx prisma generate".');
         throw new Error('Prisma client not properly initialized or "recipes" model is missing.');
@@ -68,6 +69,17 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend) {
             });
         }
 
+        // Achievement: first_recipe
+        if (userId) {
+            const userRecipeCount = await prisma.recipes.count({ where: { created_by_id: userId } });
+            if (userRecipeCount === 1) {
+                await unlockAchievementIfNeeded(userId, 'first_recipe');
+            }
+            if (userRecipeCount === 10) {
+                await unlockAchievementIfNeeded(userId, '10_recipes');
+            }
+        }
+
         return recipe;
     } catch (error) {
         console.error('[ERROR - Prisma Recipe Operation] Fehler beim Erstellen oder Aktualisieren des Rezepts:', error);
@@ -76,7 +88,7 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend) {
 }
 
 async function addFavoriteRecipe(userId, spoonacularId, recipeDetailsFromSpoonacular) {
-    const recipe = await getOrCreateRecipeInDb(spoonacularId, recipeDetailsFromSpoonacular);
+    const recipe = await getOrCreateRecipeInDb(spoonacularId, recipeDetailsFromSpoonacular, userId);
     
     try {
         const newFavorite = await prisma.favorites.create({
@@ -88,6 +100,16 @@ async function addFavoriteRecipe(userId, spoonacularId, recipeDetailsFromSpoonac
                 recipes: true,
             },
         });
+        
+        // Achievement: first_favorite, 5_favorites
+        const favCount = await prisma.favorites.count({ where: { user_id: userId } });
+        console.log('favCount', favCount);
+        if (favCount > 0) {
+            await unlockAchievementIfNeeded(userId, 'first_favorite');
+        }
+        if (favCount >= 5) {
+            await unlockAchievementIfNeeded(userId, '5_favorites');
+        }
         
         return newFavorite;
     } catch (error) {
@@ -288,6 +310,17 @@ async function addFavoriteRecipeByRecipeId(userId, recipeId) {
                 recipes: true,
             },
         });
+        // Achievement: first_favorite, 5_favorites
+        const favCount = await prisma.favorites.count({ where: { user_id: userId } });
+        console.log('[AchievementTrigger] favCount', favCount);
+        if (favCount === 1) {
+            console.log('[AchievementTrigger] Unlock first_favorite');
+            await unlockAchievementIfNeeded(userId, 'first_favorite');
+        }
+        if (favCount === 5) {
+            console.log('[AchievementTrigger] Unlock 5_favorites');
+            await unlockAchievementIfNeeded(userId, '5_favorites');
+        }
         return newFavorite;
     } catch (error) {
         console.error('[Backend Service] Error adding favorite by recipeId:', error);

@@ -22,6 +22,25 @@ async function getAchievementsWithStatus(userId) {
   }));
 }
 
+// Hilfsfunktion zum Freischalten eines Achievements
+async function unlockAchievementIfNeeded(userId, achievementKey) {
+  const achievement = await prisma.achievement.findUnique({ where: { key: achievementKey } });
+  if (!achievement) return;
+
+  const alreadyUnlocked = await prisma.user_achievement.findUnique({
+    where: { user_id_achievement_id: { user_id: userId, achievement_id: achievement.id } }
+  });
+  if (alreadyUnlocked) return;
+
+  await prisma.user_achievement.create({
+    data: {
+      user_id: userId,
+      achievement_id: achievement.id
+    }
+  });
+}
+
 module.exports = {
-  getAchievementsWithStatus
+  getAchievementsWithStatus,
+  unlockAchievementIfNeeded
 };
