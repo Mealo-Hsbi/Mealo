@@ -135,7 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Let’s get to know your preferences.',
+                'Let\'s get to know your preferences.\nYou can skip questions if you want.',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -152,7 +152,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: const [
               Icon(Icons.check_circle_outline, size: 80, color: Colors.green),
               SizedBox(height: 24),
-              Text('You’re ready!', style: TextStyle(fontSize: 24)),
+              Text('You\'re ready!', style: TextStyle(fontSize: 24)),
               SizedBox(height: 12),
               Text('You can always adjust your settings later.'),
             ],
