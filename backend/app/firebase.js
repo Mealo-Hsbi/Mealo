@@ -54,4 +54,9 @@ else {
 }
 
 admin.initializeApp(initOpts);
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports = {};
+}
+
 module.exports = admin;
