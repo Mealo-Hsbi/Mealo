@@ -295,6 +295,19 @@ async function addFavoriteRecipeByRecipeId(userId, recipeId) {
     }
 }
 
+/**
+ * Gibt alle eigenen Rezepte eines Nutzers zurück
+ * @param {string} userId - Die ID des Benutzers
+ * @returns {Promise<Array>} - Liste der eigenen Rezepte
+ */
+async function getOwnRecipesForUser(userId) {
+    if (!userId) throw new Error('userId ist erforderlich');
+    return prisma.recipes.findMany({
+        where: { created_by_id: userId },
+        orderBy: { created_at: 'desc' },
+    });
+}
+
 module.exports = {
     getOrCreateRecipeInDb,
     addFavoriteRecipe,
@@ -306,4 +319,5 @@ module.exports = {
     getAverageRecipeRating,
     getInternalRecipeDetails,
     addFavoriteRecipeByRecipeId,
+    getOwnRecipesForUser,
 };

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:frontend/core/config/app_config.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../common/models/recipe.dart';
 
@@ -21,6 +22,20 @@ class RecipeService {
           .toList();
     } else {
       throw Exception('Fehler beim Laden der Rezepte: ${response.statusCode}');
+    }
+  }
+
+  static Future<List<Recipe>> fetchUserRecipes(String jwtToken) async {
+    final baseUrl = dotenv.env['API_BASE_URL']!;
+    final url = Uri.parse('$baseUrl/recipes/mine');
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $jwtToken',
+    });
+    if (response.statusCode == 200) {
+      final List<dynamic> recipesJson = json.decode(response.body);
+      return recipesJson.map((json) => Recipe.fromJson(json)).toList();
+    } else {
+      throw Exception('Fehler beim Laden der eigenen Rezepte: \\${response.statusCode}');
     }
   }
 }

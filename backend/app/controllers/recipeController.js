@@ -323,6 +323,20 @@ const getUserRecipeRating = async (req, res) => {
     }
 };
 
+const getOwnRecipesForUser = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'Nicht authentifiziert.' });
+        }
+        const recipes = await recipeManagementService.getOwnRecipesForUser(userId);
+        return res.json(recipes);
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Fehler in getOwnRecipesForUser:', error);
+        return res.status(500).json({ message: 'Fehler beim Laden der eigenen Rezepte.' });
+    }
+};
+
 module.exports = {
     getRecipesByQuery,
     getRecipesByIngredients,
@@ -334,4 +348,5 @@ module.exports = {
     getRecipeIsFavorited,
     addOrUpdateRecipeRating,
     getUserRecipeRating,
+    getOwnRecipesForUser,
 };
