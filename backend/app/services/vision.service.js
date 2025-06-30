@@ -20,7 +20,6 @@ if (process.env.NODE_ENV === 'test') {
     }),
   };
   console.log('OpenAI Vision is mocked for tests.');
-  return;
 }
 
 // detectIngredients erhält nun einen Buffer, nicht einen Pfad
