@@ -62,18 +62,16 @@ exports.setUserPreferences = async (userId, optionKeys) => {
       key: { in: optionKeys },
     },
   });
-
+  
   // alte löschen
   await prisma.user_preference.deleteMany({
     where: { user_id: userId },
   });
-
   // neue speichern
   const data = allOptions.map((opt) => ({
     user_id: userId,
     option_id: opt.id,
   }));
-
   if (data.length > 0) {
     await prisma.user_preference.createMany({ data });
   }

@@ -107,23 +107,37 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
       final preferenceIndex = _userPreferences.indexWhere((p) => p['questionKey'] == questionKey);
       if (preferenceIndex != -1) {
         final preference = _userPreferences[preferenceIndex];
-        final selectedOptions = (preference['selectedOptions'] as List).cast<Map<String, Object>>().toList();
-        if (isSelected) {
-          if (!selectedOptions.any((opt) => opt['key'] == optionKey)) {
-            selectedOptions.add({
-              'key': optionKey,
-              'label': optionLabel,
-            });
+        List<Map<String, Object>> selectedOptions = (preference['selectedOptions'] as List).cast<Map<String, Object>>().toList();
+
+        if (questionKey == 'cooking_frequency') {
+          // Nur eine Auswahl zulassen
+          if (isSelected) {
+            selectedOptions = [
+              {'key': optionKey, 'label': optionLabel}
+            ];
+          } else {
+            selectedOptions = [];
           }
         } else {
-          selectedOptions.removeWhere((opt) => opt['key'] == optionKey);
+          if (isSelected) {
+            if (!selectedOptions.any((opt) => opt['key'] == optionKey)) {
+              selectedOptions.add({
+                'key': optionKey,
+                'label': optionLabel,
+              });
+            }
+          } else {
+            selectedOptions.removeWhere((opt) => opt['key'] == optionKey);
+          }
         }
+
         _userPreferences[preferenceIndex] = {
           ...preference,
           'selectedOptions': selectedOptions,
         };
       }
     });
+    _savePreferences();
   }
 
   @override
@@ -133,20 +147,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
       appBar: AppBar(
         title: const Text('Preferences'),
         actions: [
-          if (_isSaving)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _savePreferences,
-              child: const Text('Save'),
-            ),
+          // Ladeicon entfernt
         ],
       ),
       body: _isLoading
