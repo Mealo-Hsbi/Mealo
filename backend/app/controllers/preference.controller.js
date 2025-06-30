@@ -9,6 +9,17 @@ exports.getAllQuestions = async (req, res, next) => {
   }
 };
 
+exports.getUserPreferences = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const preferences = await preferenceService.getUserPreferences(userId);
+    res.json(preferences);
+  } catch (err) {
+    console.error('Error fetching user preferences:', err);
+    res.status(500).json({ message: 'Error fetching user preferences', error: err.message });
+  }
+};
+
 exports.saveUserPreferences = async (req, res, next) => {
   try {
     const userId = req.user.id; // ✅ directly from middleware (UUID)
