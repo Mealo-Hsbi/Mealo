@@ -130,6 +130,7 @@ class FavoriteNotifier extends ChangeNotifier {
     } catch (e) {
       _setError('Fehler beim Ändern des Favoritenstatus: $e');
     } finally {
+      _setStatus(FavoriteStatus.loaded);
       notifyListeners();
     }
   }
