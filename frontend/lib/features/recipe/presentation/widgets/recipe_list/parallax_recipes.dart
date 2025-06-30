@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/common/models/recipe.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart'; // Ensure RecipeDetailScreen is imported
 import 'package:flutter/services.dart'; // Import for rootBundle in RecipeItem
+import 'package:frontend/features/recipe/presentation/widgets/recipe_ad_item.dart';
 
 class ParallaxRecipes extends StatefulWidget {
   const ParallaxRecipes({
@@ -11,6 +12,7 @@ class ParallaxRecipes extends StatefulWidget {
     required this.scrollController, // NOW REQUIRED: Receive the controller
     required this.isLoadingMore, // NOW REQUIRED: Receive loading state
     required this.hasMore, // NOW REQUIRED: Receive hasMore state
+    this.showAds = true, // Add showAds flag, default true
   });
 
   final List<Recipe> recipes;
@@ -18,6 +20,7 @@ class ParallaxRecipes extends StatefulWidget {
   final ScrollController scrollController; // Store the received controller
   final bool isLoadingMore;
   final bool hasMore;
+  final bool showAds; // Add showAds flag
 
   @override
   State<ParallaxRecipes> createState() => _ParallaxRecipesState();
@@ -26,26 +29,39 @@ class ParallaxRecipes extends StatefulWidget {
 class _ParallaxRecipesState extends State<ParallaxRecipes> {
   @override
   Widget build(BuildContext context) {
-    // Use ListView.builder directly within ParallaxRecipes
+    final showAds = widget.showAds;
+    final recipes = widget.recipes;
+    // Calculate how many ads will be inserted
+    int adCount = showAds ? (recipes.length ~/ 4) : 0;
+    int totalCount = recipes.length + adCount + (widget.hasMore ? 1 : 0);
+
     return ListView.builder(
-      controller: widget.scrollController, // Attach the received controller
-      itemCount: widget.recipes.length + (widget.hasMore ? 1 : 0), // Add 1 for the loading indicator
+      controller: widget.scrollController,
+      itemCount: totalCount,
       itemBuilder: (context, index) {
-        if (index == widget.recipes.length) {
-          // This is the loading indicator at the end of the list
+        // Loading indicator at the end
+        if (index == totalCount - 1 && widget.hasMore) {
           return widget.isLoadingMore
               ? const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(child: CircularProgressIndicator()),
                 )
-              : const SizedBox.shrink(); // No more items, hide indicator
+              : const SizedBox.shrink();
         }
 
-        final recipe = widget.recipes[index];
+        if (showAds && (index + 1) % 5 == 0) {
+          // Every 5th item (after 4 recipes) is an ad
+          return const RecipeAdItem();
+        }
+
+        // Calculate the actual recipe index, skipping ads
+        int numAdsBefore = showAds ? (index ~/ 5) : 0;
+        int recipeIndex = index - numAdsBefore;
+        final recipe = recipes[recipeIndex];
         return RecipeItem(
           id: recipe.id,
-          internalId: recipe.internalId, // Assuming internalId is part of Recipe
-          isInternal: recipe.isInternal ?? false, // Assuming isInternal is part of Recipe
+          internalId: recipe.internalId,
+          isInternal: recipe.isInternal ?? false,
           imageUrl: recipe.imageUrl,
           name: recipe.name,
           country: recipe.place ?? '',
