@@ -10,6 +10,19 @@ if (!process.env.OPENAI_API_KEY) {
 // OpenAI-Client initialisieren (v4 SDK)
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+if (process.env.NODE_ENV === 'test') {
+  module.exports = {
+    detectIngredients: async () => ({
+      ingredients: [
+        { name: 'MockTomato', confidence: 1.0, quantity: 1, unit: 'piece' },
+        { name: 'MockPotato', confidence: 0.9, quantity: 2, unit: 'piece' },
+      ],
+    }),
+  };
+  console.log('OpenAI Vision is mocked for tests.');
+  return;
+}
+
 // detectIngredients erhält nun einen Buffer, nicht einen Pfad
 async function detectIngredients(imageBuffer) { // GEÄNDERT: imagePath -> imageBuffer
     // 1) Bild mit sharp bearbeiten (Buffer -> Buffer)
