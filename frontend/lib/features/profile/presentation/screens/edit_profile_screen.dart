@@ -20,6 +20,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final vm = Provider.of<ProfileViewModel>(context, listen: false);
       final file = File(image.path);
       await vm.uploadAvatar(file);
+      // Profil nach Profilbild-Änderung neu laden
+      Provider.of<ProfileViewModel>(context, listen: false).loadProfile();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

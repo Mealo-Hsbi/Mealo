@@ -12,45 +12,17 @@ class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileRemoteDataSource remote;
   final ApiClient               apiClient;
 
-  ProfileDto?  _cache;
-  DateTime?    _cacheTime;
-  final Duration cacheDuration = const Duration(minutes: 5);
-
   ProfileRepositoryImpl(this.remote, this.apiClient);
 
   @override
   Future<ProfileDto> fetchProfile() async {
-    if (_cache != null
-        && _cacheTime != null
-        && DateTime.now().difference(_cacheTime!) < cacheDuration) {
-      _refreshProfile();
-      return _cache!;
-    }
-    final profile = await remote.fetchProfile();
-    _cache     = profile;
-    _cacheTime = DateTime.now();
-    return profile;
-  }
-
-  Future<void> _refreshProfile() async {
-    try {
-      final fresh = await remote.fetchProfile();
-      if (fresh != _cache) {
-        _cache     = fresh;
-        _cacheTime = DateTime.now();
-      }
-    } catch (_) {}
+    // Immer direkt vom Server laden, kein Cache mehr
+    return await remote.fetchProfile();
   }
 
   @override
   Future<String> fetchAvatarUrl(String objectKey) =>
     remote.getAvatarDownloadUrl(objectKey);
-
-  @override
-  void invalidateCache() {
-    _cache = null;
-    _cacheTime = null;
-  }
 
   @override
   Future<UploadInfo> getUploadInfo(String filename, String contentType) =>
@@ -71,8 +43,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
     return info.objectKey;
   }
 
-
   @override
   Future<void> saveAvatarKey(String objectKey) =>
     remote.updateAvatarKey(objectKey);
+
+  @override
+  void invalidateCache() {
+    // Kein Cache mehr vorhanden
+  }
 }

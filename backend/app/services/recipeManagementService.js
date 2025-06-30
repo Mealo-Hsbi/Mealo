@@ -1,7 +1,6 @@
 // services/recipeManagementService.js
 
-const { PrismaClient } = require('../generated/prisma');
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 
 if (prisma && !prisma.recipes) {
     console.warn('[DEBUG] prisma.recipes is undefined. Is the Prisma schema correct and client regenerated? (Expected: "model recipes")');

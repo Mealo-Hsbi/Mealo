@@ -1,9 +1,7 @@
 // lib/services/profile.service.js
 
-const { PrismaClient } = require('../generated/prisma');
 const mediaService = require('./media.service');
-
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 
 async function fetchProfile(firebaseUid) {
   // 1) User mit verknüpften Daten laden

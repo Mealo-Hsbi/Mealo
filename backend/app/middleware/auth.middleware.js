@@ -1,7 +1,5 @@
 const admin = require('../firebase');
-const {PrismaClient} = require('../generated/prisma');
-
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 
 module.exports = async function authMiddleware(req, res, next) {
   const header = req.headers.authorization;

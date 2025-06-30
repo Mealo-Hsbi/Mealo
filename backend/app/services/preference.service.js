@@ -1,5 +1,4 @@
-const { PrismaClient } = require('../generated/prisma');
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 
 exports.getAllWithOptions = async () => {
   return prisma.preference_question.findMany({
