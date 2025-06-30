@@ -73,4 +73,14 @@ async function fetchProfile(firebaseUid) {
   };
 }
 
-module.exports = { fetchProfile };
+async function updateAvatar(firebaseUid, objectKey) {
+  await prisma.users.update({
+    where: { firebase_uid: firebaseUid },
+    data:  { avatar_url: objectKey },
+  });
+
+  return { avatarUrl: objectKey };
+}
+
+
+module.exports = { fetchProfile, updateAvatar };
