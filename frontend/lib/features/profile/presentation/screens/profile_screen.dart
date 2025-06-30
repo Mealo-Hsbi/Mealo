@@ -127,11 +127,9 @@ class ProfileScreen extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      StatItem('Recipes', profile.recipesCount),
+                                      StatItem('Rezepte', profile.recipesCount),
                                       const SizedBox(width: 24),
-                                      StatItem('Likes', profile.likesCount),
-                                      const SizedBox(width: 24),
-                                      StatItem('Favorites', profile.favoritesCount),
+                                      StatItem('Favoriten', profile.favoritesCount),
                                     ],
                                   ),
                                 ],

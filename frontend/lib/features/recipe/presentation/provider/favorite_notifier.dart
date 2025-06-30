@@ -27,15 +27,6 @@ class FavoriteNotifier extends ChangeNotifier {
 
   String? _lastLoadedUserId;
 
-  final Map<String, bool> _recipeFavoritedStatus = {};
-  final Map<String, String?> _recipeFavoriteIds = {};
-  final Map<String, bool> _recipeLoadingStatus = {};
-
-  bool isRecipeCurrentlyFavorited(String recipeId) => _recipeFavoritedStatus[recipeId] ?? false;
-  String? getFavoriteIdForRecipe(String recipeId) => _recipeFavoriteIds[recipeId];
-  bool isRecipeCheckingFavoriteStatus(String recipeId) => _recipeLoadingStatus[recipeId] ?? false;
-  bool isRecipeStatusInCache(String recipeId) => _recipeFavoritedStatus.containsKey(recipeId);
-
   FavoriteNotifier({
     required this.addFavoriteRecipeUseCase,
     required this.removeFavoriteRecipeUseCase,
@@ -83,24 +74,11 @@ class FavoriteNotifier extends ChangeNotifier {
       final favorites = await getFavoriteRecipesUseCase(userId: userId);
       _favoriteRecipes = favorites;
 
-      _recipeFavoritedStatus.clear();
-      _recipeFavoriteIds.clear();
-
-      for (var fav in favorites) {
-        final id = fav.recipe.id;
-        if (id != null) {
-          _recipeFavoritedStatus[id] = true;
-          _recipeFavoriteIds[id] = fav.id;
-        }
-      }
-
       _setStatus(FavoriteStatus.loaded);
     } on Failure catch (e) {
       _setError(e.message);
     } catch (e) {
       _setError('Ein unerwarteter Fehler ist aufgetreten: $e');
-      _recipeFavoritedStatus.clear();
-      _recipeFavoriteIds.clear();
     }
   }
 
@@ -115,22 +93,19 @@ class FavoriteNotifier extends ChangeNotifier {
       return;
     }
 
-    _recipeLoadingStatus[recipeId] = true;
-    notifyListeners();
+    _setLoading();
 
     try {
-      if (isRecipeCurrentlyFavorited(recipeId)) {
-        final favoriteId = _recipeFavoriteIds[recipeId];
+      final isFavorited = _favoriteRecipes.any((fav) => fav.recipe.id?.toString() == recipeId);
+      if (isFavorited) {
+        final favorite = _favoriteRecipes.firstWhere((fav) => fav.recipe.id?.toString() == recipeId);
+        final favoriteId = favorite.id;
         if (favoriteId == null) {
           _setError('Favorite-ID fehlt. Bitte Seite neu laden.');
-          _recipeLoadingStatus.remove(recipeId);
           notifyListeners();
           return;
         }
-
         await removeFavoriteRecipeUseCase(userId: userId, favoriteId: favoriteId);
-        _recipeFavoritedStatus[recipeId] = false;
-        _recipeFavoriteIds.remove(recipeId);
         _favoriteRecipes.removeWhere((fav) => fav.id == favoriteId);
       } else {
         final newFavorite = await addFavoriteRecipeUseCase(
@@ -138,8 +113,6 @@ class FavoriteNotifier extends ChangeNotifier {
           spoonacularId: spoonacularId,
           recipe: recipe,
         );
-        _recipeFavoritedStatus[recipeId] = true;
-        _recipeFavoriteIds[recipeId] = newFavorite.id;
         _favoriteRecipes.add(newFavorite);
       }
     } on Failure catch (e) {
@@ -148,16 +121,12 @@ class FavoriteNotifier extends ChangeNotifier {
     } catch (e) {
       _setError('Fehler beim Ändern des Favoritenstatus: $e');
     } finally {
-      _recipeLoadingStatus.remove(recipeId);
       notifyListeners();
     }
   }
 
   void reset() {
     _favoriteRecipes = [];
-    _recipeFavoritedStatus.clear();
-    _recipeFavoriteIds.clear();
-    _recipeLoadingStatus.clear();
     _isLoadingGlobal = false;
     _errorMessage = null;
     _status = FavoriteStatus.initial;

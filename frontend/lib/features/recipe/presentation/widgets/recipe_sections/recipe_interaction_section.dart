@@ -59,9 +59,6 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
       favoriteNotifier.reset();
       _lastKnownUserId = currentUserId;
       await favoriteNotifier.init(currentUserId);
-    } else if (!favoriteNotifier.isRecipeStatusInCache(internalRecipeId) &&
-               !favoriteNotifier.isRecipeCheckingFavoriteStatus(internalRecipeId)) {
-      // Optional: spezifischen Check nachreichen
     }
   }
 
@@ -79,11 +76,8 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
     final String? internalRecipeId = widget.recipeDetails.id;
     final bool canInteract = currentUserId != null && internalRecipeId != null;
 
-    final bool showFavoriteLoader = favoriteNotifier.isLoading ||
-        favoriteNotifier.isRecipeCheckingFavoriteStatus(internalRecipeId ?? '');
-    final bool isFavorited = showFavoriteLoader
-        ? false
-        : favoriteNotifier.isRecipeCurrentlyFavorited(internalRecipeId ?? '');
+    final bool showFavoriteLoader = favoriteNotifier.isLoading;
+    final bool isFavorited = favoriteNotifier.favoriteRecipes.any((fav) => fav.recipe.id == internalRecipeId);
 
     if (asyncAuthUser.isLoading) {
       return const Center(child: CircularProgressIndicator(strokeWidth: 2));
@@ -121,13 +115,11 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
                 ? null
                 : () async {
                     if (internalRecipeId == null || currentUserId == null) return;
-
                     await favoriteNotifier.toggleFavorite(
                       userId: currentUserId,
                       spoonacularId: widget.recipeDetails.spoonacularId,
                       recipe: widget.recipeDetails.toRecipe(),
                     );
-
                     if (mounted && favoriteNotifier.errorMessage != null) {
                       scaffoldMessengerKey.currentState?.showSnackBar(
                         SnackBar(content: Text(favoriteNotifier.errorMessage!)),
