@@ -215,4 +215,43 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
       throw ServerException('An unexpected error occurred: ${e.toString()}');
     }
   }
+
+  Future<RecipeDetails> getInternalRecipeDetails(String internalRecipeId, {CancelToken? cancelToken}) async {
+    try {
+      final String endpoint = '/recipes/internal/$internalRecipeId';
+      debugPrint('[Frontend Data] Calling GET $endpoint');
+      final Response response = await _apiClient.get(
+        endpoint,
+        options: Options(
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 20),
+        ),
+        cancelToken: cancelToken,
+      );
+      debugPrint('DEBUG API Response for internal recipe ID $internalRecipeId: ${response.data}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> json = response.data;
+        return RecipeDetails.fromJson(json);
+      } else {
+        throw ServerException('Unexpected status code: \\${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.cancel) {
+        debugPrint('Internal recipe details request cancelled: \\${e.message}');
+        throw CancelledException('Request was cancelled.');
+      }
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+        throw TimeoutException('The connection to the server timed out. Please try again later.');
+      }
+      if (e.response != null) {
+        final errorData = e.response!.data;
+        throw ServerException('Error during internal recipe details request: \\${errorData['message'] ?? e.message}');
+      } else {
+        throw ServerException('Network error or server problem: \\${e.message}');
+      }
+    } catch (e) {
+      debugPrint('Unexpected error in RecipeApiDataSource.getInternalRecipeDetails: \\${e.toString()}');
+      throw ServerException('An unexpected error occurred: \\${e.toString()}');
+    }
+  }
 }

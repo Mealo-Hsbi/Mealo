@@ -14,7 +14,7 @@ import 'package:frontend/core/error/exceptions.dart'; // Für ServerException, T
 import 'package:dio/dio.dart'; // Wichtig: Dio importieren für CancelToken
 
 class RecipeRepositoryImpl implements RecipeRepository {
-  final RecipeApiDataSource remoteDataSource;
+  final RecipeApiDataSourceImpl remoteDataSource;
 
   RecipeRepositoryImpl({required this.remoteDataSource});
 
@@ -70,23 +70,6 @@ class RecipeRepositoryImpl implements RecipeRepository {
 
   @override
   Future<RecipeDetails> getInternalRecipeDetails(String internalRecipeId, {CancelToken? cancelToken}) async {
-    // TODO: Implement actual call to _internalApiClient to fetch internal recipe details
-    // For now, return a placeholder or throw an unimplemented error
-    // The route that needs to be called for image recognition is /api/image-recognition/recognize (post).
-    // For getting internal recipe details, you would typically use a GET request to a path like:
-    // final json = await _internalApiClient.get('/api/recipes/details/$internalRecipeId', cancelToken: cancelToken);
-    // return RecipeDetails.fromJson(json);
-
-    // Provisorische Lösung: Einen Fehler werfen, bis es implementiert ist
-    throw UnimplementedError('getInternalRecipeDetails has not been implemented yet.');
-
-    // Oder, wenn du ein leeres oder Standard-Objekt zurückgeben willst:
-    // return Future.value(RecipeDetails(
-    //   id: null, // Oder eine Dummy-ID, falls erforderlich
-    //   internalId: internalRecipeId,
-    //   name: 'Placeholder Internal Recipe',
-    //   imageUrl: '',
-    //   // ... andere Felder mit Standardwerten oder null
-    // ));
+    return await remoteDataSource.getInternalRecipeDetails(internalRecipeId, cancelToken: cancelToken);
   }
 }

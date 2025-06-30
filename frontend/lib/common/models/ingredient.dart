@@ -23,6 +23,15 @@ class Ingredient {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': imageUrl,
+      'aliases': aliases,
+    };
+  }
+
   @override
   String toString() {
     return 'Ingredient(id: $id, name: $name, imageUrl: $imageUrl, aliases: $aliases)';

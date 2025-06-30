@@ -16,6 +16,7 @@ import '../widgets/achievement_card.dart';
 import '../screens/achievements_overview_screen.dart';
 import '../screens/settings_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
+import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
@@ -159,6 +160,33 @@ class ProfileScreen extends StatelessWidget {
                                 children: recent.map((r) => RecipePreviewItem(
                                   imageUrl: r.imageUrl,
                                   title: r.title,
+                                  onTap: () {
+                                    if ((r.internalId ?? '').isNotEmpty) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => RecipeDetailScreen(
+                                            initialImageUrl: r.imageUrl,
+                                            initialName: r.title,
+                                            initialPlace: '',
+                                            isInternal: true,
+                                            internalRecipeId: r.internalId,
+                                          ),
+                                        ),
+                                      );
+                                    } else if (r.spoonacularId != null && r.spoonacularId!.isNotEmpty) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => RecipeDetailScreen(
+                                            initialImageUrl: r.imageUrl,
+                                            initialName: r.title,
+                                            initialPlace: '',
+                                            isInternal: false,
+                                            recipeId: int.tryParse(r.spoonacularId!),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 )).toList(),
                               )
                             : const _EmptyStateWidget(

@@ -100,10 +100,12 @@ class RecipeDetails {
 
     try {
       return RecipeDetails(
-        spoonacularId: json['id'] as int?, // <--- HIER WICHTIGE ÄNDERUNG: Parsing als int?!
-        id: json['internalRecipeId'] as String?,
+        spoonacularId: json['spoonacularId'] is int
+            ? json['spoonacularId']
+            : int.tryParse(json['spoonacularId']?.toString() ?? ''),
+        id: json['internalRecipeId']?.toString() ?? json['id']?.toString(),
         title: json['title'] as String,
-        image: json['image'] as String?,
+        image: json['image'] as String? ?? json['imageUrl'] as String?,
         imageType: json['imageType'] as String?,
         servings: json['servings'] as int?,
         readyInMinutes: json['readyInMinutes'] as int?,

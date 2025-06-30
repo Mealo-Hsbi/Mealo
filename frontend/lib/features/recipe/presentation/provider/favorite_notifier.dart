@@ -84,7 +84,8 @@ class FavoriteNotifier extends ChangeNotifier {
 
   Future<void> toggleFavorite({
     required String userId,
-    required int? spoonacularId,
+    int? spoonacularId,
+    String? internalRecipeId,
     required Recipe recipe,
   }) async {
     final recipeId = recipe.id?.toString();
@@ -108,6 +109,14 @@ class FavoriteNotifier extends ChangeNotifier {
         await removeFavoriteRecipeUseCase(userId: userId, favoriteId: favoriteId);
         _favoriteRecipes.removeWhere((fav) => fav.id == favoriteId);
       } else {
+        final data = {
+          'userId': userId,
+          'spoonacularId': spoonacularId,
+          'internalRecipeId': internalRecipeId,
+          'recipeData': recipe.toJson(),
+        };
+        // Sende data an das Backend (z.B. via Dio oder ApiClient)
+        // ...
         final newFavorite = await addFavoriteRecipeUseCase(
           userId: userId,
           spoonacularId: spoonacularId,

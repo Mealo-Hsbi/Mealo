@@ -1,15 +1,21 @@
-// backend/app/firebase.js
+const admin = require('firebase-admin');
+
 if (process.env.NODE_ENV === 'test') {
-  module.exports = {};
+  // Mock-Objekt für Tests
+  module.exports = {
+    auth: () => ({
+      verifyIdToken: async () => ({ uid: 'test-user-id' }),
+    }),
+    credential: { cert: () => ({}) },
+    initializeApp: () => {},
+  };
+  console.log('Firebase is mocked for tests.');
 } else {
-  const admin = require('firebase-admin');
   let initOpts;
 
-  // This condition checks if GOOGLE_APPLICATION_CREDENTIALS exists and its content
-  // looks like a JSON string (starts with '{'). This is for Cloud Run.
+  // Prüfe, ob die Umgebungsvariable direkt ein JSON enthält (z. B. für Cloud Run)
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_APPLICATION_CREDENTIALS.startsWith('{')) {
     try {
-      // Parse the JSON string directly from the environment variable
       const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
       initOpts = { credential: admin.credential.cert(serviceAccount) };
       console.log("Firebase initialized using JSON from GOOGLE_APPLICATION_CREDENTIALS environment variable.");
@@ -17,10 +23,8 @@ if (process.env.NODE_ENV === 'test') {
       console.error('Failed to parse GOOGLE_APPLICATION_CREDENTIALS as JSON:', e);
       throw new Error('Invalid GOOGLE_APPLICATION_CREDENTIALS JSON format.');
     }
-  }
-  // This condition is for local development or if you were to mount the key as a file
-  // AND set GOOGLE_APPLICATION_CREDENTIALS to that file path.
-  else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Lokale Entwicklung mit Dateipfad zu JSON-Datei
     const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     try {
       const serviceAccount = require(keyPath);
@@ -30,9 +34,8 @@ if (process.env.NODE_ENV === 'test') {
       console.error('Failed to load GOOGLE_APPLICATION_CREDENTIALS from file path:', keyPath, e);
       throw new Error('Failed to load Firebase credentials from file path. Ensure it is a valid path.');
     }
-  }
-  // This is the fallback for local development where the JSON is in ./certs/serviceAccountKey.json
-  else {
+  } else {
+    // Fallback auf lokalen Standardpfad
     try {
       const serviceAccount = require('../certs/serviceAccountKey.json');
       initOpts = { credential: admin.credential.cert(serviceAccount) };

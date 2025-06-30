@@ -14,6 +14,7 @@ const {
     getRecipeIsFavorited,      // NEU: Controller für Favoritenstatus prüfen
     addOrUpdateRecipeRating,   // NEU: Controller für Bewertungen hinzufügen/aktualisieren
     getUserRecipeRating,       // NEU: Controller für Bewertungen abrufen
+    getInternalRecipeDetails,  // NEU: Controller für interne Rezeptdetails
 } = require('../controllers/recipeController');
 
 
@@ -64,5 +65,8 @@ router.post('/favorites', auth, addFavoriteRecipe);
 // URL: /api/recipes/favorites/:recipeId
 // Benötigt: Authentifizierung (userId), in Params: recipeId (Ihre interne DB-UUID des Rezepts)
 router.delete('/favorites/:favoriteId', auth, removeFavoriteRecipe);
+
+// Route für interne Rezeptdetails (eigene Rezepte per UUID)
+router.get('/internal/:id', auth, getInternalRecipeDetails);
 
 module.exports = router;

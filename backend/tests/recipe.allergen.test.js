@@ -1,3 +1,4 @@
+jest.mock('../app/services/vision.service.js');
 const request = require('supertest');
 const app = require('../app'); // Adjust if your Express app export path is different
 
