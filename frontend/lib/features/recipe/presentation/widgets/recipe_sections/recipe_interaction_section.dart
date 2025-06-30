@@ -9,6 +9,7 @@ import 'package:frontend/features/recipe/presentation/provider/favorite_notifier
 import 'package:frontend/features/auth/presentation/providers/auth_state_provider.dart';
 import 'package:frontend/features/recipe/domain/entities/recipe.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/features/profile/presentation/viewmodels/profile_viewmodel.dart';
 
 class RecipeInteractionSection extends ConsumerStatefulWidget {
   final RecipeDetails recipeDetails;
@@ -120,6 +121,7 @@ class _RecipeInteractionSectionState extends ConsumerState<RecipeInteractionSect
                       spoonacularId: widget.recipeDetails.spoonacularId,
                       recipe: widget.recipeDetails.toRecipe(),
                     );
+                    context.read<ProfileViewModel>().loadProfile();
                     if (mounted && favoriteNotifier.errorMessage != null) {
                       scaffoldMessengerKey.currentState?.showSnackBar(
                         SnackBar(content: Text(favoriteNotifier.errorMessage!)),
