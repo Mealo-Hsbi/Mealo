@@ -8,7 +8,7 @@ const recipeRoutes = require('./recipe.routes');
 const profileRoutes = require('./profile.routes');
 const mediaRoutes   = require('./media.routes');
 const preferenceRoutes = require('./preference.routes');
-
+const achievementRoutes = require('./achievement.route');
 
 // Mount individual route files
 router.use('/users', userRoutes);
@@ -18,5 +18,6 @@ router.use('/recipes', recipeRoutes);
 router.use('/media', mediaRoutes);
 router.use('/preferences', preferenceRoutes);
 router.use(profileRoutes);
+router.use('/achievements', achievementRoutes);
 
 module.exports = router;

@@ -34,6 +34,9 @@ import 'package:frontend/features/profile/data/repositories/profile_repository_i
 import 'package:frontend/features/profile/domain/usecases/get_profile.dart';
 import 'package:frontend/features/profile/domain/usecases/upload_avatar.dart';
 
+// 🔽 NEU: Imports für AchievementProvider
+import 'package:frontend/features/profile/presentation/providers/achievement_provider.dart';
+
 class AppProviders {
   static List<SingleChildWidget> get providers {
     final ApiClient apiClient = ApiClient();
@@ -90,6 +93,10 @@ class AppProviders {
           UploadAvatar(profileRepository),
           profileRepository,
         ),
+      ),
+      // 🔽 NEU: AchievementProvider
+      ChangeNotifierProvider<AchievementProvider>(
+        create: (_) => AchievementProvider(),
       ),
     ];
   }

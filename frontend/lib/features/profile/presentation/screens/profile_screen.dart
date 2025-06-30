@@ -15,6 +15,7 @@ import '../widgets/tag_chip.dart';
 import '../widgets/achievement_card.dart';
 import '../screens/achievements_overview_screen.dart';
 import '../screens/settings_screen.dart';
+import '../providers/achievement_provider.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/user_recipe_list_screen.dart';
@@ -34,13 +35,23 @@ class ProfileScreen extends StatelessWidget {
         if (vm.profile == null && !vm.isLoading) {
           vm.loadProfile();
         }
+        
+        // Lade Achievements beim ersten Laden
+        final achievementProvider = Provider.of<AchievementProvider>(context, listen: false);
+        if (achievementProvider.status == AchievementStatus.initial) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            achievementProvider.loadAchievements();
+          });
+        }
         final theme = Theme.of(ctx);
         if (vm.isLoading && vm.profile == null) {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
         final profile = vm.profile!;
         final recent = profile.recentRecipes.take(3).toList();
-        final achievements = profile.achievements.take(3).toList();
+        
+        // Hole Achievement-Daten vom AchievementProvider
+        final achievements = achievementProvider.achievements.take(3).toList();
         return Scaffold(
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
@@ -123,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
                                     const SizedBox(width: 24),
                                     StatItem('Favorites', profile.favoritesCount),
                                     const SizedBox(width: 24),
-                                    StatItem('Achievements', profile.achievements.length),
+                                    StatItem('Achievements', achievementProvider.unlockedCount),
                                   ],
                                 ),
                               ],
