@@ -13,6 +13,7 @@ if (process.env.NODE_ENV === 'test') {
 } else {
   let initOpts;
 
+  // Prüfe, ob die Umgebungsvariable direkt ein JSON enthält (z. B. für Cloud Run)
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_APPLICATION_CREDENTIALS.startsWith('{')) {
     try {
       const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === 'test') {
       throw new Error('Invalid GOOGLE_APPLICATION_CREDENTIALS JSON format.');
     }
   } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Lokale Entwicklung mit Dateipfad zu JSON-Datei
     const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     try {
       const serviceAccount = require(keyPath);
@@ -33,6 +35,7 @@ if (process.env.NODE_ENV === 'test') {
       throw new Error('Failed to load Firebase credentials from file path. Ensure it is a valid path.');
     }
   } else {
+    // Fallback auf lokalen Standardpfad
     try {
       const serviceAccount = require('../certs/serviceAccountKey.json');
       initOpts = { credential: admin.credential.cert(serviceAccount) };
