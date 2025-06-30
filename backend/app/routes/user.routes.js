@@ -2,10 +2,9 @@
 
 const express        = require('express');
 const admin          = require('../firebase.js');
-const { PrismaClient } = require('../generated/prisma'); // PrismaClient importieren
+const prisma         = require('../prisma');
 const authMiddleware = require('../middleware/auth.middleware');
 
-const prisma = new PrismaClient();
 const router = express.Router();
 
 // Registrierung / Upsert
