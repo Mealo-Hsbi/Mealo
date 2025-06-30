@@ -76,6 +76,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
       );
 
       if (response.statusCode == 200) {
+        debugPrint('DEBUG Raw API Response for searchRecipesByQuery: \\n${response.data}');
         final List<dynamic> jsonList = response.data;
         var result = jsonList.map((json) => RecipeModel.fromJson(json).toEntity()).toList();
         return result;

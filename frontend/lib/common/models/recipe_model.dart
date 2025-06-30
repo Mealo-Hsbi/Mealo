@@ -31,6 +31,9 @@ class RecipeModel {
   final double? averageRating;
   final int? ratingCount;
 
+  final bool? containsUserAllergens;
+  final List<String>? matchedAllergens;
+
   RecipeModel({
     this.id, // Now nullable
     this.internalId, // Add this to the constructor
@@ -52,6 +55,8 @@ class RecipeModel {
     this.missedIngredients,
     this.averageRating,
     this.ratingCount,
+    this.containsUserAllergens,
+    this.matchedAllergens,
   }) : assert(id != null || internalId != null, 'Either Spoonacular ID or internal ID must be provided.');
 
 
@@ -112,6 +117,8 @@ class RecipeModel {
       missedIngredients: parseIngredientList(json['missedIngredients'] as List?),
       averageRating: (json['averageRating'] as num?)?.toDouble(),
       ratingCount: json['ratingCount'] as int?,
+      containsUserAllergens: json['containsUserAllergens'] as bool?,
+      matchedAllergens: (json['matchedAllergens'] as List?)?.map((e) => e.toString()).toList(),
     );
   }
 
@@ -138,6 +145,8 @@ class RecipeModel {
       missedIngredients: missedIngredients,
       averageRating: averageRating,
       ratingCount: ratingCount,
+      containsUserAllergens: containsUserAllergens,
+      matchedAllergens: matchedAllergens,
     );
   }
 }

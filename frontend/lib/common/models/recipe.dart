@@ -28,6 +28,8 @@ class Recipe {
 
   final double? averageRating;
   final int? ratingCount;
+  final bool? containsUserAllergens;
+  final List<String>? matchedAllergens;
 
   const Recipe({
     this.id, // Kann null sein, wenn isInternal true ist
@@ -50,6 +52,8 @@ class Recipe {
     this.missedIngredients,
     this.averageRating,
     this.ratingCount,
+    this.containsUserAllergens,
+    this.matchedAllergens,
   }) : assert(id != null || internalId != null, 'Either Spoonacular ID or internal ID must be provided.');
 
 
@@ -111,6 +115,8 @@ class Recipe {
       missedIngredients: parseIngredientList(json['missedIngredients'] as List?),
       averageRating: (json['averageRating'] as num?)?.toDouble(),
       ratingCount: json['ratingCount'] as int?,
+      containsUserAllergens: json['containsUserAllergens'] as bool?,
+      matchedAllergens: (json['matchedAllergens'] as List?)?.map((e) => e.toString()).toList(),
     );
   }
 

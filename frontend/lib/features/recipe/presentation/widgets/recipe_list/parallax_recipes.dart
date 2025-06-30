@@ -83,6 +83,8 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           onRatingUpdated: widget.onRecipeRatingUpdated == null ? null : (double newRating, int newRatingCount) {
             widget.onRecipeRatingUpdated!(recipeIndex, newRating, newRatingCount);
           },
+          containsUserAllergens: recipe.containsUserAllergens,
+          matchedAllergens: recipe.matchedAllergens,
         );
       },
     );
@@ -92,6 +94,8 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
 @immutable
 class RecipeItem extends StatelessWidget {
   final void Function(double newRating, int newRatingCount)? onRatingUpdated;
+  final bool? containsUserAllergens;
+  final List<String>? matchedAllergens;
   RecipeItem({
     super.key,
     this.id,
@@ -114,6 +118,8 @@ class RecipeItem extends StatelessWidget {
     this.averageRating,
     this.ratingCount,
     this.onRatingUpdated,
+    this.containsUserAllergens,
+    this.matchedAllergens,
   });
 
   final int? id;
@@ -152,6 +158,8 @@ class RecipeItem extends StatelessWidget {
               initialName: name,
               initialPlace: country,
               initialReadyInMinutes: readyInMinutes,
+              containsUserAllergens: containsUserAllergens,
+              matchedAllergens: matchedAllergens,
             ),
           ),
         );
@@ -176,6 +184,48 @@ class RecipeItem extends StatelessWidget {
                 _buildGradient(),
                 _buildTitleAndSubtitle(),
                 _buildRatingOverlay(),
+                if (containsUserAllergens == true && (matchedAllergens?.isNotEmpty ?? false))
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 180),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.warning, color: Colors.white, size: 16),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Builder(
+                              builder: (context) {
+                                final allergens = matchedAllergens ?? [];
+                                String text;
+                                if (allergens.length > 2) {
+                                  text = 'Allergens: '
+                                    + allergens.take(2).join(", ")
+                                    + ' +${allergens.length - 2} more';
+                                } else {
+                                  text = 'Allergens: ' + allergens.join(", ");
+                                }
+                                return Text(
+                                  text,
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

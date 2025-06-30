@@ -21,6 +21,8 @@ class RecipeDetailScreen extends StatefulWidget {
   final String initialName;
   final String initialPlace;
   final int? initialReadyInMinutes;
+  final bool? containsUserAllergens;
+  final List<String>? matchedAllergens;
 
   const RecipeDetailScreen({
     super.key,
@@ -31,6 +33,8 @@ class RecipeDetailScreen extends StatefulWidget {
     required this.initialName,
     required this.initialPlace,
     this.initialReadyInMinutes,
+    this.containsUserAllergens,
+    this.matchedAllergens,
   });
 
   @override
@@ -110,6 +114,29 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             RecipeDetailAppBar(
               imageUrl: widget.initialImageUrl,
               title: widget.initialName,
+            ),
+            SliverToBoxAdapter(
+              child: (widget.containsUserAllergens == true && (widget.matchedAllergens?.isNotEmpty ?? false))
+                  ? Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.warning, color: Colors.white, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'This recipe contains: ${(widget.matchedAllergens ?? []).join(", ")}',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
             // Ausgelagerter Hauptinhalt
             RecipeDetailContent(

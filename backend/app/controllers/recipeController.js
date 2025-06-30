@@ -12,6 +12,8 @@ const getRecipesByQuery = async (req, res) => {
             intolerances: req.query.intolerances,
         };
 
+        const userId = req.user?.id;
+
         const recipes = await searchRecipesByQuery({
             query,
             offset: parseInt(offset) || 0,
@@ -19,6 +21,7 @@ const getRecipesByQuery = async (req, res) => {
             filters,
             sortBy,
             sortDirection,
+            userId,
         });
 
         return res.json(recipes);

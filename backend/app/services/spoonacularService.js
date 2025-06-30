@@ -2,6 +2,9 @@
 const axios = require('axios');
 const { spoonacularKeys } = require('../config/apiKeys');
 const recipeManagementService = require('./recipeManagementService');
+const preferenceService = require('./preference.service');
+const { PrismaClient } = require('../generated/prisma');
+const prisma = new PrismaClient();
 
 
 const SPOONACULAR_COMPLEX_SEARCH_BASE_URL = 'https://api.spoonacular.com/recipes/complexSearch';
@@ -55,6 +58,31 @@ const makeSpoonacularApiCall = async (url, params) => {
     throw new Error('All Spoonacular API keys attempted and failed for this request.');
 };
 
+// Helper to get user allergen keys
+async function getUserAllergenKeys(userId) {
+  if (!userId) return [];
+  const userPrefs = await prisma.user_preference.findMany({
+    where: { user_id: userId },
+    include: { preference_option: true },
+  });
+  return userPrefs.map(up => up.preference_option.key);
+}
+
+// Allergen mapping for boolean flags and ingredients
+const allergenFlagMap = {
+  gluten: 'gluten_free',
+  lactose: 'dairy_free',
+  dairy: 'dairy_free',
+};
+const allergenIngredientMap = {
+  lactose: [
+    'milk', 'cream', 'cheese', 'yogurt', 'butter', 'whey', 'curds', 'ghee', 'casein', 'lactose',
+    'kefir', 'custard', 'evaporated milk', 'condensed milk', 'ice cream', 'sour cream', 'fromage', 'paneer', 'ricotta', 'mozzarella', 'parmesan', 'feta', 'goat cheese', 'sheep cheese', 'milk powder', 'milk solids', 'malted milk', 'milk protein', 'milkfat', 'milk fat', 'milk sugar', 'milk derivative', 'milk concentrate', 'milk permeate', 'milk mineral', 'milk protein concentrate', 'milk protein isolate', 'milk solids nonfat', 'skim milk', 'whole milk', 'low fat milk', 'nonfat milk', 'reduced fat milk', 'chocolate milk', 'buttermilk', 'caseinate', 'caseinates', 'caseinate sodium', 'caseinate calcium', 'caseinate potassium', 'caseinate magnesium', 'caseinate ammonium', 'caseinate iron', 'caseinate zinc', 'caseinate copper', 'caseinate manganese', 'caseinate cobalt', 'caseinate nickel', 'caseinate chromium', 'caseinate molybdenum', 'caseinate selenium', 'caseinate vanadium', 'caseinate tin', 'caseinate antimony', 'caseinate barium', 'caseinate beryllium', 'caseinate boron', 'caseinate cadmium', 'caseinate lead', 'caseinate lithium', 'caseinate silver', 'caseinate strontium', 'caseinate thallium', 'caseinate titanium', 'caseinate uranium', 'caseinate yttrium', 'caseinate zirconium'
+  ],
+  nut: ['almond', 'hazelnut', 'walnut', 'cashew', 'pecan', 'pistachio', 'macadamia'],
+  egg: ['egg', 'egg white', 'egg yolk'],
+  // Add more as needed
+};
 
 // 1. Funktion für die Textsuche (Query-basiert)
 const searchRecipesByQuery = async ({
@@ -64,6 +92,7 @@ const searchRecipesByQuery = async ({
     filters,
     sortBy,
     sortDirection,
+    userId,
 }) => {
     if (!spoonacularKeys || spoonacularKeys.length === 0) {
         throw new Error('Server configuration error: Spoonacular API keys are missing.');
@@ -99,7 +128,7 @@ const searchRecipesByQuery = async ({
 
     const response = await makeSpoonacularApiCall(SPOONACULAR_COMPLEX_SEARCH_BASE_URL, spoonacularParams);
 
-    const recipes = response.data.results.map(recipe => {
+    let recipes = response.data.results.map(recipe => {
         const nutrients = recipe.nutrition?.nutrients;
         return {
             id: recipe.id,
@@ -121,8 +150,39 @@ const searchRecipesByQuery = async ({
             missedIngredients: recipe.missedIngredients,
             averageRating: null,
             ratingCount: 0,
+            gluten_free: recipe.glutenFree,
+            dairy_free: recipe.dairyFree,
+            ingredients: recipe.extendedIngredients?.map(i => i.name.toLowerCase()) || [],
         };
     });
+
+    // Allergen tagging
+    if (userId) {
+        const userAllergenKeys = await getUserAllergenKeys(userId);
+        recipes = recipes.map(recipe => {
+            let matchedAllergens = [];
+            // Check boolean flags
+            for (const key of userAllergenKeys) {
+                if (allergenFlagMap[key] && recipe[allergenFlagMap[key]] === false) {
+                    matchedAllergens.push(key);
+                }
+            }
+            // Check ingredients
+            for (const key of userAllergenKeys) {
+                if (allergenIngredientMap[key]) {
+                    if (recipe.ingredients && allergenIngredientMap[key].some(a => recipe.ingredients.includes(a))) {
+                        matchedAllergens.push(key);
+                    }
+                }
+            }
+            matchedAllergens = [...new Set(matchedAllergens)];
+            return {
+                ...recipe,
+                containsUserAllergens: matchedAllergens.length > 0,
+                matchedAllergens,
+            };
+        });
+    }
 
     const recipesWithRatings = await enrichRecipesWithRatings(recipes);
     return recipesWithRatings;
@@ -296,17 +356,19 @@ const enrichRecipesWithRatings = async (recipes) => {
             if (internalRecipe) {
                 // Holen Sie die aggregierten Bewertungsdaten aus unserer DB
                 const avgData = await recipeManagementService.getAverageRecipeRating(internalRecipe.id);
+                // Immer alle Felder des Originalrezepts übernehmen und nur Rating-Felder überschreiben/hinzufügen
                 return {
-                    ...recipe, // Alle ursprünglichen Spoonacular-Daten
-                    averageRating: avgData.averageRating, // Ergänzen Sie die durchschnittliche Bewertung
-                    ratingCount: avgData.ratingCount,     // Ergänzen Sie die Anzahl der Bewertungen
+                    ...recipe, // Alle ursprünglichen Felder inkl. custom fields wie containsUserAllergens
+                    averageRating: avgData.averageRating, // Ergänzen/Überschreiben
+                    ratingCount: avgData.ratingCount,     // Ergänzen/Überschreiben
                 };
             }
         } catch (dbError) {
             console.error(`[BACKEND DEBUG - SERVICE] Error fetching ratings for recipe ID ${recipe.id} (Spoonacular ID):`, dbError);
             // Bei einem Fehler einfach das Rezept ohne Bewertungsdaten zurückgeben
         }
-        return recipe; // Geben Sie das Rezept so zurück, wie es war, wenn keine Bewertungen hinzugefügt werden konnten
+        // Auch im Fehlerfall: alle Felder des Originalrezepts zurückgeben
+        return { ...recipe };
     }));
 
     return recipesWithRatings;
