@@ -26,12 +26,26 @@ class RecipeDetailAppBar extends StatelessWidget {
             background: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      Center(child: Icon(Icons.broken_image, size: 80, color: Colors.grey[400])),
-                ),
+                (imageUrl.isNotEmpty)
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                              'assets/images/placeholder_image.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Center(
+                                child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
+                              ),
+                            ),
+                      )
+                    : Image.asset(
+                        'assets/images/placeholder_image.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
+                        ),
+                      ),
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

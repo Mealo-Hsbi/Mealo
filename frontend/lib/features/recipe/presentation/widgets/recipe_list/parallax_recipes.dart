@@ -199,9 +199,12 @@ class RecipeItem extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
-                    'assets/placeholder_image.png',
+                    'assets/images/placeholder_image.png',
                     key: _backgroundImageKey,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Center(
+                      child: Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
+                    ),
                   );
                 },
                 loadingBuilder: (context, child, loadingProgress) {
@@ -217,9 +220,12 @@ class RecipeItem extends StatelessWidget {
                 },
               )
             : Image.asset(
-                'assets/no_image_available.png',
+                'assets/images/placeholder_image.png',
                 key: _backgroundImageKey,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Center(
+                  child: Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
+                ),
               ),
       ],
     );
