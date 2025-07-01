@@ -155,11 +155,26 @@ const getRecipeDetails = async (req, res) => {
 const getInternalRecipeDetails = async (req, res) => {
     try {
         const { id } = req.params;
+        const userId = req.user?.id;
+        
         const recipe = await recipeManagementService.getInternalRecipeDetails(id);
         if (!recipe) {
             return res.status(404).json({ message: 'Recipe not found' });
         }
-        return res.json(recipe);
+
+        // Lade Benutzerbewertung, falls angemeldet
+        let userRating = null;
+        if (userId) {
+            userRating = await recipeManagementService.getUserRecipeRating(userId, id);
+        }
+
+        // Füge Benutzerbewertung zum Rezept hinzu
+        const fullRecipeDetails = {
+            ...recipe,
+            userRating: userRating,
+        };
+
+        return res.json(fullRecipeDetails);
     } catch (error) {
         console.error('[BACKEND DEBUG - CONTROLLER] Error in getInternalRecipeDetails:', error);
         const statusCode = error.status || 500;

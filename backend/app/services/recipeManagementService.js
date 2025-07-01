@@ -281,21 +281,105 @@ async function getAverageRecipeRating(recipeId) {
 }
 
 async function getInternalRecipeDetails(id) {
-    // Hole das Rezept anhand der internen UUID
+    // Hole das Rezept mit allen Relationen
     const recipe = await prisma.recipes.findUnique({
         where: { id },
-        // Hier ggf. weitere Relationen einbinden (z.B. Zutaten, Schritte)
+        include: {
+            recipe_ingredients: {
+                include: {
+                    ingredients: true
+                }
+            },
+            recipe_steps: {
+                orderBy: {
+                    step_number: 'asc'
+                }
+            },
+            ratings: true,
+            users: true // Für den Ersteller
+        }
     });
+    
     if (!recipe) return null;
-    // Passe das Mapping ggf. an die Felder im Frontend an
+
+    // Berechne durchschnittliche Bewertung
+    const avgRating = recipe.ratings.length > 0 
+        ? recipe.ratings.reduce((sum, rating) => sum + rating.score, 0) / recipe.ratings.length
+        : null;
+
+    // Mappe Zutaten in Spoonacular-Format
+    const extendedIngredients = recipe.recipe_ingredients.map(ri => ({
+        id: parseInt(ri.ingredients.id.replace(/-/g, '').substring(0, 8), 16), // Konvertiere UUID zu Integer
+        aisle: null, // Eigene Rezepte haben keine Aisle-Information
+        image: null, // Eigene Rezepte haben keine Zutatenbilder
+        consistency: null,
+        name: ri.ingredients.name,
+        original: `${ri.amount} ${ri.unit} ${ri.ingredients.name}`,
+        originalName: ri.original || `${ri.amount} ${ri.unit} ${ri.ingredients.name}`,
+        amount: parseFloat(ri.amount),
+        unit: ri.unit,
+        meta: [],
+        measures: null
+    }));
+
+    // Mappe Schritte in Spoonacular-Format
+    const analyzedInstructions = [{
+        name: null,
+        steps: recipe.recipe_steps.map((step, index) => ({
+            number: step.step_number,
+            step: step.description,
+            ingredients: [], // Könnte später durch NLP erweitert werden
+            equipment: [],
+            length: step.duration_minutes ? {
+                number: step.duration_minutes,
+                unit: 'minutes'
+            } : null
+        }))
+    }];
+
+    // Erstelle Diets-Array basierend auf den Rezept-Eigenschaften
+    const diets = [];
+    if (recipe.vegan) diets.push('vegan');
+    if (recipe.vegetarian) diets.push('vegetarian');
+    if (recipe.gluten_free) diets.push('gluten-free');
+    if (recipe.dairy_free) diets.push('dairy-free');
+
+    // Mappe in Spoonacular-Format
     return {
-        id: recipe.id,
+        spoonacularId: null, // Eigene Rezepte haben keine Spoonacular ID
+        internalRecipeId: recipe.id,
         title: recipe.title,
-        imageUrl: recipe.image_url,
+        image: recipe.image_url,
+        imageType: null,
         servings: recipe.servings,
         readyInMinutes: recipe.ready_in_minutes,
+        sourceUrl: null, // Eigene Rezepte haben keine externe Quelle
+        sourceName: null,
         summary: recipe.summary,
-        // ... weitere Felder nach Bedarf
+        aggregateLikes: null, // Eigene Rezepte haben keine Likes
+        healthScore: recipe.health_score,
+        pricePerServing: null, // Eigene Rezepte haben keine Preisinformation
+        dishTypes: recipe.dish_types || [],
+        diets: diets,
+        intolerances: [], // Könnte später erweitert werden
+        extendedIngredients: extendedIngredients,
+        analyzedInstructions: analyzedInstructions,
+        calories: null, // Könnte später berechnet werden
+        protein: null,
+        fat: null,
+        carbs: null,
+        sugar: null,
+        nutrition: null, // Könnte später berechnet werden
+        userRating: null, // Wird separat geladen
+        averageRating: avgRating,
+        ratingCount: recipe.ratings.length,
+        // Zusätzliche Felder für eigene Rezepte
+        createdBy: recipe.users ? {
+            id: recipe.users.id,
+            name: recipe.users.name,
+            email: recipe.users.email
+        } : null,
+        createdAt: recipe.created_at
     };
 }
 
@@ -335,9 +419,65 @@ async function addFavoriteRecipeByRecipeId(userId, recipeId) {
  */
 async function getOwnRecipesForUser(userId) {
     if (!userId) throw new Error('userId ist erforderlich');
-    return prisma.recipes.findMany({
+    
+    const recipes = await prisma.recipes.findMany({
         where: { created_by_id: userId },
+        include: {
+            ratings: true,
+            recipe_ingredients: {
+                include: {
+                    ingredients: true
+                }
+            }
+        },
         orderBy: { created_at: 'desc' },
+    });
+
+    // Mappe die Rezepte in das erwartete Format
+    return recipes.map(recipe => {
+        // Berechne durchschnittliche Bewertung
+        const avgRating = recipe.ratings.length > 0 
+            ? recipe.ratings.reduce((sum, rating) => sum + rating.score, 0) / recipe.ratings.length
+            : null;
+
+        return {
+            id: null, // Keine Spoonacular ID
+            internalId: recipe.id,
+            isInternal: true,
+            name: recipe.title,
+            title: recipe.title,
+            imageUrl: recipe.image_url,
+            place: null, // Eigene Rezepte haben keinen Ort
+            readyInMinutes: recipe.ready_in_minutes,
+            servings: recipe.servings,
+            calories: null, // Könnte später berechnet werden
+            protein: null,
+            fat: null,
+            carbs: null,
+            sugar: null,
+            healthScore: recipe.health_score,
+            usedIngredientCount: recipe.recipe_ingredients.length,
+            missedIngredientCount: 0, // Eigene Rezepte haben keine fehlenden Zutaten
+            usedIngredients: recipe.recipe_ingredients.map(ri => ({
+                id: parseInt(ri.ingredients.id.replace(/-/g, '').substring(0, 8), 16), // Konvertiere UUID zu Integer
+                name: ri.ingredients.name,
+                amount: parseFloat(ri.amount),
+                unit: ri.unit,
+                original: `${ri.amount} ${ri.unit} ${ri.ingredients.name}`,
+                aisle: null,
+                image: null,
+                consistency: null,
+                originalName: `${ri.amount} ${ri.unit} ${ri.ingredients.name}`,
+                meta: [],
+                measures: null
+            })),
+            missedIngredients: [],
+            averageRating: avgRating,
+            ratingCount: recipe.ratings.length,
+            containsUserAllergens: false, // Könnte später berechnet werden
+            matchedAllergens: [],
+            createdAt: recipe.created_at
+        };
     });
 }
 

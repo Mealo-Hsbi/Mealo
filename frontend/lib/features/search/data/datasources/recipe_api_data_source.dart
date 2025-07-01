@@ -29,6 +29,8 @@ abstract class RecipeApiDataSource {
   });
 
   Future<RecipeDetails> getRecipeDetails(int recipeId, {CancelToken? cancelToken}); // Optional cancel token for request cancellation
+  
+  Future<RecipeDetails> getInternalRecipeDetails(String internalRecipeId, {CancelToken? cancelToken}); // For internal recipes
 }
 
 class RecipeApiDataSourceImpl implements RecipeApiDataSource {
@@ -216,6 +218,7 @@ class RecipeApiDataSourceImpl implements RecipeApiDataSource {
     }
   }
 
+  @override
   Future<RecipeDetails> getInternalRecipeDetails(String internalRecipeId, {CancelToken? cancelToken}) async {
     try {
       final String endpoint = '/recipes/internal/$internalRecipeId';

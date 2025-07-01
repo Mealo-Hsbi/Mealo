@@ -131,7 +131,7 @@ class RecipeDetails {
         userRating: parsedUserRating,
       );
     } catch (e, st) {
-      debugPrint('ERROR: Failed to create RecipeDetails instance from JSON for Spoonacular ID ${json['id']}: $e\nStack: $st');
+      debugPrint('ERROR: Failed to create RecipeDetails instance from JSON for Recipe ID ${json['id']}: $e\nStack: $st');
       debugPrint('Problematic JSON (truncated): ${json.toString().substring(0, json.toString().length > 500 ? 500 : json.toString().length)}...');
       rethrow;
     }
