@@ -12,6 +12,15 @@ function getMonday(date) {
 // Hilfsfunktion: Backend-Recipe zu Frontend-RecipeModel-Format
 function mapRecipeToFrontend(recipe) {
   if (!recipe) return null;
+  // Zutaten mappen
+  const usedIngredients = (recipe.recipe_ingredients || []).map(ri => ({
+    id: ri.ingredients.id,
+    name: ri.ingredients.name,
+    imageUrl: ri.ingredients.image || null,
+    amount: ri.amount,
+    unit: ri.unit,
+    original: ri.original,
+  }));
   return {
     id: recipe.id,
     internalId: recipe.id,
@@ -27,10 +36,10 @@ function mapRecipeToFrontend(recipe) {
     carbs: undefined,
     sugar: undefined,
     healthScore: recipe.health_score,
-    usedIngredientCount: undefined,
-    missedIngredientCount: undefined,
-    usedIngredients: undefined,
-    missedIngredients: undefined,
+    usedIngredientCount: usedIngredients.length,
+    missedIngredientCount: 0,
+    usedIngredients,
+    missedIngredients: [],
     averageRating: undefined,
     ratingCount: undefined,
     containsUserAllergens: undefined,
@@ -61,6 +70,11 @@ exports.getCurrentMealplan = async (userId) => {
   console.log('[Mealplan-Backend] weekly_plan_item:', plan.weekly_plan_item);
   const recipes = await prisma.recipes.findMany({
     where: { id: { in: recipeIds } },
+    include: {
+      recipe_ingredients: {
+        include: { ingredients: true }
+      }
+    }
   });
   const recipeMap = Object.fromEntries(recipes.map(r => [r.id, r]));
   console.log('[Mealplan-Backend] recipeMap:', recipeMap);
