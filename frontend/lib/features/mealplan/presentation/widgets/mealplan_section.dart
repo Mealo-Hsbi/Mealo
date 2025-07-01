@@ -41,18 +41,20 @@ class MealPlanSection extends ConsumerWidget {
       'Breakfast', 'Lunch', 'Dinner'
     ];
     final List<String> weekDays = const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final dateKeys = getCurrentWeekDateKeys();
 
     if (mealplanAsync.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
     if (mealplanAsync.hasError) {
-      return Center(child: Text('Fehler beim Laden des Mealplans'));
+      print('[MealPlanSection] Error: ${mealplanAsync.error}');
+      print('[MealPlanSection] Stack trace: ${mealplanAsync.stackTrace}');
+      return Center(child: Text('Fehler beim Laden des Mealplans: ${mealplanAsync.error}'));
     }
     final mealplan = mealplanAsync.value!;
     print('[MealPlanSection] mealplan.days: \n${mealplan.days}');
     print('Date-Keys in mealplan.days: \n${mealplan.days.keys.toList()}');
 
+    final dateKeys = getCurrentWeekDateKeys();
     final sortedDateKeys = mealplan.days.keys.toList()..sort();
 
     void _showRecipePicker(String dateKey, String meal) async {
@@ -83,21 +85,82 @@ class MealPlanSection extends ConsumerWidget {
     }
 
     void _showShoppingList() {
-      final ingredientsSet = <Ingredient>{};
+      // Sammle alle Zutaten
+      final allIngredients = <Ingredient>[];
       mealplan.days.forEach((_, meals) {
         meals.forEach((_, recipe) {
           if (recipe != null) {
             if (recipe.usedIngredients != null) {
-              ingredientsSet.addAll(recipe.usedIngredients!);
+              allIngredients.addAll(recipe.usedIngredients!);
             }
             if (recipe.missedIngredients != null) {
-              ingredientsSet.addAll(recipe.missedIngredients!);
+              allIngredients.addAll(recipe.missedIngredients!);
             }
           }
         });
       });
-      final ingredients = ingredientsSet.where((i) => i.name != null).toList();
-      ingredients.sort((a, b) => a.name.compareTo(b.name));
+
+      // Gruppiere Zutaten nach Namen und addiere Mengen
+      final ingredientGroups = <String, List<Ingredient>>{};
+      for (final ingredient in allIngredients) {
+        if (ingredient.name != null) {
+          final normalizedName = ingredient.name!.toLowerCase().trim();
+          ingredientGroups.putIfAbsent(normalizedName, () => []).add(ingredient);
+        }
+      }
+
+      // Erstelle zusammengefasste Zutaten
+      final mergedIngredients = <Ingredient>[];
+      ingredientGroups.forEach((name, ingredients) {
+        if (ingredients.length == 1) {
+          // Nur eine Zutat mit diesem Namen
+          mergedIngredients.add(ingredients.first);
+        } else {
+          // Mehrere Zutaten mit gleichem Namen - versuche zu addieren
+          final firstIngredient = ingredients.first;
+          double? totalAmount;
+          String? commonUnit;
+          bool canMerge = true;
+
+          // Prüfe ob alle Zutaten die gleiche Einheit haben
+          for (final ingredient in ingredients) {
+            if (ingredient.unit != firstIngredient.unit) {
+              canMerge = false;
+              break;
+            }
+          }
+
+                     if (canMerge) {
+             // Addiere Mengen
+             totalAmount = 0.0;
+             for (final ingredient in ingredients) {
+               if (ingredient.amount != null) {
+                 totalAmount = totalAmount! + ingredient.amount!;
+               }
+             }
+             commonUnit = firstIngredient.unit;
+           }
+
+          // Erstelle zusammengefasste Zutat oder behalte separate Einträge
+          if (canMerge && totalAmount != null) {
+            mergedIngredients.add(Ingredient(
+              id: firstIngredient.id,
+              name: firstIngredient.name,
+              imageUrl: firstIngredient.imageUrl,
+              aliases: firstIngredient.aliases,
+              amount: totalAmount,
+              unit: commonUnit,
+              original: '${totalAmount}${commonUnit != null ? ' $commonUnit' : ''} ${firstIngredient.name}',
+            ));
+          } else {
+            // Kann nicht zusammengefasst werden - behalte alle separaten Einträge
+            mergedIngredients.addAll(ingredients);
+          }
+        }
+      });
+
+      final ingredients = mergedIngredients.where((i) => i.name != null).toList();
+      ingredients.sort((a, b) => a.name!.compareTo(b.name!));
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -122,7 +185,7 @@ class MealPlanSection extends ConsumerWidget {
                             : const Icon(Icons.kitchen),
                         title: Text([
                           if (ingredient.amount != null) ingredient.amount,
-                          if (ingredient.unit != null && ingredient.unit.isNotEmpty) ingredient.unit,
+                          if ((ingredient.unit ?? '').isNotEmpty) ingredient.unit,
                           ingredient.name ?? ''
                         ].where((e) => e != null && e.toString().isNotEmpty).join(' ')),
                       );
