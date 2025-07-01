@@ -17,11 +17,34 @@ class InstructionStep {
   });
 
   factory InstructionStep.fromJson(Map<String, dynamic> json) {
-    return InstructionStep(
-      stepNumber: json['step_number'] as int,
-      description: json['description'] as String,
-      durationMinutes: json['duration_minutes'] as int?,
-    );
+    // Spoonacular: {number, step, length: {number, unit}}
+    // Eigenes Backend: {step_number, description, duration_minutes}
+    try {
+      if (json.containsKey('step_number')) {
+        // Eigenes Backend-Format
+        return InstructionStep(
+          stepNumber: json['step_number'] as int,
+          description: json['description'] as String,
+          durationMinutes: json['duration_minutes'] as int?,
+        );
+      } else if (json.containsKey('number') && json.containsKey('step')) {
+        // Spoonacular-Format
+        int? duration;
+        if (json['length'] != null && json['length'] is Map<String, dynamic> && json['length']['number'] != null) {
+          duration = json['length']['number'] as int;
+        }
+        return InstructionStep(
+          stepNumber: json['number'] as int,
+          description: json['step'] as String,
+          durationMinutes: duration,
+        );
+      } else {
+        throw Exception('Unknown instruction step format: ' + json.toString());
+      }
+    } catch (e, st) {
+      debugPrint('Error parsing InstructionStep: $e\nStack: $st. Raw JSON: $json');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
