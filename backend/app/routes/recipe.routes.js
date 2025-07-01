@@ -16,6 +16,8 @@ const {
     getUserRecipeRating,       // NEU: Controller für Bewertungen abrufen
     getInternalRecipeDetails,  // NEU: Controller für interne Rezeptdetails
     getOwnRecipesForUser,      // <--- NEU
+    addOwnRecipe,              // NEU: Controller für eigenes Rezept hinzufügen
+    addRecipeImageUploadUrl,   // NEU: Controller für signierte Upload-URL für Rezeptbilder
 } = require('../controllers/recipeController');
 
 
@@ -76,10 +78,13 @@ router.delete('/favorites/:favoriteId', auth, removeFavoriteRecipe);
 // Route für interne Rezeptdetails (eigene Rezepte per UUID)
 router.get('/internal/:id', auth, getInternalRecipeDetails);
 
-// Route zum Abrufen aller eigenen Rezepte eines Benutzers
-// Methode: GET
-// URL: /api/recipes/mine
+// Route zum Anlegen eines eigenen Rezepts
+// Methode: POST
+// URL: /api/recipes
 // Benötigt: Authentifizierung (userId)
-router.get('/mine', auth, getOwnRecipesForUser);
+router.post('/', auth, addOwnRecipe);
+
+// Route für signierte Upload-URL für Rezeptbilder
+router.post('/image-upload-url', auth, addRecipeImageUploadUrl);
 
 module.exports = router;

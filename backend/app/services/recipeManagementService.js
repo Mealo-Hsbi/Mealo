@@ -481,6 +481,55 @@ async function getOwnRecipesForUser(userId) {
     });
 }
 
+/**
+ * Legt ein eigenes Rezept mit Zutaten und Schritten an
+ * @param {Object} data - Rezeptdaten
+ * @returns {Promise<Object>} - Das angelegte Rezept
+ */
+async function createOwnRecipe({ userId, title, servings, readyInMinutes, summary, ingredients, steps, imageUrl }) {
+    // 1. Rezept anlegen
+    const recipe = await prisma.recipes.create({
+        data: {
+            title,
+            servings,
+            ready_in_minutes: readyInMinutes,
+            summary,
+            image_url: imageUrl,
+            created_by_id: userId,
+        }
+    });
+    // 2. Zutaten anlegen (und ggf. neue Zutaten in ingredients-Tabelle)
+    for (const ing of ingredients) {
+        // Prüfe, ob die Zutat schon existiert
+        let ingredient = await prisma.ingredients.findFirst({ where: { name: ing.name } });
+        if (!ingredient) {
+            ingredient = await prisma.ingredients.create({ data: { name: ing.name } });
+        }
+        await prisma.recipe_ingredients.create({
+            data: {
+                recipe_id: recipe.id,
+                ingredient_id: ingredient.id,
+                amount: ing.amount,
+                unit: ing.unit,
+                original: ing.original || `${ing.amount} ${ing.unit} ${ing.name}`,
+            }
+        });
+    }
+    // 3. Schritte anlegen
+    for (let i = 0; i < steps.length; i++) {
+        await prisma.recipe_steps.create({
+            data: {
+                recipe_id: recipe.id,
+                step_number: i + 1,
+                description: steps[i].description,
+                duration_minutes: steps[i].durationMinutes || null,
+            }
+        });
+    }
+    // 4. Rezept zurückgeben (wie getInternalRecipeDetails)
+    return getInternalRecipeDetails(recipe.id);
+}
+
 module.exports = {
     getOrCreateRecipeInDb,
     addFavoriteRecipe,
@@ -493,4 +542,5 @@ module.exports = {
     getInternalRecipeDetails,
     addFavoriteRecipeByRecipeId,
     getOwnRecipesForUser,
+    createOwnRecipe,
 };

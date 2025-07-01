@@ -37,8 +37,13 @@ if (process.env.NODE_ENV === 'test') {
     return downloadUrl;
   }
 
+  async function getSignedUploadUrl(filename, contentType) {
+    return getSignedUploadInfo(filename, contentType);
+  }
+
   module.exports = {
     getSignedUploadInfo,
+    getSignedUploadUrl,
     getSignedDownloadUrl,
   };
 }

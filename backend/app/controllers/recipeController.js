@@ -361,6 +361,48 @@ const getOwnRecipesForUser = async (req, res) => {
     }
 };
 
+const addOwnRecipe = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'Nicht authentifiziert.' });
+        }
+        const { title, servings, readyInMinutes, summary, ingredients, steps, imageUrl } = req.body;
+        if (!title || !ingredients || !steps) {
+            return res.status(400).json({ message: 'Pflichtfelder fehlen.' });
+        }
+        const recipe = await recipeManagementService.createOwnRecipe({
+            userId,
+            title,
+            servings,
+            readyInMinutes,
+            summary,
+            ingredients,
+            steps,
+            imageUrl
+        });
+        return res.status(201).json(recipe);
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Fehler in addOwnRecipe:', error);
+        return res.status(500).json({ message: 'Fehler beim Anlegen des Rezepts.' });
+    }
+};
+
+const addRecipeImageUploadUrl = async (req, res) => {
+    try {
+        const { filename, contentType } = req.body;
+        if (!filename || !contentType) {
+            return res.status(400).json({ message: 'filename und contentType sind erforderlich.' });
+        }
+        const objectKey = `recipe-pictures/${filename}`;
+        const uploadInfo = await mediaService.getSignedUploadUrl(objectKey, contentType);
+        return res.json({ ...uploadInfo, objectKey });
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Fehler in addRecipeImageUploadUrl:', error);
+        return res.status(500).json({ message: 'Fehler beim Erstellen der Upload-URL.' });
+    }
+};
+
 module.exports = {
     getRecipesByQuery,
     getRecipesByIngredients,
@@ -373,4 +415,6 @@ module.exports = {
     addOrUpdateRecipeRating,
     getUserRecipeRating,
     getOwnRecipesForUser,
+    addOwnRecipe,
+    addRecipeImageUploadUrl,
 };

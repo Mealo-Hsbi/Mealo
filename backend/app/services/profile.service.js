@@ -36,7 +36,7 @@ async function fetchProfile(firebaseUid) {
       title:    recipe.title,
       imageUrl: recipe.image_url
         ? await mediaService.getSignedDownloadUrl(recipe.image_url)
-        : null,
+        : '', // Leerer String statt null
     }))
   );
 

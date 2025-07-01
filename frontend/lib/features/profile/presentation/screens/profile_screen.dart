@@ -19,6 +19,7 @@ import '../providers/achievement_provider.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/user_recipe_list_screen.dart';
+import 'package:frontend/features/recipe/presentation/screens/create_recipe_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
@@ -155,11 +156,23 @@ class ProfileScreen extends StatelessWidget {
                       // Rezepte-Sektion mit Fallback
                       ProfileSection(
                         title: 'My Recipes',
-                        action: TextButton(
-                          onPressed: () => Navigator.of(context).push(
-                            _createSlideRoute(const UserRecipeListScreen()),
-                          ),
-                          child: const Text('View All'),
+                        action: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.add_circle, color: Colors.green),
+                              tooltip: 'Rezept hinzufügen',
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const CreateRecipeScreen()),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                _createSlideRoute(const UserRecipeListScreen()),
+                              ),
+                              child: const Text('View All'),
+                            ),
+                          ],
                         ),
                         child: recent.isNotEmpty
                             ? GridView.count(
@@ -170,14 +183,14 @@ class ProfileScreen extends StatelessWidget {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 children: recent.map((r) => RecipePreviewItem(
-                                  imageUrl: r.imageUrl,
+                                  imageUrl: r.imageUrl ?? '',
                                   title: r.title,
                                   onTap: () {
                                     if ((r.internalId ?? '').isNotEmpty) {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) => RecipeDetailScreen(
-                                            initialImageUrl: r.imageUrl,
+                                            initialImageUrl: r.imageUrl ?? '',
                                             initialName: r.title,
                                             initialPlace: '',
                                             isInternal: true,
@@ -189,7 +202,7 @@ class ProfileScreen extends StatelessWidget {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) => RecipeDetailScreen(
-                                            initialImageUrl: r.imageUrl,
+                                            initialImageUrl: r.imageUrl ?? '',
                                             initialName: r.title,
                                             initialPlace: '',
                                             isInternal: false,

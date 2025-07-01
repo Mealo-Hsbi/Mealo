@@ -6,14 +6,14 @@ class RecipePreviewDto {
   final String? id;
   final String? internalId;
   final String? spoonacularId;
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
 
   RecipePreviewDto({
     this.id,
     this.internalId,
     this.spoonacularId,
-    required this.imageUrl,
+    this.imageUrl,
     required this.title,
   });
 
@@ -22,7 +22,7 @@ class RecipePreviewDto {
       id: json['id']?.toString(),
       internalId: (json['internalId'] ?? json['id'])?.toString(),
       spoonacularId: json['spoonacularId']?.toString(),
-      imageUrl: json['imageUrl'] as String,
+      imageUrl: json['imageUrl'] as String?,
       title: json['title'] as String,
     );
   }
