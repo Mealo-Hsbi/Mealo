@@ -1,4 +1,4 @@
-// lib/common/models/instruction_step.dart
+// lib/common/models/recipe/instruction_step.dart
 
 import 'package:flutter/foundation.dart'; // For debugPrint
 import 'package:html_unescape/html_unescape.dart'; // NEU: Für HTML unescaping
@@ -6,61 +6,57 @@ import 'package:html_unescape/html_unescape.dart'; // NEU: Für HTML unescaping
 /// Represents a single step within a recipe's instructions.
 /// Now includes an optional duration for timer functionality and handles HTML unescaping.
 class InstructionStep {
-  final int number;
-  final String step; // Can contain HTML
-  final List<String> ingredients; // Names of ingredients mentioned in this step
-  final List<String> equipment; // Names of equipment mentioned in this step
-  final LengthDetail? duration; // Optionale Dauer für den Timer
+  final int stepNumber;
+  final String description;
+  final int? durationMinutes;
 
-  const InstructionStep({
-    required this.number,
-    required this.step,
-    required this.ingredients,
-    required this.equipment,
-    this.duration,
+  InstructionStep({
+    required this.stepNumber,
+    required this.description,
+    this.durationMinutes,
   });
 
   factory InstructionStep.fromJson(Map<String, dynamic> json) {
-    List<String> parseNamedList(dynamic jsonList) {
-      if (jsonList is List) {
-        return jsonList.map((item) {
-          if (item is String) {
-            return item;
-          } else if (item is Map<String, dynamic> && item.containsKey('name')) {
-            return item['name'].toString();
-          }
-          return '';
-        }).where((item) => item.isNotEmpty).toList();
-      }
-      return [];
-    }
+    return InstructionStep(
+      stepNumber: json['step_number'] as int,
+      description: json['description'] as String,
+      durationMinutes: json['duration_minutes'] as int?,
+    );
+  }
 
-    try {
-      final lengthJson = json['length'];
-      final LengthDetail? parsedLength = lengthJson != null && lengthJson is Map<String, dynamic>
-          ? LengthDetail.fromJson(lengthJson)
-          : null;
-
-      // NEU: HTML unescaping für den Schritttext
-      final String rawStep = json['step'] as String? ?? '';
-      final String unescapedStep = HtmlUnescape().convert(rawStep);
-
-      return InstructionStep(
-        number: json['number'] as int,
-        step: unescapedStep, // Den unescaped-String verwenden
-        ingredients: parseNamedList(json['ingredients']),
-        equipment: parseNamedList(json['equipment']),
-        duration: parsedLength,
-      );
-    } catch (e, st) {
-      debugPrint('Error parsing InstructionStep ${json['number']}: $e\nStack: $st. Raw JSON: $json');
-      rethrow;
-    }
+  Map<String, dynamic> toJson() {
+    return {
+      'step_number': stepNumber,
+      'description': description,
+      'duration_minutes': durationMinutes,
+    };
   }
 
   @override
   String toString() {
-    return 'InstructionStep(number: $number, step: $step, duration: ${duration?.number ?? 'N/A'} ${duration?.unit ?? ''})';
+    return 'InstructionStep(stepNumber: $stepNumber, description: $description, durationMinutes: $durationMinutes)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InstructionStep &&
+          runtimeType == other.runtimeType &&
+          stepNumber == other.stepNumber;
+
+  @override
+  int get hashCode => stepNumber.hashCode;
+
+  InstructionStep copyWith({
+    int? stepNumber,
+    String? description,
+    int? durationMinutes,
+  }) {
+    return InstructionStep(
+      stepNumber: stepNumber ?? this.stepNumber,
+      description: description ?? this.description,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+    );
   }
 }
 

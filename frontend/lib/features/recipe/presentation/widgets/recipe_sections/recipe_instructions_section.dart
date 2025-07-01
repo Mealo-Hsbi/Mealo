@@ -88,7 +88,7 @@ class RecipeInstructionsSection extends StatelessWidget {
                     ),
                   ),
                 ...instructionSet.steps.map((step) {
-                  final int? durationInSeconds = step.duration?.toSeconds();
+                  final int? durationInSeconds = step.durationMinutes != null ? step.durationMinutes! * 60 : null;
                   final bool hasTimer = durationInSeconds != null && durationInSeconds > 0;
 
                   return Padding(
@@ -123,7 +123,7 @@ class RecipeInstructionsSection extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6.0),
                             ),
                             child: Text(
-                              step.number.toString(),
+                              step.stepNumber.toString(),
                               style: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
@@ -136,7 +136,7 @@ class RecipeInstructionsSection extends StatelessWidget {
                             child: Text.rich(
                               TextSpan(
                                 children: _parseHtmlToTextSpans(
-                                  step.step,
+                                  step.description,
                                   textTheme.bodyMedium?.copyWith(
                                     color: colorScheme.onSurface,
                                     height: 1.5,

@@ -341,6 +341,125 @@ async function getOwnRecipesForUser(userId) {
     });
 }
 
+/**
+ * Erstellt ein neues Rezept mit allen zugehörigen Daten
+ * @param {object} recipeData - Die Rezeptdaten
+ * @returns {Promise<object>} - Das erstellte Rezept
+ */
+async function createRecipe(recipeData) {
+    const {
+        userId,
+        title,
+        imageUrl,
+        servings,
+        readyInMinutes,
+        cookingMinutes,
+        preparationMinutes,
+        dishTypes,
+        summary,
+        instructions,
+        healthScore,
+        pricePerServing,
+        vegan,
+        vegetarian,
+        glutenFree,
+        dairyFree,
+        weightWatcherPoints,
+        ingredients,
+        steps
+    } = recipeData;
+
+    try {
+        // Erstelle das Hauptrezept
+        const recipe = await prisma.recipes.create({
+            data: {
+                created_by_id: userId,
+                title,
+                image_url: imageUrl,
+                servings,
+                ready_in_minutes: readyInMinutes,
+                cooking_minutes: cookingMinutes,
+                preparation_minutes: preparationMinutes,
+                dish_types: dishTypes,
+                summary,
+                instructions,
+                health_score: healthScore,
+                price_per_serving: pricePerServing,
+                vegan,
+                vegetarian,
+                gluten_free: glutenFree,
+                dairy_free: dairyFree,
+                weight_watcher_points: weightWatcherPoints,
+            },
+        });
+
+        // Erstelle die Zutaten, falls vorhanden
+        if (ingredients && ingredients.length > 0) {
+            for (const ingredientData of ingredients) {
+                // Prüfe, ob die Zutat bereits existiert
+                let ingredient = await prisma.ingredients.findUnique({
+                    where: { name: ingredientData.name }
+                });
+
+                // Erstelle die Zutat, falls sie nicht existiert
+                if (!ingredient) {
+                    ingredient = await prisma.ingredients.create({
+                        data: {
+                            name: ingredientData.name,
+                            category: ingredientData.category,
+                            shelf_life_days: ingredientData.shelfLifeDays,
+                            calories: ingredientData.calories,
+                            protein_gram: ingredientData.proteinGram,
+                            carbs_gram: ingredientData.carbsGram,
+                            fat_gram: ingredientData.fatGram,
+                        }
+                    });
+                }
+
+                // Verknüpfe die Zutat mit dem Rezept
+                await prisma.recipe_ingredients.create({
+                    data: {
+                        recipe_id: recipe.id,
+                        ingredient_id: ingredient.id,
+                        amount: ingredientData.amount,
+                        unit: ingredientData.unit,
+                        original: ingredientData.original,
+                    }
+                });
+            }
+        }
+
+        // Erstelle die Schritte, falls vorhanden
+        if (steps && steps.length > 0) {
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                await prisma.recipe_steps.create({
+                    data: {
+                        recipe_id: recipe.id,
+                        step_number: i + 1,
+                        description: step.description,
+                        duration_minutes: step.durationMinutes,
+                    }
+                });
+            }
+        }
+
+        // Achievement: first_recipe
+        const userRecipeCount = await prisma.recipes.count({ where: { created_by_id: userId } });
+        if (userRecipeCount === 1) {
+            await unlockAchievementIfNeeded(userId, 'first_recipe');
+        }
+        if (userRecipeCount === 10) {
+            await unlockAchievementIfNeeded(userId, '10_recipes');
+        }
+
+        return recipe;
+    } catch (error) {
+        console.error('[ERROR - Prisma Recipe Creation] Fehler beim Erstellen des Rezepts:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     getOrCreateRecipeInDb,
     addFavoriteRecipe,
@@ -353,4 +472,5 @@ module.exports = {
     getInternalRecipeDetails,
     addFavoriteRecipeByRecipeId,
     getOwnRecipesForUser,
+    createRecipe,
 };

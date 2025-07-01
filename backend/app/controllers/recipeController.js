@@ -346,6 +346,67 @@ const getOwnRecipesForUser = async (req, res) => {
     }
 };
 
+const createRecipe = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'Nicht authentifiziert.' });
+        }
+
+        const {
+            title,
+            imageUrl,
+            servings,
+            readyInMinutes,
+            cookingMinutes,
+            preparationMinutes,
+            dishTypes,
+            summary,
+            instructions,
+            healthScore,
+            pricePerServing,
+            vegan,
+            vegetarian,
+            glutenFree,
+            dairyFree,
+            weightWatcherPoints,
+            ingredients,
+            steps
+        } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ message: 'Rezepttitel ist erforderlich.' });
+        }
+
+        const recipe = await recipeManagementService.createRecipe({
+            userId,
+            title,
+            imageUrl,
+            servings,
+            readyInMinutes,
+            cookingMinutes,
+            preparationMinutes,
+            dishTypes: dishTypes || [],
+            summary,
+            instructions,
+            healthScore,
+            pricePerServing,
+            vegan: vegan || false,
+            vegetarian: vegetarian || false,
+            glutenFree: glutenFree || false,
+            dairyFree: dairyFree || false,
+            weightWatcherPoints,
+            ingredients: ingredients || [],
+            steps: steps || []
+        });
+
+        return res.status(201).json(recipe);
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Fehler in createRecipe:', error);
+        return res.status(500).json({ message: 'Fehler beim Erstellen des Rezepts.' });
+    }
+};
+
 module.exports = {
     getRecipesByQuery,
     getRecipesByIngredients,
@@ -358,4 +419,5 @@ module.exports = {
     addOrUpdateRecipeRating,
     getUserRecipeRating,
     getOwnRecipesForUser,
+    createRecipe,
 };

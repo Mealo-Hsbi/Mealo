@@ -19,6 +19,7 @@ import '../providers/achievement_provider.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/user_recipe_list_screen.dart';
+import 'package:frontend/features/recipe/presentation/screens/create_recipe_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
@@ -167,11 +168,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           // Rezepte-Sektion mit Fallback
                           ProfileSection(
                             title: 'My Recipes',
-                            action: TextButton(
-                              onPressed: () => Navigator.of(context).push(
-                                _createSlideRoute(const UserRecipeListScreen()),
-                              ),
-                              child: const Text('View All'),
+                            action: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.add, color: Colors.green, size: 20),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  tooltip: 'Add Recipe',
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const CreateRecipeScreen(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).push(
+                                    _createSlideRoute(const UserRecipeListScreen()),
+                                  ),
+                                  child: const Text('View All'),
+                                ),
+                              ],
                             ),
                             child: recent.isNotEmpty
                                 ? GridView.count(
