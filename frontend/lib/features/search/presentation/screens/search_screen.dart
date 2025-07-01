@@ -12,7 +12,8 @@ import 'package:frontend/features/search/presentation/provider/search_notifier.d
 import 'package:frontend/common/models/recipe.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final void Function(Recipe recipe)? onRecipeTap;
+  const SearchScreen({super.key, this.onRecipeTap});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -251,6 +252,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           );
                         });
                       },
+                      onRecipeTap: widget.onRecipeTap,
                     );
                   },
                 ),
