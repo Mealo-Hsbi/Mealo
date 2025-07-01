@@ -15,6 +15,7 @@ const {
     addOrUpdateRecipeRating,   // NEU: Controller für Bewertungen hinzufügen/aktualisieren
     getUserRecipeRating,       // NEU: Controller für Bewertungen abrufen
     getInternalRecipeDetails,  // NEU: Controller für interne Rezeptdetails
+    getOwnRecipesForUser,      // <--- NEU
 } = require('../controllers/recipeController');
 
 
@@ -44,6 +45,12 @@ router.get('/search/query', auth, getRecipesByQuery);
 // Beispiel-URL: GET /api/recipes/search/ingredients?ingredients=chicken,rice&maxMissingIngredients=2
 router.get('/search/ingredients', auth, getRecipesByIngredients);
 
+// Route zum Abrufen aller eigenen Rezepte eines Benutzers
+// Methode: GET
+// URL: /api/recipes/mine
+// Benötigt: Authentifizierung (userId)
+router.get('/mine', auth, getOwnRecipesForUser);
+
 // Route für Rezeptdetails (bleibt unverändert)
 // Beispiel-URL: GET /api/recipes/12345 (hier ist es die Spoonacular ID)
 router.get('/:id', auth, getRecipeDetails);
@@ -68,5 +75,11 @@ router.delete('/favorites/:favoriteId', auth, removeFavoriteRecipe);
 
 // Route für interne Rezeptdetails (eigene Rezepte per UUID)
 router.get('/internal/:id', auth, getInternalRecipeDetails);
+
+// Route zum Abrufen aller eigenen Rezepte eines Benutzers
+// Methode: GET
+// URL: /api/recipes/mine
+// Benötigt: Authentifizierung (userId)
+router.get('/mine', auth, getOwnRecipesForUser);
 
 module.exports = router;

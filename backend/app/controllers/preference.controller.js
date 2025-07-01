@@ -9,19 +9,31 @@ exports.getAllQuestions = async (req, res, next) => {
   }
 };
 
+exports.getUserPreferences = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const preferences = await preferenceService.getUserPreferences(userId);
+    res.json(preferences);
+  } catch (err) {
+    console.error('Error fetching user preferences:', err);
+    res.status(500).json({ message: 'Error fetching user preferences', error: err.message });
+  }
+};
+
 exports.saveUserPreferences = async (req, res, next) => {
   try {
-    const userId = req.user.id; // ✅ direkt aus Middleware (UUID)
+    const userId = req.user.id; // ✅ directly from middleware (UUID)
     const { optionKeys } = req.body;
 
-    if (!Array.isArray(optionKeys) || optionKeys.length === 0) {
-      return res.status(400).json({ message: 'Keine Optionen übermittelt.' });
+    // Allow empty arrays - users don't need to answer all questions
+    if (!Array.isArray(optionKeys)) {
+      return res.status(400).json({ message: 'optionKeys must be an array.' });
     }
 
     await preferenceService.setUserPreferences(userId, optionKeys);
     res.status(204).send();
   } catch (err) {
-    console.error('Fehler beim Speichern der Präferenzen:', err);
-    res.status(500).json({ message: 'Fehler beim Speichern der Präferenzen', error: err.message });
+    console.error('Error saving preferences:', err);
+    res.status(500).json({ message: 'Error saving preferences', error: err.message });
   }
 };

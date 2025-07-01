@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 import 'about-mealo_screen.dart';
 import 'edit_profile_screen.dart';
+import 'preferences_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -36,6 +37,17 @@ class SettingsScreen extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.tune),
+            title: const Text('Preferences'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PreferencesSettingsScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.quiz),
             title: const Text('Start Onboarding'),
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(

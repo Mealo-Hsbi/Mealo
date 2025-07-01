@@ -9,4 +9,12 @@ class OnboardingApi {
       'optionKeys': optionKeys,
     });
   }
+
+  Future<List<Map<String, dynamic>>> getUserPreferences() async {
+    final response = await _api.get('/preferences/user');
+    // Robustes Mapping für alle Elemente
+    return (response.data as List)
+        .map((e) => e is Map<String, dynamic> ? e : Map<String, dynamic>.from(e as Map))
+        .toList();
+  }
 }
