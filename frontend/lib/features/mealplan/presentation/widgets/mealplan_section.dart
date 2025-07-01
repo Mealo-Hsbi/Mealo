@@ -120,7 +120,11 @@ class MealPlanSection extends ConsumerWidget {
                                 errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
                               )
                             : const Icon(Icons.kitchen),
-                        title: Text(ingredient.name ?? ''),
+                        title: Text([
+                          if (ingredient.amount != null) ingredient.amount,
+                          if (ingredient.unit != null && ingredient.unit.isNotEmpty) ingredient.unit,
+                          ingredient.name ?? ''
+                        ].where((e) => e != null && e.toString().isNotEmpty).join(' ')),
                       );
                     },
                   ),

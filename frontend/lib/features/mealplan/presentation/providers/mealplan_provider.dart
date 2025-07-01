@@ -68,7 +68,7 @@ class MealplanNotifier extends StateNotifier<AsyncValue<Mealplan>> {
         'items': items,
       };
       await updateCurrentMealplan(payload);
-      state = AsyncData(mealplan);
+      await loadMealplan();
     } catch (e, st) {
       state = AsyncError(e, st);
     }
