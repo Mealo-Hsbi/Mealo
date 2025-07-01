@@ -235,9 +235,90 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
 
 
 
-    void _showPreferencesAndGenerate() async {
-      // ... Preferences-Logik wie gehabt ...
+    void _generateMealplan(String diet) async {
+      try {
+        // Show loading indicator
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text('Generating your meal plan...'),
+              ],
+            ),
+          ),
+        );
+
+        // Call backend to generate mealplan
+        await mealplanNotifier.generateMealplan(diet);
+        
+        // Close loading dialog
+        Navigator.of(context).pop();
+        
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Meal plan generated with $diet diet!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        // Close loading dialog
+        Navigator.of(context).pop();
+        
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error generating meal plan: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
+
+    void _showPreferencesAndGenerate() async {
+      String? selectedDiet;
+      
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Select Diet Preferences'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Choose your dietary preferences:'),
+              const SizedBox(height: 16),
+              ...dietOptions.map((diet) => RadioListTile<String>(
+                title: Text(diet),
+                value: diet,
+                groupValue: selectedDiet,
+                onChanged: (value) {
+                  setState(() {
+                    selectedDiet = value;
+                  });
+                },
+              )).toList(),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: selectedDiet == null ? null : () {
+                Navigator.of(context).pop();
+                _generateMealplan(selectedDiet!);
+              },
+              child: const Text('Generate'),
+            ),
+          ],
+        ),
+      );
+
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),

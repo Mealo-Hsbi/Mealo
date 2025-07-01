@@ -141,4 +141,21 @@ class MealplanNotifier extends StateNotifier<AsyncValue<Mealplan>> {
     // Backend-Update im Hintergrund
     _saveMealplanInBackground(empty);
   }
+
+  Future<void> generateMealplan(String diet) async {
+    try {
+      // Call backend to generate mealplan
+      final response = await ApiClient().post('/api/mealplan/generate', data: {
+        'diet': diet,
+        'timeFrame': 'week',
+        'targetCalories': 2000,
+      });
+      
+      // Reload mealplan after generation
+      await loadMealplan();
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
 } 

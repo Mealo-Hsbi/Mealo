@@ -21,4 +21,26 @@ exports.updateCurrentMealplan = async (req, res) => {
     console.error('updateCurrentMealplan error:', err);
     res.status(500).json({ error: 'Failed to update mealplan' });
   }
+};
+
+exports.generateMealplan = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { diet, timeFrame = 'week', targetCalories = 2000 } = req.body;
+    
+    if (!diet) {
+      return res.status(400).json({ error: 'Diet parameter is required' });
+    }
+    
+    const generatedPlan = await mealplanService.generateMealplan(userId, {
+      diet,
+      timeFrame,
+      targetCalories
+    });
+    
+    res.json(generatedPlan);
+  } catch (err) {
+    console.error('generateMealplan error:', err);
+    res.status(500).json({ error: 'Failed to generate mealplan' });
+  }
 }; 
