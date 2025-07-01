@@ -131,7 +131,8 @@ class RecipeInstructionsSection extends StatelessWidget {
                             ),
                           ),
                           // Der eigentliche Anweisungstext (HTML-formatiert)
-                          Flexible(
+                          Container(
+                            constraints: const BoxConstraints(minWidth: 0, maxWidth: 500), // or MediaQuery if you want full width
                             child: Text.rich(
                               TextSpan(
                                 children: _parseHtmlToTextSpans(
@@ -155,6 +156,7 @@ class RecipeInstructionsSection extends StatelessWidget {
                               ),
                               iconColor: colorScheme.primary,
                             ),
+                          
                         ],
                       ),
                     ),
