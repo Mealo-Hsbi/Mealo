@@ -45,14 +45,11 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
                     ...prismaRecipeData,
                 },
             });
-        } else if (internalRecipeIdFromFrontend) {
-            // Fall 2: Keine Spoonacular ID, aber interne ID vom Frontend vorhanden
-            // Dies ist der Fall für bereits existierende, selbst erstellte Rezepte,
-            // oder importierte Spoonacular-Rezepte, deren interne ID das Frontend kennt.
+        } else if (internalRecipeIdFromFrontend && typeof internalRecipeIdFromFrontend === 'string') {
+            // Fall 2: Nur wenn die interne ID ein String (UUID) ist
             recipe = await prisma.recipes.upsert({
                 where: { id: internalRecipeIdFromFrontend }, // Suche über interne ID
                 update: {
-                    // Keine spoonacular_id im Update setzen, wenn sie null ist
                     ...prismaRecipeData,
                 },
                 create: {
