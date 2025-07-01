@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../domain/entities/profile_dto.dart';
+import '../../domain/entities/achievement.dart';
 
-IconData mapAchievementIcon(String? iconKey) {
+IconData getAchievementIcon(String? iconKey) {
   switch (iconKey) {
-    case 'heart': return FontAwesomeIcons.heart;
-    case 'shopping-cart': return FontAwesomeIcons.cartShopping;
-    case 'share-alt': return FontAwesomeIcons.shareAlt;
-    case 'utensils': return FontAwesomeIcons.utensils;
-    case 'clock': return FontAwesomeIcons.clock;
-    case 'users': return FontAwesomeIcons.users;
-    case 'calendar-week': return FontAwesomeIcons.calendarWeek;
-    case 'books': return FontAwesomeIcons.book;
-    case 'barcode': return FontAwesomeIcons.barcode;
-    default: return FontAwesomeIcons.medal;
+    case 'restaurant':
+      return Icons.restaurant;
+    case 'camera_alt':
+      return Icons.camera_alt;
+    case 'favorite':
+      return Icons.favorite;
+    case 'star':
+      return Icons.star;
+    case 'star_rate':
+      return Icons.star_rate;
+    case 'rate_review':
+      return Icons.rate_review;
+    case 'chef':
+      return Icons.emoji_food_beverage;
+    case 'edit_note':
+      return Icons.edit_note;
+    case 'share':
+      return Icons.share;
+    case 'campaign':
+      return Icons.campaign;
+    default:
+      return Icons.emoji_events;
   }
 }
 
 class AchievementCard extends StatelessWidget {
-  final AchievementDto achievement;
+  final Achievement achievement;
 
   const AchievementCard({Key? key, required this.achievement}) : super(key: key);
 
@@ -30,22 +41,47 @@ class AchievementCard extends StatelessWidget {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       clipBehavior: Clip.hardEdge,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(mapAchievementIcon(achievement.icon), size: 24),
-            const SizedBox(height: 6),
-            Text(
-              achievement.title,
-              style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: achievement.unlocked 
+              ? theme.colorScheme.primary.withOpacity(0.1)
+              : Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                getAchievementIcon(achievement.icon),
+                size: 28,
+                color: achievement.unlocked ? theme.colorScheme.primary : Colors.grey[600],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                achievement.title,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: achievement.unlocked 
+                      ? theme.colorScheme.primary
+                      : Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Icon(
+                achievement.unlocked ? Icons.check_circle : Icons.lock,
+                size: 16,
+                color: achievement.unlocked 
+                    ? theme.colorScheme.primary
+                    : Colors.grey[600],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -5,6 +5,7 @@ const preferenceCtrl = require('../controllers/preference.controller');
 const router = express.Router();
 
 router.get('/', auth, preferenceCtrl.getAllQuestions);
+router.get('/user', auth, preferenceCtrl.getUserPreferences);
 router.post('/', auth, preferenceCtrl.saveUserPreferences);
 
 module.exports = router;

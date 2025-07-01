@@ -2,6 +2,7 @@
 const { searchRecipesByQuery, searchRecipesByIngredients, getSpoonacularRecipeDetails } = require('../services/spoonacularService');
 const recipeManagementService = require('../services/recipeManagementService');
 const prisma = require('../prisma');
+const mediaService = require('../services/media.service');
 
 const getRecipesByQuery = async (req, res) => {
     try {
@@ -323,6 +324,28 @@ const getUserRecipeRating = async (req, res) => {
     }
 };
 
+const getOwnRecipesForUser = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'Nicht authentifiziert.' });
+        }
+        const recipes = await recipeManagementService.getOwnRecipesForUser(userId);
+        // Für jedes Rezept ggf. signed URL erzeugen
+        const recipesWithImageUrls = await Promise.all(recipes.map(async (recipe) => {
+            let imageUrl = recipe.image_url;
+            if (imageUrl && !imageUrl.startsWith('http')) {
+                imageUrl = await mediaService.getSignedDownloadUrl(imageUrl);
+            }
+            return { ...recipe, imageUrl };
+        }));
+        return res.json(recipesWithImageUrls);
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Fehler in getOwnRecipesForUser:', error);
+        return res.status(500).json({ message: 'Fehler beim Laden der eigenen Rezepte.' });
+    }
+};
+
 module.exports = {
     getRecipesByQuery,
     getRecipesByIngredients,
@@ -334,4 +357,5 @@ module.exports = {
     getRecipeIsFavorited,
     addOrUpdateRecipeRating,
     getUserRecipeRating,
+    getOwnRecipesForUser,
 };
