@@ -2,23 +2,6 @@ const admin = require('../firebase');
 const prisma = require('../prisma');
 
 module.exports = async function authMiddleware(req, res, next) {
-  if (process.env.NODE_ENV === 'test') {
-    const header = req.headers.authorization || '';
-    if (!header || !header.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'Kein Token übergeben.' });
-    }
-    if (header === 'Bearer invalid.token') {
-      return res.status(401).json({ message: 'Ungültiges Token' });
-    }
-    let testUser = { id: '00000000-0000-0000-0000-000000000000', firebase_uid: 'test-firebase-uid', email: 'test@example.com', name: 'Test User' };
-    if (header.includes('lactose')) {
-      testUser.id = '00000000-0000-0000-0000-000000000001';
-    } else if (header.includes('noallergy')) {
-      testUser.id = '00000000-0000-0000-0000-000000000002';
-    }
-    req.user = testUser;
-    return next();
-  }
 
   const header = req.headers.authorization;
 

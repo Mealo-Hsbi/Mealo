@@ -33,6 +33,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<ProfileDto> fetchProfile() async {
     final res = await apiClient.get('/profilescreen');
+    print('[ProfileRemoteDataSource] /profilescreen Response: ' + res.data.toString());
     return ProfileDto.fromJson(res.data as Map<String, dynamic>);
   }
 

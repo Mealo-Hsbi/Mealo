@@ -65,176 +65,208 @@ class ProfileScreen extends StatelessWidget {
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: kHeaderHeight,
-                  width: double.infinity,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (profile.avatarUrl != null)
-                        Image.network(
-                          profile.avatarUrl!,
-                          key: UniqueKey(),
-                          fit: BoxFit.cover,
-                          headers: {
-                            'Cache-Control': 'no-cache',
-                            'Pragma': 'no-cache',
-                            'Expires': '0',
-                          },
-                        ),
-                      BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                        child: Container(color: Colors.black.withOpacity(0.2)),
-                      ),
-                    ],
-                  ),
-                ),
-                Transform.translate(
-                  offset: const Offset(0, -kAvatarRadius),
-                  child: Column(
-                    children: [
-                      Stack(
-                        clipBehavior: Clip.none,
-                        alignment: Alignment.topCenter,
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      height: kHeaderHeight,
+                      width: double.infinity,
+                      child: Stack(
+                        fit: StackFit.expand,
                         children: [
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.fromLTRB(
-                              kSectionPadding,
-                              kAvatarRadius + kSectionSpacing,
-                              kSectionPadding,
-                              kSectionPadding,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surface,
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(24),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  profile.name,
-                                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: kSectionSpacing),
-                                Wrap(
-                                  spacing: kSectionSpacing,
-                                  children: profile.tags.take(3).map((t) => TagChip(t)).toList(),
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    StatItem('Recipes', profile.recipesCount),
-                                    const SizedBox(width: 24),
-                                    StatItem('Favorites', profile.favoritesCount),
-                                    const SizedBox(width: 24),
-                                    StatItem('Achievements', achievementProvider.unlockedCount),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: -kAvatarRadius,
-                            child: AvatarWidget(
+                          if (profile.avatarUrl != null)
+                            Image.network(
+                              profile.avatarUrl!,
                               key: UniqueKey(),
-                              url: profile.avatarUrl,
-                              loading: vm.isLoading,
+                              fit: BoxFit.cover,
+                              headers: {
+                                'Cache-Control': 'no-cache',
+                                'Pragma': 'no-cache',
+                                'Expires': '0',
+                              },
                             ),
+                          BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                            child: Container(color: Colors.black.withOpacity(0.2)),
                           ),
                         ],
                       ),
-                      const SizedBox(height: kSectionSpacing),
-
-                      // Rezepte-Sektion mit Fallback
-                      ProfileSection(
-                        title: 'My Recipes',
-                        action: TextButton(
-                          onPressed: () => Navigator.of(context).push(
-                            _createSlideRoute(const UserRecipeListScreen()),
-                          ),
-                          child: const Text('View All'),
-                        ),
-                        child: recent.isNotEmpty
-                            ? GridView.count(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 3 / 4,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: recent.map((r) => RecipePreviewItem(
-                                  imageUrl: r.imageUrl,
-                                  title: r.title,
-                                  onTap: () {
-                                    if ((r.internalId ?? '').isNotEmpty) {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => RecipeDetailScreen(
-                                            initialImageUrl: r.imageUrl,
-                                            initialName: r.title,
-                                            initialPlace: '',
-                                            isInternal: true,
-                                            internalRecipeId: r.internalId,
-                                          ),
-                                        ),
-                                      );
-                                    } else if (r.spoonacularId != null && r.spoonacularId!.isNotEmpty) {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => RecipeDetailScreen(
-                                            initialImageUrl: r.imageUrl,
-                                            initialName: r.title,
-                                            initialPlace: '',
-                                            isInternal: false,
-                                            recipeId: int.tryParse(r.spoonacularId!),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                )).toList(),
-                              )
-                            : const _EmptyStateWidget(
-                                icon: Icons.no_food,
-                                message: 'Du hast noch keine Rezepte erstellt.',
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -kAvatarRadius),
+                      child: Column(
+                        children: [
+                          Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.topCenter,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.fromLTRB(
+                                  kSectionPadding,
+                                  kAvatarRadius + kSectionSpacing,
+                                  kSectionPadding,
+                                  kSectionPadding,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.surface,
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(24),
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      profile.name,
+                                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: kSectionSpacing),
+                                    Wrap(
+                                      spacing: kSectionSpacing,
+                                      children: profile.tags.take(3).map((t) => TagChip(t)).toList(),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        StatItem('Recipes', profile.recipesCount),
+                                        const SizedBox(width: 24),
+                                        StatItem('Favorites', profile.favoritesCount),
+                                        const SizedBox(width: 24),
+                                        StatItem('Achievements', achievementProvider.unlockedCount),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                      ),
-
-                      // Achievements-Sektion mit Fallback
-                      ProfileSection(
-                        title: 'Achievements',
-                        action: TextButton(
-                          onPressed: () => Navigator.of(context).push(
-                            _createSlideRoute(const AchievementsOverviewScreen()),
-                          ),
-                          child: const Text('View All'),
-                        ),
-                        child: achievements.isNotEmpty
-                            ? GridView.count(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: achievements.map((a) => AchievementCard(achievement: a)).toList(),
-                              )
-                            : const _EmptyStateWidget(
-                                icon: Icons.emoji_events_outlined,
-                                message: 'Du hast noch keine Erfolge erreicht.',
+                              Positioned(
+                                top: -kAvatarRadius,
+                                child: AvatarWidget(
+                                  key: UniqueKey(),
+                                  url: profile.avatarUrl,
+                                  loading: vm.isLoading,
+                                ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: kSectionSpacing),
+
+                          // Rezepte-Sektion mit Fallback
+                          ProfileSection(
+                            title: 'My Recipes',
+                            action: TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                _createSlideRoute(const UserRecipeListScreen()),
+                              ),
+                              child: const Text('View All'),
+                            ),
+                            child: recent.isNotEmpty
+                                ? GridView.count(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                    childAspectRatio: 3 / 4,
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    children: recent.map((r) => RecipePreviewItem(
+                                      imageUrl: r.imageUrl,
+                                      title: r.title,
+                                      onTap: () {
+                                        if ((r.internalId ?? '').isNotEmpty) {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => RecipeDetailScreen(
+                                                initialImageUrl: r.imageUrl,
+                                                initialName: r.title,
+                                                initialPlace: '',
+                                                isInternal: true,
+                                                internalRecipeId: r.internalId,
+                                              ),
+                                            ),
+                                          );
+                                        } else if (r.spoonacularId != null && r.spoonacularId!.isNotEmpty) {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => RecipeDetailScreen(
+                                                initialImageUrl: r.imageUrl,
+                                                initialName: r.title,
+                                                initialPlace: '',
+                                                isInternal: false,
+                                                recipeId: int.tryParse(r.spoonacularId!),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    )).toList(),
+                                  )
+                                : const _EmptyStateWidget(
+                                    icon: Icons.no_food,
+                                    message: 'Du hast noch keine Rezepte erstellt.',
+                                  ),
+                          ),
+
+                          // Achievements-Sektion mit Fallback
+                          ProfileSection(
+                            title: 'Achievements',
+                            action: TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                _createSlideRoute(const AchievementsOverviewScreen()),
+                              ),
+                              child: const Text('View All'),
+                            ),
+                            child: achievements.isNotEmpty
+                                ? GridView.count(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    children: achievements.map((a) => AchievementCard(achievement: a)).toList(),
+                                  )
+                                : const _EmptyStateWidget(
+                                    icon: Icons.emoji_events_outlined,
+                                    message: 'Du hast noch keine Erfolge erreicht.',
+                                  ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              // Debug-Box immer sichtbar unten
+              Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: Opacity(
+                  opacity: 0.85,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: DefaultTextStyle(
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('DEBUG:'),
+                          Text('isLoading: 	${vm.isLoading}'),
+                          Text('errorMessage: 	${vm.errorMessage ?? "-"}'),
+                          Text('profile: 	${vm.profile?.toString() ?? "-"}'),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
