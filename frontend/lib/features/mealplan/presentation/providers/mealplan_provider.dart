@@ -91,11 +91,54 @@ class MealplanNotifier extends StateNotifier<AsyncValue<Mealplan>> {
         },
       },
     );
-    saveMealplan(updated);
+    
+    // Optimistic Update: UI sofort aktualisieren
+    state = AsyncData(updated);
+    
+    // Backend-Update im Hintergrund
+    _saveMealplanInBackground(updated);
+  }
+
+  // Hintergrund-Update ohne UI-Blockierung
+  Future<void> _saveMealplanInBackground(Mealplan mealplan) async {
+    try {
+      // Mapping: days -> items[]
+      final items = <Map<String, dynamic>>[];
+      mealplan.days.forEach((dateKey, meals) {
+        meals.forEach((mealType, recipe) {
+          if (recipe != null && (recipe.id != null || recipe.internalId != null)) {
+            items.add({
+              'date': dateKey,
+              'mealType': mealType,
+              'recipeId': recipe.internalId ?? recipe.id,
+              'spoonacularId': recipe.id,
+              'recipeData': recipe.toJson(),
+            });
+          }
+        });
+      });
+      final payload = {
+        'items': items,
+      };
+      await updateCurrentMealplan(payload);
+      
+      // Nach erfolgreichem Update den aktuellen Stand vom Server holen
+      // für die Shopping List (Zutaten werden vom Backend geladen)
+      await loadMealplan();
+    } catch (e, st) {
+      // Bei Fehler: UI auf vorherigen Stand zurücksetzen
+      print('Fehler beim Speichern des Mealplans: $e');
+      // Optional: Snackbar oder Toast anzeigen
+    }
   }
 
   void resetMealplan() {
     final empty = Mealplan.empty();
-    saveMealplan(empty);
+    
+    // Optimistic Update: UI sofort leeren
+    state = AsyncData(empty);
+    
+    // Backend-Update im Hintergrund
+    _saveMealplanInBackground(empty);
   }
 } 

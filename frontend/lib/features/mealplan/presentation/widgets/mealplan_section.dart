@@ -13,8 +13,16 @@ import 'package:frontend/features/recipe/presentation/screens/recipe_detail_scre
 import 'package:intl/intl.dart';
 import 'package:frontend/common/models/ingredient.dart';
 
-class MealPlanSection extends ConsumerWidget {
-  MealPlanSection({Key? key}) : super(key: key);
+class MealPlanSection extends ConsumerStatefulWidget {
+  const MealPlanSection({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<MealPlanSection> createState() => _MealPlanSectionState();
+}
+
+class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
+  // State to track checked ingredients in shopping list
+  final Set<String> _checkedIngredients = <String>{};
 
   final List<String> meals = const [
     'Breakfast', 'Lunch', 'Dinner'
@@ -33,8 +41,149 @@ class MealPlanSection extends ConsumerWidget {
     'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
   ];
 
+  void _showShoppingList(Mealplan mealplan) {
+    // Sammle alle Zutaten
+    final allIngredients = <Ingredient>[];
+    mealplan.days.forEach((_, meals) {
+      meals.forEach((_, recipe) {
+        if (recipe != null) {
+          if (recipe.usedIngredients != null) {
+            allIngredients.addAll(recipe.usedIngredients!);
+          }
+          if (recipe.missedIngredients != null) {
+            allIngredients.addAll(recipe.missedIngredients!);
+          }
+        }
+      });
+    });
+
+    // Gruppiere Zutaten nach Namen und addiere Mengen
+    final ingredientGroups = <String, List<Ingredient>>{};
+    for (final ingredient in allIngredients) {
+      if (ingredient.name != null) {
+        final normalizedName = ingredient.name!.toLowerCase().trim();
+        ingredientGroups.putIfAbsent(normalizedName, () => []).add(ingredient);
+      }
+    }
+
+    // Erstelle zusammengefasste Zutaten
+    final mergedIngredients = <Ingredient>[];
+    ingredientGroups.forEach((name, ingredients) {
+      if (ingredients.length == 1) {
+        // Nur eine Zutat mit diesem Namen
+        mergedIngredients.add(ingredients.first);
+      } else {
+        // Mehrere Zutaten mit gleichem Namen - versuche zu addieren
+        final firstIngredient = ingredients.first;
+        double? totalAmount;
+        String? commonUnit;
+        bool canMerge = true;
+
+        // Prüfe ob alle Zutaten die gleiche Einheit haben
+        for (final ingredient in ingredients) {
+          if (ingredient.unit != firstIngredient.unit) {
+            canMerge = false;
+            break;
+          }
+        }
+
+        if (canMerge) {
+          // Addiere Mengen
+          totalAmount = 0.0;
+          for (final ingredient in ingredients) {
+            if (ingredient.amount != null) {
+              totalAmount = totalAmount! + ingredient.amount!;
+            }
+          }
+          commonUnit = firstIngredient.unit;
+        }
+
+        // Erstelle zusammengefasste Zutat oder behalte separate Einträge
+        if (canMerge && totalAmount != null) {
+          mergedIngredients.add(Ingredient(
+            id: firstIngredient.id,
+            name: firstIngredient.name,
+            imageUrl: firstIngredient.imageUrl,
+            aliases: firstIngredient.aliases,
+            amount: totalAmount,
+            unit: commonUnit,
+            original: '${totalAmount}${commonUnit != null ? ' $commonUnit' : ''} ${firstIngredient.name}',
+          ));
+        } else {
+          // Kann nicht zusammengefasst werden - behalte alle separaten Einträge
+          mergedIngredients.addAll(ingredients);
+        }
+      }
+    });
+
+    final ingredients = mergedIngredients.where((i) => i.name != null).toList();
+    ingredients.sort((a, b) => a.name!.compareTo(b.name!));
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Shopping List'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ingredients.isEmpty
+                ? const Text('No ingredients in your meal plan.')
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ingredients.length,
+                    itemBuilder: (context, index) {
+                      final ingredient = ingredients[index];
+                      final ingredientKey = '${ingredient.name}_${ingredient.amount}_${ingredient.unit}';
+                      final isChecked = _checkedIngredients.contains(ingredientKey);
+                      
+                      return ListTile(
+                        leading: Checkbox(
+                          value: isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                _checkedIngredients.add(ingredientKey);
+                              } else {
+                                _checkedIngredients.remove(ingredientKey);
+                              }
+                            });
+                            // Also update the dialog state to rebuild immediately
+                            setDialogState(() {});
+                          },
+                        ),
+                        title: Text([
+                          if (ingredient.amount != null) ingredient.amount,
+                          if ((ingredient.unit ?? '').isNotEmpty) ingredient.unit,
+                          ingredient.name ?? ''
+                        ].where((e) => e != null && e.toString().isNotEmpty).join(' ')),
+                        onTap: () {
+                          setState(() {
+                            if (isChecked) {
+                              _checkedIngredients.remove(ingredientKey);
+                            } else {
+                              _checkedIngredients.add(ingredientKey);
+                            }
+                          });
+                          // Also update the dialog state to rebuild immediately
+                          setDialogState(() {});
+                        },
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final ref = this.ref;
     final mealplanAsync = ref.watch(mealplanProvider);
     final mealplanNotifier = ref.read(mealplanProvider.notifier);
     final List<String> meals = const [
@@ -84,123 +233,7 @@ class MealPlanSection extends ConsumerWidget {
       }
     }
 
-    void _showShoppingList() {
-      // Sammle alle Zutaten
-      final allIngredients = <Ingredient>[];
-      mealplan.days.forEach((_, meals) {
-        meals.forEach((_, recipe) {
-          if (recipe != null) {
-            if (recipe.usedIngredients != null) {
-              allIngredients.addAll(recipe.usedIngredients!);
-            }
-            if (recipe.missedIngredients != null) {
-              allIngredients.addAll(recipe.missedIngredients!);
-            }
-          }
-        });
-      });
 
-      // Gruppiere Zutaten nach Namen und addiere Mengen
-      final ingredientGroups = <String, List<Ingredient>>{};
-      for (final ingredient in allIngredients) {
-        if (ingredient.name != null) {
-          final normalizedName = ingredient.name!.toLowerCase().trim();
-          ingredientGroups.putIfAbsent(normalizedName, () => []).add(ingredient);
-        }
-      }
-
-      // Erstelle zusammengefasste Zutaten
-      final mergedIngredients = <Ingredient>[];
-      ingredientGroups.forEach((name, ingredients) {
-        if (ingredients.length == 1) {
-          // Nur eine Zutat mit diesem Namen
-          mergedIngredients.add(ingredients.first);
-        } else {
-          // Mehrere Zutaten mit gleichem Namen - versuche zu addieren
-          final firstIngredient = ingredients.first;
-          double? totalAmount;
-          String? commonUnit;
-          bool canMerge = true;
-
-          // Prüfe ob alle Zutaten die gleiche Einheit haben
-          for (final ingredient in ingredients) {
-            if (ingredient.unit != firstIngredient.unit) {
-              canMerge = false;
-              break;
-            }
-          }
-
-                     if (canMerge) {
-             // Addiere Mengen
-             totalAmount = 0.0;
-             for (final ingredient in ingredients) {
-               if (ingredient.amount != null) {
-                 totalAmount = totalAmount! + ingredient.amount!;
-               }
-             }
-             commonUnit = firstIngredient.unit;
-           }
-
-          // Erstelle zusammengefasste Zutat oder behalte separate Einträge
-          if (canMerge && totalAmount != null) {
-            mergedIngredients.add(Ingredient(
-              id: firstIngredient.id,
-              name: firstIngredient.name,
-              imageUrl: firstIngredient.imageUrl,
-              aliases: firstIngredient.aliases,
-              amount: totalAmount,
-              unit: commonUnit,
-              original: '${totalAmount}${commonUnit != null ? ' $commonUnit' : ''} ${firstIngredient.name}',
-            ));
-          } else {
-            // Kann nicht zusammengefasst werden - behalte alle separaten Einträge
-            mergedIngredients.addAll(ingredients);
-          }
-        }
-      });
-
-      final ingredients = mergedIngredients.where((i) => i.name != null).toList();
-      ingredients.sort((a, b) => a.name!.compareTo(b.name!));
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Shopping List'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ingredients.isEmpty
-                ? const Text('No ingredients in your meal plan.')
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: ingredients.length,
-                    itemBuilder: (context, index) {
-                      final ingredient = ingredients[index];
-                      return ListTile(
-                        leading: ingredient.imageUrl != null
-                            ? Image.network(
-                                ingredient.imageUrl!,
-                                width: 32,
-                                height: 32,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
-                              )
-                            : const Icon(Icons.kitchen),
-                        title: Text([
-                          if (ingredient.amount != null) ingredient.amount,
-                          if ((ingredient.unit ?? '').isNotEmpty) ingredient.unit,
-                          ingredient.name ?? ''
-                        ].where((e) => e != null && e.toString().isNotEmpty).join(' ')),
-                      );
-                    },
-                  ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        ),
-      );
-    }
 
     void _showPreferencesAndGenerate() async {
       // ... Preferences-Logik wie gehabt ...
@@ -229,7 +262,7 @@ class MealPlanSection extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.shopping_cart_outlined, color: Colors.green, size: 28),
                       tooltip: 'Show shopping list',
-                      onPressed: _showShoppingList,
+                      onPressed: () => _showShoppingList(mealplan),
                     ),
                     IconButton(
                       icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.primary, size: 28),
@@ -326,8 +359,7 @@ class MealPlanSection extends ConsumerWidget {
                           );
                         }
                         return Expanded(
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
+                          child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -345,32 +377,58 @@ class MealPlanSection extends ConsumerWidget {
                                 ),
                               );
                             },
-                            child: Column(
-                              children: [
-                                if (recipe.imageUrl != null)
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      recipe.imageUrl!,
-                                      height: 50,
-                                      width: 80,
-                                      fit: BoxFit.cover,
+                            onLongPress: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Remove recipe?'),
+                                  content: Text('Do you want to remove "${recipe.name}" from your meal plan?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text('Cancel'),
                                     ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        mealplanNotifier.updateMeal(dateKey, mealType, null);
+                                      },
+                                      child: const Text('Remove'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  if (recipe.imageUrl != null)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        recipe.imageUrl!,
+                                        height: 50,
+                                        width: 80,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    recipe.name ?? '-',
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  recipe.name ?? '-',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline, size: 18),
-                                  tooltip: 'Remove',
-                                  onPressed: () => mealplanNotifier.updateMeal(dateKey, mealType, null),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         );
