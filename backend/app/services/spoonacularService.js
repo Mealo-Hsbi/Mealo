@@ -94,32 +94,7 @@ const searchRecipesByQuery = async ({
     sortDirection,
     userId,
 }) => {
-    if (process.env.NODE_ENV === 'test') {
-        // Return a static recipe list for tests
-        const testRecipes = [
-            {
-                id: 1,
-                name: 'Milk Cake',
-                containsUserAllergens: userId === '00000000-0000-0000-0000-000000000001', // lactose user
-                matchedAllergens: userId === '00000000-0000-0000-0000-000000000001' ? ['lactose'] : [],
-                imageUrl: '',
-                place: 'Test',
-                averageRating: 4.5,
-                ratingCount: 10,
-            },
-            {
-                id: 2,
-                name: 'Fruit Salad',
-                containsUserAllergens: false,
-                matchedAllergens: [],
-                imageUrl: '',
-                place: 'Test',
-                averageRating: 4.0,
-                ratingCount: 5,
-            }
-        ];
-        return testRecipes;
-    }
+    
     if (!spoonacularKeys || spoonacularKeys.length === 0) {
         throw new Error('Server configuration error: Spoonacular API keys are missing.');
     }
