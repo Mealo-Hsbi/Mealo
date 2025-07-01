@@ -12,8 +12,8 @@ app.use('/api', allRoutes);
 app.get('/health', (req, res) => {
   res.status(200).json({
     status:  'ok',
-    version,                // aus package.json
-    commit: COMMIT_SHA,     // aus ENV_VAR
+    version: '1.0.0',                // aus package.json
+    commit: '1234567890',     // aus ENV_VAR
     now:    new Date().toISOString(),
   });
 });

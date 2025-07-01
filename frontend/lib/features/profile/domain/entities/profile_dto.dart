@@ -22,8 +22,8 @@ class RecipePreviewDto {
       id: json['id']?.toString(),
       internalId: (json['internalId'] ?? json['id'])?.toString(),
       spoonacularId: json['spoonacularId']?.toString(),
-      imageUrl: json['imageUrl'] as String,
-      title: json['title'] as String,
+      imageUrl: json['imageUrl']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
     );
   }
 
@@ -122,21 +122,17 @@ class ProfileDto {
 
   factory ProfileDto.fromJson(Map<String, dynamic> json) {
     return ProfileDto(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      tags: List<String>.from(json['tags'] as List),
-      recipesCount: json['recipesCount'] as int,
-      favoritesCount: json['favoritesCount'] as int,
-      pantryCount: json['pantryCount'] as int,
-      likesCount: json['likesCount'] as int,
-      avatarUrl: json['avatarUrl'] as String,
-      recentRecipes: (json['recentRecipes'] as List)
-          .map((e) => RecipePreviewDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      achievements: (json['achievements'] as List)
-          .map((e) => AchievementDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      recipesCount: json['recipesCount'] is int ? json['recipesCount'] : int.tryParse(json['recipesCount']?.toString() ?? '0') ?? 0,
+      favoritesCount: json['favoritesCount'] is int ? json['favoritesCount'] : int.tryParse(json['favoritesCount']?.toString() ?? '0') ?? 0,
+      pantryCount: json['pantryCount'] is int ? json['pantryCount'] : int.tryParse(json['pantryCount']?.toString() ?? '0') ?? 0,
+      likesCount: json['likesCount'] is int ? json['likesCount'] : int.tryParse(json['likesCount']?.toString() ?? '0') ?? 0,
+      avatarUrl: json['avatarUrl']?.toString() ?? '',
+      recentRecipes: (json['recentRecipes'] as List?)?.map((e) => RecipePreviewDto.fromJson(e as Map<String, dynamic>)).toList() ?? [],
+      achievements: (json['achievements'] as List?)?.map((e) => AchievementDto.fromJson(e as Map<String, dynamic>)).toList() ?? [],
     );
   }
 

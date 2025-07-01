@@ -25,17 +25,27 @@ const double kSectionPadding = 16.0;
 const double kHeaderHeight = 240.0;
 const double kAvatarRadius = 48.0;
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final vm = Provider.of<ProfileViewModel>(context, listen: false);
+      vm.loadProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ProfileViewModel>(
       builder: (ctx, vm, _) {
-        if (vm.profile == null && !vm.isLoading) {
-          vm.loadProfile();
-        }
-        
         // Lade Achievements beim ersten Laden
         final achievementProvider = Provider.of<AchievementProvider>(context, listen: false);
         if (achievementProvider.status == AchievementStatus.initial) {
@@ -236,34 +246,6 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-              ),
-              // Debug-Box immer sichtbar unten
-              Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: Opacity(
-                  opacity: 0.85,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: DefaultTextStyle(
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('DEBUG:'),
-                          Text('isLoading: 	${vm.isLoading}'),
-                          Text('errorMessage: 	${vm.errorMessage ?? "-"}'),
-                          Text('profile: 	${vm.profile?.toString() ?? "-"}'),
-                        ],
-                      ),
-                    ),
-                  ),
                 ),
               ),
             ],

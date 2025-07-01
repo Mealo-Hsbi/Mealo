@@ -25,9 +25,7 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('[ProfileViewModel] Lade Profil...');
       final fresh = await _getProfile();
-      print('[ProfileViewModel] Profil geladen: ' + fresh.toString());
       if (profile == null || profile!.avatarUrl != fresh.avatarUrl) {
         profile = fresh;
         notifyListeners();
@@ -35,7 +33,6 @@ class ProfileViewModel extends ChangeNotifier {
     } catch (e, st) {
       errorMessage = 'Fehler beim Laden des Profils: '
           '\n${e.toString()}';
-      print('[ProfileViewModel] ERROR beim Laden des Profils: $e\n$st');
     } finally {
       isLoading = false;
       notifyListeners();
