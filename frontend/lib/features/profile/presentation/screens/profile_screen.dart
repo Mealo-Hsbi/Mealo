@@ -63,7 +63,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final recent = profile.recentRecipes.take(3).toList();
         
         // Hole Achievement-Daten vom AchievementProvider
-        final achievements = achievementProvider.achievements.take(3).toList();
+        final achievements = [
+          ...achievementProvider.achievements.where((a) => a.unlocked),
+          ...achievementProvider.achievements.where((a) => !a.unlocked),
+        ].take(3).toList();
         return Scaffold(
           backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
@@ -250,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   )
                                 : const _EmptyStateWidget(
                                     icon: Icons.no_food,
-                                    message: 'Du hast noch keine Rezepte erstellt.',
+                                    message: 'You have not created any recipes yet.',
                                   ),
                           ),
 
@@ -274,7 +277,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   )
                                 : const _EmptyStateWidget(
                                     icon: Icons.emoji_events_outlined,
-                                    message: 'Du hast noch keine Erfolge erreicht.',
+                                    message: 'You have not achieved any achievements yet.',
                                   ),
                           ),
                         ],

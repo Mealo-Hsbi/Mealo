@@ -84,11 +84,7 @@ class PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> {
       print('DEBUG: Zu speichernde Keys: $allSelectedOptions');
       await _api.submitPreferences(allSelectedOptions);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Preferences saved successfully')),
-        );
-      }
+      // Keine Snackbar mehr bei Erfolg
     } catch (e) {
       print('DEBUG: Fehler beim Speichern: $e');
       if (mounted) {

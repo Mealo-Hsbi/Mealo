@@ -12,7 +12,7 @@ async function getAchievementsWithStatus(userId) {
 
   const unlockedSet = new Set(unlockedAchievements.map(a => a.achievement_id));
 
-  return allAchievements.map(a => ({
+  const achievementsWithStatus = allAchievements.map(a => ({
     id: a.id,
     key: a.key,
     title: a.title,
@@ -20,6 +20,12 @@ async function getAchievementsWithStatus(userId) {
     icon: a.icon,
     unlocked: unlockedSet.has(a.id)
   }));
+  // Sortiere: zuerst unlocked=true, dann unlocked=false
+  achievementsWithStatus.sort((a, b) => {
+    if (a.unlocked === b.unlocked) return 0;
+    return a.unlocked ? -1 : 1;
+  });
+  return achievementsWithStatus;
 }
 
 // Hilfsfunktion zum Freischalten eines Achievements

@@ -29,14 +29,6 @@ class _AchievementsOverviewScreenState extends State<AchievementsOverviewScreen>
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text('All Achievements'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<AchievementProvider>().refreshAchievements();
-            },
-          ),
-        ],
       ),
       body: Consumer<AchievementProvider>(
         builder: (context, achievementProvider, child) {
