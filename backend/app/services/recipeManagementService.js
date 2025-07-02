@@ -295,12 +295,16 @@ async function getInternalRecipeDetails(id) {
 
     // Zutaten mappen (wie Spoonacular extendedIngredients)
     const extendedIngredients = (recipe.recipe_ingredients || []).map((ri, idx) => ({
-        id: idx + 1, // Eindeutige int-ID pro Zutat
+        id: idx + 1, // Eindeutige int-ID pro Zutat (Frontend erwartet int)
         name: ri.ingredients?.name || '',
         amount: ri.amount !== undefined && ri.amount !== null ? Number(ri.amount) : null,
         unit: ri.unit,
-        original: ri.original,
-        // Weitere Felder nach Bedarf
+        original: ri.original || `${ri.amount || ''} ${ri.unit || ''} ${ri.ingredients?.name || ''}`.trim(),
+        originalName: ri.ingredients?.name || '',
+        consistency: null, // Kann ggf. ergänzt werden
+        image: null, // Kann ggf. ergänzt werden
+        measures: null, // Kann ggf. ergänzt werden
+        meta: [], // Leeres Array wie bei Spoonacular
     }));
 
     // Schritte mappen (wie Spoonacular analyzedInstructions)
@@ -493,7 +497,9 @@ async function createRecipe(recipeData) {
                         recipe_id: recipe.id,
                         step_number: i + 1,
                         description: step.description,
-                        duration_minutes: step.durationMinutes,
+                        duration_minutes: step.durationMinutes != null
+                            ? Number(step.durationMinutes)
+                            : (step.duration_minutes != null ? Number(step.duration_minutes) : null),
                     }
                 });
             }

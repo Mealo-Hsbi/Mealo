@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:dio/dio.dart';
 
 import '../../../../common/models/ingredient.dart';
 import '../../../../common/models/recipe/instruction_step.dart';
@@ -107,6 +108,37 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
     }
   }
 
+  Future<String?> _uploadImage(File imageFile) async {
+    final originalFileName = imageFile.path.split('/').last;
+    final fileName = 'recipe-pictures/$originalFileName';
+    final mimeType = 'image/jpeg'; // Optional: Mime-Type dynamisch bestimmen
+    final apiClient = ApiClient();
+    // 1. Hole signed Upload-URL
+    final uploadUrlResponse = await apiClient.post('/media/upload-url', data: {
+      'filename': fileName,
+      'contentType': mimeType,
+      'bucketType': 'profile',
+    });
+    final uploadUrl = uploadUrlResponse.data['uploadUrl'];
+    final objectKey = uploadUrlResponse.data['objectKey'];
+    // 2. Lade das Bild hoch (ohne Auth-Header!)
+    final dio = Dio();
+    final response = await dio.put(
+      uploadUrl,
+      data: imageFile.openRead(),
+      options: Options(
+        headers: {
+          'Content-Type': mimeType,
+        },
+      ),
+    );
+    if (response.statusCode == 200) {
+      return objectKey;
+    } else {
+      throw Exception('Image upload failed with status: \\${response.statusCode}');
+    }
+  }
+
   Future<void> _saveRecipe() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -133,8 +165,12 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
       // Bild hochladen, falls vorhanden
       String? imageUrl;
       if (_selectedImage != null) {
-        // TODO: Implementiere Bild-Upload-Service
-        // imageUrl = await uploadImage(_selectedImage!);
+        try {
+          imageUrl = await _uploadImage(_selectedImage!);
+        } catch (e) {
+          setState(() { _isLoading = false; });
+          return;
+        }
       }
 
       final recipeData = {

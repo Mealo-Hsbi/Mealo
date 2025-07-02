@@ -353,7 +353,7 @@ const createRecipe = async (req, res) => {
             return res.status(401).json({ message: 'Nicht authentifiziert.' });
         }
 
-        const {
+        let {
             title,
             imageUrl,
             servings,
@@ -382,10 +382,17 @@ const createRecipe = async (req, res) => {
             return res.status(400).json({ message: 'Rezepttitel ist erforderlich.' });
         }
 
+        // Wenn das Bild eine URL ist, die kein http enthält, ist es ein ObjektKey -> wie bei avatar_url
+        let imageObjectKey = imageUrl;
+        if (imageUrl && imageUrl.startsWith('http')) {
+            // Optional: Extrahiere den ObjektKey aus der URL, falls nötig
+            // imageObjectKey = ...
+        }
+        // Speichere nur den ObjektKey in der DB
         const recipe = await recipeManagementService.createRecipe({
             userId,
             title,
-            imageUrl,
+            imageUrl: imageObjectKey,
             servings,
             readyInMinutes,
             cookingMinutes,
@@ -408,7 +415,14 @@ const createRecipe = async (req, res) => {
             steps: steps || []
         });
 
-        return res.status(201).json(recipe);
+        // Im Response: Wenn Bild vorhanden und kein http, dann signed Download-URL erzeugen
+        let responseRecipe = { ...recipe };
+        if (responseRecipe.image_url && !responseRecipe.image_url.startsWith('http')) {
+            responseRecipe.imageUrl = await mediaService.getSignedDownloadUrl(responseRecipe.image_url);
+        } else {
+            responseRecipe.imageUrl = responseRecipe.image_url;
+        }
+        return res.status(201).json(responseRecipe);
     } catch (error) {
         console.error('[BACKEND DEBUG - CONTROLLER] Fehler in createRecipe:', error);
         return res.status(500).json({ message: 'Fehler beim Erstellen des Rezepts.' });

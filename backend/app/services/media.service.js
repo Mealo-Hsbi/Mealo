@@ -14,9 +14,11 @@ if (process.env.NODE_ENV === 'test') {
 } else {
   const { Storage } = require('@google-cloud/storage');
   const storage = new Storage({ keyFilename: process.env.GCS_KEY_FILE });
-  const bucket  = storage.bucket(process.env.BUCKET_NAME);
+  const defaultBucket  = storage.bucket(process.env.BUCKET_NAME);
+  const recipeBucket   = storage.bucket('recipe-pictures');
 
-  async function getSignedUploadInfo(filename, contentType) {
+  async function getSignedUploadInfo(filename, contentType, bucketType = 'profile') {
+    const bucket = bucketType === 'recipe' ? recipeBucket : defaultBucket;
     const file = bucket.file(filename);
     const [uploadUrl] = await file.getSignedUrl({
       version     : 'v4',
@@ -27,7 +29,8 @@ if (process.env.NODE_ENV === 'test') {
     return { uploadUrl, objectKey: filename };
   }
 
-  async function getSignedDownloadUrl(objectKey) {
+  async function getSignedDownloadUrl(objectKey, bucketType = 'profile') {
+    const bucket = bucketType === 'recipe' ? recipeBucket : defaultBucket;
     const file = bucket.file(objectKey);
     const [downloadUrl] = await file.getSignedUrl({
       version : 'v4',
