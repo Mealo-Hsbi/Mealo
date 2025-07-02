@@ -91,7 +91,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             // Platzhalter für weitere Inhalte
             const Expanded(
               child: Center(
-                child: Text('Hier kommen später andere Explore-Inhalte hin.'),
+                // child: Text('Hier kommen später andere Explore-Inhalte hin.'),
               ),
             ),
           ],

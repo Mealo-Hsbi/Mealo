@@ -95,6 +95,22 @@ class MockApiClient implements ApiClient {
       requestOptions: RequestOptions(path: '/users/me'),
     );
   }
+
+  @override
+  Future<Response> getMealplan() async {
+    return Response(
+      data: {}, // or mock data as needed
+      requestOptions: RequestOptions(path: '/api/mealplan/current'),
+    );
+  }
+
+  @override
+  Future<Response> updateMealplan(Map<String, dynamic> mealplanJson) async {
+    return Response(
+      data: {}, // or mock data as needed
+      requestOptions: RequestOptions(path: '/api/mealplan/current'),
+    );
+  }
 }
 void main() {
   // Flutter-Umgebung initialisieren

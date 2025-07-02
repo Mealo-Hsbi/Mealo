@@ -1,21 +1,20 @@
-// lib/common/models/ingredient.dart
-
 class Ingredient {
   final String id;        // z.B. eindeutiger Name oder ID (String)
   final String name;      // z.B. "Tomate"
   final String? imageUrl;  // URL für Bild (kann leer sein)
   final List<String>? aliases;
-  
-  // Neue Felder für die Rezepterstellung
+
+  // Zusätzliche Felder für die Rezepterstellung
   final String? category;
   final int? shelfLifeDays;
   final int? calories;
   final double? proteinGram;
   final double? carbsGram;
   final double? fatGram;
-  final double? amount;
-  final String? unit;
-  final String? original;
+
+  final double? amount;    // Menge (z.B. 2.0)
+  final String? unit;      // Einheit (z.B. "g", "ml", "Stück")
+  final String? original;  // Originaltext (z.B. "2 red onions, chopped")
 
   Ingredient({
     required this.id,
@@ -46,7 +45,7 @@ class Ingredient {
       proteinGram: (json['protein_gram'] as num?)?.toDouble(),
       carbsGram: (json['carbs_gram'] as num?)?.toDouble(),
       fatGram: (json['fat_gram'] as num?)?.toDouble(),
-      amount: (json['amount'] as num?)?.toDouble(),
+      amount: _parseAmount(json['amount']),
       unit: json['unit'] as String?,
       original: json['original'] as String?,
     );
@@ -115,5 +114,19 @@ class Ingredient {
       unit: unit ?? this.unit,
       original: original ?? this.original,
     );
+  }
+
+  // Hilfsmethode zum Parsen von amount (kann String oder num sein)
+  static double? _parseAmount(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      try {
+        return double.parse(value);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 }

@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const allSpoonacularKeys = [
+    process.env.SPOONACULAR_API_KEY_4,
     process.env.SPOONACULAR_API_KEY,
     process.env.SPOONACULAR_API_KEY_1,
     process.env.SPOONACULAR_API_KEY_2,

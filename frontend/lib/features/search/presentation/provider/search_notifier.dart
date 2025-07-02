@@ -43,6 +43,9 @@ class SearchNotifier extends ChangeNotifier {
   // Parameter für die maximale Anzahl fehlender Zutaten (relevant für Zutatensuche)
   int _maxMissingIngredients = 2; // Standardwert, kann angepasst werden
 
+  // Öffentliche Getter für die UseCases
+  SearchRecipesByQuery get searchRecipesByQueryUsecase => _searchRecipesByQueryUsecase;
+  SearchRecipesByIngredients get searchRecipesByIngredientsUsecase => _searchRecipesByIngredientsUsecase;
 
   // --- Getters to expose state to UI ---
   String get query => _query;
