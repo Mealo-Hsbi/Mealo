@@ -20,6 +20,7 @@ import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/user_recipe_list_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/create_recipe_screen.dart';
+import 'package:frontend/core/providers/app_providers.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
@@ -109,6 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Transform.translate(
                       offset: const Offset(0, -kAvatarRadius),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Stack(
                             clipBehavior: Clip.none,
@@ -130,9 +132,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 child: Column(
                                   children: [
-                                    Text(
-                                      profile.name,
-                                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          vm.profile?.name ?? '',
+                                          style: Theme.of(context).textTheme.headlineSmall,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Consumer<PremiumProvider>(
+                                          builder: (context, premiumProvider, _) {
+                                            if (premiumProvider.isPremium) {
+                                              return Icon(Icons.workspace_premium, color: Colors.amber, size: 28);
+                                            }
+                                            return SizedBox.shrink();
+                                          },
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: kSectionSpacing),
                                     Wrap(

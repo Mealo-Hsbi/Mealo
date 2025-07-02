@@ -7,13 +7,14 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart' as legacy_provider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider;
 
 import 'package:frontend/core/themes/app_theme.dart';
 import 'package:frontend/features/auth/presentation/auth_gate.dart';
 import 'package:frontend/core/routes/app_router.dart';
 import 'package:frontend/core/config/app_config.dart';
 import 'package:frontend/core/config/environment.dart';
-import 'package:frontend/core/providers/app_providers.dart'; // Importiere deine Provider-Konfiguration
+import 'package:frontend/core/providers/app_providers.dart';
 // Importe für LoginScreen/RegisterScreen, falls direkt in routes verwendet
 import 'package:frontend/features/auth/presentation/login_screen.dart';
 import 'package:frontend/features/auth/presentation/register_screen.dart';
@@ -44,18 +45,20 @@ Future<void> _initializeAppServices() async {
   AppConfig.init(Environment.dev);
 }
 
-void main() {
-  _initializeAppServices().then((_) {
-    runApp(
-      // NEU: ProviderScope umschließt den MultiProvider
-      ProviderScope( // <-- HIER IST DER PROVIDERSCOPE (from flutter_riverpod)
-        child: legacy_provider.MultiProvider(
-          providers: AppProviders.providers, // Hier kommt die saubere Liste von Providern her
-          child: const MyApp(),
-        ),
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _initializeAppServices();
+  runApp(
+    ProviderScope(
+      child: provider.MultiProvider(
+        providers: [
+          ...AppProviders.providers,
+          provider.ChangeNotifierProvider(create: (_) => PremiumProvider()..loadPremiumStatus()),
+        ],
+        child: const MyApp(),
       ),
-    );
-  });
+    ),
+  );
 }
 
 class FavoritesBootstrapper extends ConsumerStatefulWidget {

@@ -225,7 +225,8 @@ exports.Prisma.UsersScalarFieldEnum = {
   created_at: 'created_at',
   name: 'name',
   avatar_url: 'avatar_url',
-  has_completed_onboarding: 'has_completed_onboarding'
+  has_completed_onboarding: 'has_completed_onboarding',
+  isPremium: 'isPremium'
 };
 
 exports.Prisma.Weekly_planScalarFieldEnum = {

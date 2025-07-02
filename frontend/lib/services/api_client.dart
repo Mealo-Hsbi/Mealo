@@ -166,4 +166,20 @@ class ApiClient {
   Future<Response> updateMealplan(Map<String, dynamic> mealplanJson) {
     return put('/api/mealplan/current', data: mealplanJson);
   }
+
+  // --- PREMIUM ---
+  Future<bool> getPremiumStatus() async {
+    final response = await get('/users/premium');
+    return response.data['isPremium'] == true;
+  }
+
+  Future<bool> buyPremium() async {
+    final response = await post('/users/premium');
+    return response.data['isPremium'] == true;
+  }
+
+  Future<bool> cancelPremium() async {
+    final response = await delete('/users/premium');
+    return response.data['isPremium'] == false;
+  }
 }

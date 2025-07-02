@@ -143,6 +143,7 @@ model users {
   name                     String?
   avatar_url               String?
   has_completed_onboarding Boolean            @default(false)
+  isPremium                Boolean?           @default(false)
   favorites                favorites[]
   inventory                inventory[]
   ratings                  ratings[]

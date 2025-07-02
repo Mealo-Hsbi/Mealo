@@ -1,4 +1,3 @@
-
 // lib/core/providers/app_providers.dart
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -36,6 +35,7 @@ import 'package:frontend/features/profile/domain/usecases/upload_avatar.dart';
 
 // 🔽 NEU: Imports für AchievementProvider
 import 'package:frontend/features/profile/presentation/providers/achievement_provider.dart';
+import 'package:flutter/material.dart';
 
 class AppProviders {
   static List<SingleChildWidget> get providers {
@@ -99,6 +99,24 @@ class AppProviders {
         create: (_) => AchievementProvider(),
       ),
     ];
+  }
+}
+
+class PremiumProvider extends ChangeNotifier {
+  bool _isPremium = false;
+  bool get isPremium => _isPremium;
+
+  Future<void> loadPremiumStatus() async {
+    _isPremium = await ApiClient().getPremiumStatus();
+    notifyListeners();
+  }
+
+  Future<void> buyPremium() async {
+    final bought = await ApiClient().buyPremium();
+    if (bought) {
+      _isPremium = true;
+      notifyListeners();
+    }
   }
 }
 

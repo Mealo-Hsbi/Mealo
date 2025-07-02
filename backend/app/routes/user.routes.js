@@ -73,4 +73,49 @@ router.get('/me', async (req, res, next) => {
   }
 });
 
+// GET /api/user/premium → Gibt den Premium-Status zurück
+router.get('/premium', async (req, res, next) => {
+  try {
+    const { firebase_uid } = req.user;
+    const user = await prisma.users.findUnique({
+      where: { firebase_uid },
+      select: { isPremium: true },
+    });
+    if (!user) return res.sendStatus(404);
+    res.json({ isPremium: user.isPremium });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/user/premium → Setzt Premium auf true (simuliert Kauf)
+router.post('/premium', async (req, res, next) => {
+  try {
+    const { firebase_uid } = req.user;
+    const user = await prisma.users.update({
+      where: { firebase_uid },
+      data: { isPremium: true },
+      select: { isPremium: true },
+    });
+    res.json({ isPremium: user.isPremium });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/user/premium → Setzt Premium auf false (Kündigung)
+router.delete('/premium', async (req, res, next) => {
+  try {
+    const { firebase_uid } = req.user;
+    const user = await prisma.users.update({
+      where: { firebase_uid },
+      data: { isPremium: false },
+      select: { isPremium: true },
+    });
+    res.json({ isPremium: user.isPremium });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

@@ -11,6 +11,7 @@ import 'package:frontend/providers/selected_ingredients_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:network_image_mock/network_image_mock.dart';
+import 'package:frontend/core/providers/app_providers.dart';
 
 class DummyRecipeRepository implements RecipeRepository {
   @override
@@ -64,6 +65,7 @@ void main() {
                     searchRecipesByIngredientsUsecase: SearchRecipesByIngredients(dummyRepo),
                   ),
                 ),
+                ChangeNotifierProvider<PremiumProvider>(create: (_) => PremiumProvider()),
               ],
               child: const SearchScreen(),
             ),
@@ -90,6 +92,7 @@ void main() {
                     searchRecipesByIngredientsUsecase: SearchRecipesByIngredients(dummyRepo),
                   ),
                 ),
+                ChangeNotifierProvider<PremiumProvider>(create: (_) => PremiumProvider()),
               ],
               child: const SearchScreen(),
             ),
@@ -115,6 +118,7 @@ void main() {
                     searchRecipesByIngredientsUsecase: SearchRecipesByIngredients(dummyRepo),
                   ),
                 ),
+                ChangeNotifierProvider<PremiumProvider>(create: (_) => PremiumProvider()),
               ],
               child: const SearchScreen(),
             ),
@@ -139,6 +143,7 @@ void main() {
                     searchRecipesByIngredientsUsecase: SearchRecipesByIngredients(dummyRepo),
                   ),
                 ),
+                ChangeNotifierProvider<PremiumProvider>(create: (_) => PremiumProvider()),
               ],
               child: const SearchScreen(),
             ),
