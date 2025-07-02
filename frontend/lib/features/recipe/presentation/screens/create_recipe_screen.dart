@@ -161,7 +161,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
       final userId = ref.read(currentUserIdProvider);
 
       if (userId == null) {
-        throw Exception('Benutzer nicht angemeldet');
+        throw Exception('User not logged in');
       }
 
       // Bild hochladen, falls vorhanden
@@ -208,12 +208,12 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
         // Zurück zum Profilscreen
         if (mounted) Navigator.of(context).pop();
       } else {
-        throw Exception('Fehler beim Erstellen des Rezepts');
+        throw Exception('Error while creating the recipe');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler: ${e.toString()}')),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
     } finally {
@@ -307,7 +307,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Rezeptbild',
+              'Recipe Image',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -353,7 +353,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                     children: [
                       Icon(Icons.add_a_photo, size: 48, color: Colors.grey),
                       SizedBox(height: 8),
-                      Text('Bild hinzufügen'),
+                      Text('Add image'),
                     ],
                   ),
                 ),
