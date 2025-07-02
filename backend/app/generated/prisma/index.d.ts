@@ -481,8 +481,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.8.2
-   * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+   * Prisma Client JS version: 6.9.0
+   * Query Engine version: bf0e5e8a04cada8225617067eaa03d041e2bba36
    */
   export type PrismaVersion = {
     client: string
@@ -956,10 +956,6 @@ export namespace Prisma {
             args: Prisma.favoritesUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.favoritesUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$favoritesPayload>[]
-          }
           upsert: {
             args: Prisma.favoritesUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$favoritesPayload>
@@ -1029,10 +1025,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.ingredientsUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.ingredientsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ingredientsPayload>[]
           }
           upsert: {
             args: Prisma.ingredientsUpsertArgs<ExtArgs>
@@ -1104,10 +1096,6 @@ export namespace Prisma {
             args: Prisma.inventoryUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.inventoryUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$inventoryPayload>[]
-          }
           upsert: {
             args: Prisma.inventoryUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$inventoryPayload>
@@ -1177,10 +1165,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.ratingsUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.ratingsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ratingsPayload>[]
           }
           upsert: {
             args: Prisma.ratingsUpsertArgs<ExtArgs>
@@ -1252,10 +1236,6 @@ export namespace Prisma {
             args: Prisma.recipe_ingredientsUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.recipe_ingredientsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$recipe_ingredientsPayload>[]
-          }
           upsert: {
             args: Prisma.recipe_ingredientsUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$recipe_ingredientsPayload>
@@ -1325,10 +1305,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.recipe_stepsUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.recipe_stepsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$recipe_stepsPayload>[]
           }
           upsert: {
             args: Prisma.recipe_stepsUpsertArgs<ExtArgs>
@@ -1400,10 +1376,6 @@ export namespace Prisma {
             args: Prisma.recipesUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.recipesUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$recipesPayload>[]
-          }
           upsert: {
             args: Prisma.recipesUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$recipesPayload>
@@ -1473,10 +1445,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.shopping_listUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.shopping_listUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$shopping_listPayload>[]
           }
           upsert: {
             args: Prisma.shopping_listUpsertArgs<ExtArgs>
@@ -1548,10 +1516,6 @@ export namespace Prisma {
             args: Prisma.shopping_list_itemUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.shopping_list_itemUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$shopping_list_itemPayload>[]
-          }
           upsert: {
             args: Prisma.shopping_list_itemUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$shopping_list_itemPayload>
@@ -1621,10 +1585,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.usersUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.usersUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$usersPayload>[]
           }
           upsert: {
             args: Prisma.usersUpsertArgs<ExtArgs>
@@ -1696,10 +1656,6 @@ export namespace Prisma {
             args: Prisma.weekly_planUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.weekly_planUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$weekly_planPayload>[]
-          }
           upsert: {
             args: Prisma.weekly_planUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$weekly_planPayload>
@@ -1769,10 +1725,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.weekly_plan_itemUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.weekly_plan_itemUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$weekly_plan_itemPayload>[]
           }
           upsert: {
             args: Prisma.weekly_plan_itemUpsertArgs<ExtArgs>
@@ -1844,10 +1796,6 @@ export namespace Prisma {
             args: Prisma.tagsUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.tagsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$tagsPayload>[]
-          }
           upsert: {
             args: Prisma.tagsUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$tagsPayload>
@@ -1917,10 +1865,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.user_tagsUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.user_tagsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$user_tagsPayload>[]
           }
           upsert: {
             args: Prisma.user_tagsUpsertArgs<ExtArgs>
@@ -1992,10 +1936,6 @@ export namespace Prisma {
             args: Prisma.achievementUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.achievementUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$achievementPayload>[]
-          }
           upsert: {
             args: Prisma.achievementUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$achievementPayload>
@@ -2065,10 +2005,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.user_achievementUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.user_achievementUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$user_achievementPayload>[]
           }
           upsert: {
             args: Prisma.user_achievementUpsertArgs<ExtArgs>
@@ -2140,10 +2076,6 @@ export namespace Prisma {
             args: Prisma.preference_optionUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.preference_optionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$preference_optionPayload>[]
-          }
           upsert: {
             args: Prisma.preference_optionUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$preference_optionPayload>
@@ -2214,10 +2146,6 @@ export namespace Prisma {
             args: Prisma.preference_questionUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
-          updateManyAndReturn: {
-            args: Prisma.preference_questionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$preference_questionPayload>[]
-          }
           upsert: {
             args: Prisma.preference_questionUpsertArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$preference_questionPayload>
@@ -2287,10 +2215,6 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.user_preferenceUpdateManyArgs<ExtArgs>
             result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.user_preferenceUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$user_preferencePayload>[]
           }
           upsert: {
             args: Prisma.user_preferenceUpsertArgs<ExtArgs>
@@ -3089,14 +3013,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["favorites"]>
 
-  export type favoritesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    user_id?: boolean
-    recipe_id?: boolean
-    created_at?: boolean
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["favorites"]>
 
   export type favoritesSelectScalar = {
     id?: boolean
@@ -3111,10 +3027,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
   export type favoritesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type favoritesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -3334,36 +3246,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends favoritesUpdateManyArgs>(args: SelectSubset<T, favoritesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Favorites and returns the data updated in the database.
-     * @param {favoritesUpdateManyAndReturnArgs} args - Arguments to update many Favorites.
-     * @example
-     * // Update many Favorites
-     * const favorites = await prisma.favorites.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Favorites and only return the `id`
-     * const favoritesWithIdOnly = await prisma.favorites.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends favoritesUpdateManyAndReturnArgs>(args: SelectSubset<T, favoritesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$favoritesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Favorites.
@@ -3852,40 +3734,6 @@ export namespace Prisma {
      * Filter which favorites to update
      */
     where?: favoritesWhereInput
-    /**
-     * Limit how many favorites to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * favorites updateManyAndReturn
-   */
-  export type favoritesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the favorites
-     */
-    select?: favoritesSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the favorites
-     */
-    omit?: favoritesOmit<ExtArgs> | null
-    /**
-     * The data used to update favorites.
-     */
-    data: XOR<favoritesUpdateManyMutationInput, favoritesUncheckedUpdateManyInput>
-    /**
-     * Filter which favorites to update
-     */
-    where?: favoritesWhereInput
-    /**
-     * Limit how many favorites to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: favoritesIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3948,10 +3796,6 @@ export namespace Prisma {
      * Filter which favorites to delete
      */
     where?: favoritesWhereInput
-    /**
-     * Limit how many favorites to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -4228,16 +4072,6 @@ export namespace Prisma {
     fat_gram?: boolean
   }, ExtArgs["result"]["ingredients"]>
 
-  export type ingredientsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    category?: boolean
-    shelf_life_days?: boolean
-    calories?: boolean
-    protein_gram?: boolean
-    carbs_gram?: boolean
-    fat_gram?: boolean
-  }, ExtArgs["result"]["ingredients"]>
 
   export type ingredientsSelectScalar = {
     id?: boolean
@@ -4258,7 +4092,6 @@ export namespace Prisma {
     _count?: boolean | IngredientsCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ingredientsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type ingredientsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $ingredientsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ingredients"
@@ -4480,36 +4313,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends ingredientsUpdateManyArgs>(args: SelectSubset<T, ingredientsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Ingredients and returns the data updated in the database.
-     * @param {ingredientsUpdateManyAndReturnArgs} args - Arguments to update many Ingredients.
-     * @example
-     * // Update many Ingredients
-     * const ingredients = await prisma.ingredients.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Ingredients and only return the `id`
-     * const ingredientsWithIdOnly = await prisma.ingredients.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends ingredientsUpdateManyAndReturnArgs>(args: SelectSubset<T, ingredientsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ingredientsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Ingredients.
@@ -4999,36 +4802,6 @@ export namespace Prisma {
      * Filter which ingredients to update
      */
     where?: ingredientsWhereInput
-    /**
-     * Limit how many ingredients to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * ingredients updateManyAndReturn
-   */
-  export type ingredientsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ingredients
-     */
-    select?: ingredientsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the ingredients
-     */
-    omit?: ingredientsOmit<ExtArgs> | null
-    /**
-     * The data used to update ingredients.
-     */
-    data: XOR<ingredientsUpdateManyMutationInput, ingredientsUncheckedUpdateManyInput>
-    /**
-     * Filter which ingredients to update
-     */
-    where?: ingredientsWhereInput
-    /**
-     * Limit how many ingredients to update.
-     */
-    limit?: number
   }
 
   /**
@@ -5091,10 +4864,6 @@ export namespace Prisma {
      * Filter which ingredients to delete
      */
     where?: ingredientsWhereInput
-    /**
-     * Limit how many ingredients to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -5366,15 +5135,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["inventory"]>
 
-  export type inventorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    user_id?: boolean
-    ingredient_id?: boolean
-    quantity?: boolean
-    expiration_date?: boolean
-    ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["inventory"]>
 
   export type inventorySelectScalar = {
     id?: boolean
@@ -5390,10 +5150,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
   export type inventoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type inventoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -5614,36 +5370,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends inventoryUpdateManyArgs>(args: SelectSubset<T, inventoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Inventories and returns the data updated in the database.
-     * @param {inventoryUpdateManyAndReturnArgs} args - Arguments to update many Inventories.
-     * @example
-     * // Update many Inventories
-     * const inventory = await prisma.inventory.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Inventories and only return the `id`
-     * const inventoryWithIdOnly = await prisma.inventory.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends inventoryUpdateManyAndReturnArgs>(args: SelectSubset<T, inventoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$inventoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Inventory.
@@ -6133,40 +5859,6 @@ export namespace Prisma {
      * Filter which inventories to update
      */
     where?: inventoryWhereInput
-    /**
-     * Limit how many inventories to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * inventory updateManyAndReturn
-   */
-  export type inventoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the inventory
-     */
-    select?: inventorySelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the inventory
-     */
-    omit?: inventoryOmit<ExtArgs> | null
-    /**
-     * The data used to update inventories.
-     */
-    data: XOR<inventoryUpdateManyMutationInput, inventoryUncheckedUpdateManyInput>
-    /**
-     * Filter which inventories to update
-     */
-    where?: inventoryWhereInput
-    /**
-     * Limit how many inventories to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: inventoryIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6229,10 +5921,6 @@ export namespace Prisma {
      * Filter which inventories to delete
      */
     where?: inventoryWhereInput
-    /**
-     * Limit how many inventories to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -6475,16 +6163,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ratings"]>
 
-  export type ratingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    user_id?: boolean
-    recipe_id?: boolean
-    score?: boolean
-    comment?: boolean
-    created_at?: boolean
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["ratings"]>
 
   export type ratingsSelectScalar = {
     id?: boolean
@@ -6501,10 +6179,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
   export type ratingsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type ratingsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -6726,36 +6400,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends ratingsUpdateManyArgs>(args: SelectSubset<T, ratingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Ratings and returns the data updated in the database.
-     * @param {ratingsUpdateManyAndReturnArgs} args - Arguments to update many Ratings.
-     * @example
-     * // Update many Ratings
-     * const ratings = await prisma.ratings.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Ratings and only return the `id`
-     * const ratingsWithIdOnly = await prisma.ratings.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends ratingsUpdateManyAndReturnArgs>(args: SelectSubset<T, ratingsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ratingsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Ratings.
@@ -7246,40 +6890,6 @@ export namespace Prisma {
      * Filter which ratings to update
      */
     where?: ratingsWhereInput
-    /**
-     * Limit how many ratings to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * ratings updateManyAndReturn
-   */
-  export type ratingsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ratings
-     */
-    select?: ratingsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the ratings
-     */
-    omit?: ratingsOmit<ExtArgs> | null
-    /**
-     * The data used to update ratings.
-     */
-    data: XOR<ratingsUpdateManyMutationInput, ratingsUncheckedUpdateManyInput>
-    /**
-     * Filter which ratings to update
-     */
-    where?: ratingsWhereInput
-    /**
-     * Limit how many ratings to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ratingsIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -7342,10 +6952,6 @@ export namespace Prisma {
      * Filter which ratings to delete
      */
     where?: ratingsWhereInput
-    /**
-     * Limit how many ratings to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -7588,16 +7194,6 @@ export namespace Prisma {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recipe_ingredients"]>
 
-  export type recipe_ingredientsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    recipe_id?: boolean
-    ingredient_id?: boolean
-    amount?: boolean
-    unit?: boolean
-    original?: boolean
-    ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["recipe_ingredients"]>
 
   export type recipe_ingredientsSelectScalar = {
     id?: boolean
@@ -7614,10 +7210,6 @@ export namespace Prisma {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }
   export type recipe_ingredientsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-  }
-  export type recipe_ingredientsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }
@@ -7839,36 +7431,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends recipe_ingredientsUpdateManyArgs>(args: SelectSubset<T, recipe_ingredientsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Recipe_ingredients and returns the data updated in the database.
-     * @param {recipe_ingredientsUpdateManyAndReturnArgs} args - Arguments to update many Recipe_ingredients.
-     * @example
-     * // Update many Recipe_ingredients
-     * const recipe_ingredients = await prisma.recipe_ingredients.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Recipe_ingredients and only return the `id`
-     * const recipe_ingredientsWithIdOnly = await prisma.recipe_ingredients.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends recipe_ingredientsUpdateManyAndReturnArgs>(args: SelectSubset<T, recipe_ingredientsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$recipe_ingredientsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Recipe_ingredients.
@@ -8359,40 +7921,6 @@ export namespace Prisma {
      * Filter which recipe_ingredients to update
      */
     where?: recipe_ingredientsWhereInput
-    /**
-     * Limit how many recipe_ingredients to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * recipe_ingredients updateManyAndReturn
-   */
-  export type recipe_ingredientsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the recipe_ingredients
-     */
-    select?: recipe_ingredientsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the recipe_ingredients
-     */
-    omit?: recipe_ingredientsOmit<ExtArgs> | null
-    /**
-     * The data used to update recipe_ingredients.
-     */
-    data: XOR<recipe_ingredientsUpdateManyMutationInput, recipe_ingredientsUncheckedUpdateManyInput>
-    /**
-     * Filter which recipe_ingredients to update
-     */
-    where?: recipe_ingredientsWhereInput
-    /**
-     * Limit how many recipe_ingredients to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: recipe_ingredientsIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -8455,10 +7983,6 @@ export namespace Prisma {
      * Filter which recipe_ingredients to delete
      */
     where?: recipe_ingredientsWhereInput
-    /**
-     * Limit how many recipe_ingredients to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -8694,14 +8218,6 @@ export namespace Prisma {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["recipe_steps"]>
 
-  export type recipe_stepsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    recipe_id?: boolean
-    step_number?: boolean
-    description?: boolean
-    duration_minutes?: boolean
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["recipe_steps"]>
 
   export type recipe_stepsSelectScalar = {
     id?: boolean
@@ -8716,9 +8232,6 @@ export namespace Prisma {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }
   export type recipe_stepsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-  }
-  export type recipe_stepsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }
 
@@ -8937,36 +8450,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends recipe_stepsUpdateManyArgs>(args: SelectSubset<T, recipe_stepsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Recipe_steps and returns the data updated in the database.
-     * @param {recipe_stepsUpdateManyAndReturnArgs} args - Arguments to update many Recipe_steps.
-     * @example
-     * // Update many Recipe_steps
-     * const recipe_steps = await prisma.recipe_steps.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Recipe_steps and only return the `id`
-     * const recipe_stepsWithIdOnly = await prisma.recipe_steps.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends recipe_stepsUpdateManyAndReturnArgs>(args: SelectSubset<T, recipe_stepsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$recipe_stepsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Recipe_steps.
@@ -9455,40 +8938,6 @@ export namespace Prisma {
      * Filter which recipe_steps to update
      */
     where?: recipe_stepsWhereInput
-    /**
-     * Limit how many recipe_steps to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * recipe_steps updateManyAndReturn
-   */
-  export type recipe_stepsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the recipe_steps
-     */
-    select?: recipe_stepsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the recipe_steps
-     */
-    omit?: recipe_stepsOmit<ExtArgs> | null
-    /**
-     * The data used to update recipe_steps.
-     */
-    data: XOR<recipe_stepsUpdateManyMutationInput, recipe_stepsUncheckedUpdateManyInput>
-    /**
-     * Filter which recipe_steps to update
-     */
-    where?: recipe_stepsWhereInput
-    /**
-     * Limit how many recipe_steps to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: recipe_stepsIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -9551,10 +9000,6 @@ export namespace Prisma {
      * Filter which recipe_steps to delete
      */
     where?: recipe_stepsWhereInput
-    /**
-     * Limit how many recipe_steps to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -9598,6 +9043,10 @@ export namespace Prisma {
     spoonacular_score: number | null
     price_per_serving: number | null
     weight_watcher_points: number | null
+    calories: number | null
+    protein_gram: number | null
+    fat_gram: number | null
+    carbs_gram: number | null
   }
 
   export type RecipesSumAggregateOutputType = {
@@ -9610,6 +9059,10 @@ export namespace Prisma {
     spoonacular_score: number | null
     price_per_serving: number | null
     weight_watcher_points: number | null
+    calories: number | null
+    protein_gram: number | null
+    fat_gram: number | null
+    carbs_gram: number | null
   }
 
   export type RecipesMinAggregateOutputType = {
@@ -9633,6 +9086,10 @@ export namespace Prisma {
     dairy_free: boolean | null
     weight_watcher_points: number | null
     created_at: Date | null
+    calories: number | null
+    protein_gram: number | null
+    fat_gram: number | null
+    carbs_gram: number | null
   }
 
   export type RecipesMaxAggregateOutputType = {
@@ -9656,6 +9113,10 @@ export namespace Prisma {
     dairy_free: boolean | null
     weight_watcher_points: number | null
     created_at: Date | null
+    calories: number | null
+    protein_gram: number | null
+    fat_gram: number | null
+    carbs_gram: number | null
   }
 
   export type RecipesCountAggregateOutputType = {
@@ -9680,6 +9141,10 @@ export namespace Prisma {
     dairy_free: number
     weight_watcher_points: number
     created_at: number
+    calories: number
+    protein_gram: number
+    fat_gram: number
+    carbs_gram: number
     _all: number
   }
 
@@ -9694,6 +9159,10 @@ export namespace Prisma {
     spoonacular_score?: true
     price_per_serving?: true
     weight_watcher_points?: true
+    calories?: true
+    protein_gram?: true
+    fat_gram?: true
+    carbs_gram?: true
   }
 
   export type RecipesSumAggregateInputType = {
@@ -9706,6 +9175,10 @@ export namespace Prisma {
     spoonacular_score?: true
     price_per_serving?: true
     weight_watcher_points?: true
+    calories?: true
+    protein_gram?: true
+    fat_gram?: true
+    carbs_gram?: true
   }
 
   export type RecipesMinAggregateInputType = {
@@ -9729,6 +9202,10 @@ export namespace Prisma {
     dairy_free?: true
     weight_watcher_points?: true
     created_at?: true
+    calories?: true
+    protein_gram?: true
+    fat_gram?: true
+    carbs_gram?: true
   }
 
   export type RecipesMaxAggregateInputType = {
@@ -9752,6 +9229,10 @@ export namespace Prisma {
     dairy_free?: true
     weight_watcher_points?: true
     created_at?: true
+    calories?: true
+    protein_gram?: true
+    fat_gram?: true
+    carbs_gram?: true
   }
 
   export type RecipesCountAggregateInputType = {
@@ -9776,6 +9257,10 @@ export namespace Prisma {
     dairy_free?: true
     weight_watcher_points?: true
     created_at?: true
+    calories?: true
+    protein_gram?: true
+    fat_gram?: true
+    carbs_gram?: true
     _all?: true
   }
 
@@ -9887,6 +9372,10 @@ export namespace Prisma {
     dairy_free: boolean
     weight_watcher_points: number | null
     created_at: Date
+    calories: number | null
+    protein_gram: number | null
+    fat_gram: number | null
+    carbs_gram: number | null
     _count: RecipesCountAggregateOutputType | null
     _avg: RecipesAvgAggregateOutputType | null
     _sum: RecipesSumAggregateOutputType | null
@@ -9930,6 +9419,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: boolean
     created_at?: boolean
+    calories?: boolean
+    protein_gram?: boolean
+    fat_gram?: boolean
+    carbs_gram?: boolean
     favorites?: boolean | recipes$favoritesArgs<ExtArgs>
     ratings?: boolean | recipes$ratingsArgs<ExtArgs>
     recipe_ingredients?: boolean | recipes$recipe_ingredientsArgs<ExtArgs>
@@ -9961,33 +9454,13 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: boolean
     created_at?: boolean
+    calories?: boolean
+    protein_gram?: boolean
+    fat_gram?: boolean
+    carbs_gram?: boolean
     users?: boolean | recipes$usersArgs<ExtArgs>
   }, ExtArgs["result"]["recipes"]>
 
-  export type recipesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    created_by_id?: boolean
-    spoonacular_id?: boolean
-    title?: boolean
-    image_url?: boolean
-    servings?: boolean
-    ready_in_minutes?: boolean
-    cooking_minutes?: boolean
-    preparation_minutes?: boolean
-    dish_types?: boolean
-    summary?: boolean
-    instructions?: boolean
-    health_score?: boolean
-    spoonacular_score?: boolean
-    price_per_serving?: boolean
-    vegan?: boolean
-    vegetarian?: boolean
-    gluten_free?: boolean
-    dairy_free?: boolean
-    weight_watcher_points?: boolean
-    created_at?: boolean
-    users?: boolean | recipes$usersArgs<ExtArgs>
-  }, ExtArgs["result"]["recipes"]>
 
   export type recipesSelectScalar = {
     id?: boolean
@@ -10011,9 +9484,13 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: boolean
     created_at?: boolean
+    calories?: boolean
+    protein_gram?: boolean
+    fat_gram?: boolean
+    carbs_gram?: boolean
   }
 
-  export type recipesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "created_by_id" | "spoonacular_id" | "title" | "image_url" | "servings" | "ready_in_minutes" | "cooking_minutes" | "preparation_minutes" | "dish_types" | "summary" | "instructions" | "health_score" | "spoonacular_score" | "price_per_serving" | "vegan" | "vegetarian" | "gluten_free" | "dairy_free" | "weight_watcher_points" | "created_at", ExtArgs["result"]["recipes"]>
+  export type recipesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "created_by_id" | "spoonacular_id" | "title" | "image_url" | "servings" | "ready_in_minutes" | "cooking_minutes" | "preparation_minutes" | "dish_types" | "summary" | "instructions" | "health_score" | "spoonacular_score" | "price_per_serving" | "vegan" | "vegetarian" | "gluten_free" | "dairy_free" | "weight_watcher_points" | "created_at" | "calories" | "protein_gram" | "fat_gram" | "carbs_gram", ExtArgs["result"]["recipes"]>
   export type recipesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     favorites?: boolean | recipes$favoritesArgs<ExtArgs>
     ratings?: boolean | recipes$ratingsArgs<ExtArgs>
@@ -10024,9 +9501,6 @@ export namespace Prisma {
     _count?: boolean | RecipesCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type recipesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    users?: boolean | recipes$usersArgs<ExtArgs>
-  }
-  export type recipesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | recipes$usersArgs<ExtArgs>
   }
 
@@ -10062,6 +9536,10 @@ export namespace Prisma {
       dairy_free: boolean
       weight_watcher_points: number | null
       created_at: Date
+      calories: number | null
+      protein_gram: number | null
+      fat_gram: number | null
+      carbs_gram: number | null
     }, ExtArgs["result"]["recipes"]>
     composites: {}
   }
@@ -10266,36 +9744,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends recipesUpdateManyArgs>(args: SelectSubset<T, recipesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Recipes and returns the data updated in the database.
-     * @param {recipesUpdateManyAndReturnArgs} args - Arguments to update many Recipes.
-     * @example
-     * // Update many Recipes
-     * const recipes = await prisma.recipes.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Recipes and only return the `id`
-     * const recipesWithIdOnly = await prisma.recipes.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends recipesUpdateManyAndReturnArgs>(args: SelectSubset<T, recipesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$recipesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Recipes.
@@ -10512,6 +9960,10 @@ export namespace Prisma {
     readonly dairy_free: FieldRef<"recipes", 'Boolean'>
     readonly weight_watcher_points: FieldRef<"recipes", 'Int'>
     readonly created_at: FieldRef<"recipes", 'DateTime'>
+    readonly calories: FieldRef<"recipes", 'Float'>
+    readonly protein_gram: FieldRef<"recipes", 'Float'>
+    readonly fat_gram: FieldRef<"recipes", 'Float'>
+    readonly carbs_gram: FieldRef<"recipes", 'Float'>
   }
     
 
@@ -10805,40 +10257,6 @@ export namespace Prisma {
      * Filter which recipes to update
      */
     where?: recipesWhereInput
-    /**
-     * Limit how many recipes to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * recipes updateManyAndReturn
-   */
-  export type recipesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the recipes
-     */
-    select?: recipesSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the recipes
-     */
-    omit?: recipesOmit<ExtArgs> | null
-    /**
-     * The data used to update recipes.
-     */
-    data: XOR<recipesUpdateManyMutationInput, recipesUncheckedUpdateManyInput>
-    /**
-     * Filter which recipes to update
-     */
-    where?: recipesWhereInput
-    /**
-     * Limit how many recipes to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: recipesIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -10901,10 +10319,6 @@ export namespace Prisma {
      * Filter which recipes to delete
      */
     where?: recipesWhereInput
-    /**
-     * Limit how many recipes to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -11254,16 +10668,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopping_list"]>
 
-  export type shopping_listSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    user_id?: boolean
-    plan_id?: boolean
-    name?: boolean
-    created_at?: boolean
-    finalized?: boolean
-    weekly_plan?: boolean | shopping_list$weekly_planArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["shopping_list"]>
 
   export type shopping_listSelectScalar = {
     id?: boolean
@@ -11282,10 +10686,6 @@ export namespace Prisma {
     _count?: boolean | Shopping_listCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type shopping_listIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    weekly_plan?: boolean | shopping_list$weekly_planArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type shopping_listIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     weekly_plan?: boolean | shopping_list$weekly_planArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -11508,36 +10908,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends shopping_listUpdateManyArgs>(args: SelectSubset<T, shopping_listUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Shopping_lists and returns the data updated in the database.
-     * @param {shopping_listUpdateManyAndReturnArgs} args - Arguments to update many Shopping_lists.
-     * @example
-     * // Update many Shopping_lists
-     * const shopping_list = await prisma.shopping_list.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Shopping_lists and only return the `id`
-     * const shopping_listWithIdOnly = await prisma.shopping_list.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends shopping_listUpdateManyAndReturnArgs>(args: SelectSubset<T, shopping_listUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$shopping_listPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Shopping_list.
@@ -12029,40 +11399,6 @@ export namespace Prisma {
      * Filter which shopping_lists to update
      */
     where?: shopping_listWhereInput
-    /**
-     * Limit how many shopping_lists to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * shopping_list updateManyAndReturn
-   */
-  export type shopping_listUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the shopping_list
-     */
-    select?: shopping_listSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the shopping_list
-     */
-    omit?: shopping_listOmit<ExtArgs> | null
-    /**
-     * The data used to update shopping_lists.
-     */
-    data: XOR<shopping_listUpdateManyMutationInput, shopping_listUncheckedUpdateManyInput>
-    /**
-     * Filter which shopping_lists to update
-     */
-    where?: shopping_listWhereInput
-    /**
-     * Limit how many shopping_lists to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: shopping_listIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12125,10 +11461,6 @@ export namespace Prisma {
      * Filter which shopping_lists to delete
      */
     where?: shopping_listWhereInput
-    /**
-     * Limit how many shopping_lists to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -12414,16 +11746,6 @@ export namespace Prisma {
     shopping_list?: boolean | shopping_listDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopping_list_item"]>
 
-  export type shopping_list_itemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    list_id?: boolean
-    ingredient_id?: boolean
-    amount?: boolean
-    unit?: boolean
-    purchased?: boolean
-    ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
-    shopping_list?: boolean | shopping_listDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["shopping_list_item"]>
 
   export type shopping_list_itemSelectScalar = {
     id?: boolean
@@ -12440,10 +11762,6 @@ export namespace Prisma {
     shopping_list?: boolean | shopping_listDefaultArgs<ExtArgs>
   }
   export type shopping_list_itemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
-    shopping_list?: boolean | shopping_listDefaultArgs<ExtArgs>
-  }
-  export type shopping_list_itemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ingredients?: boolean | ingredientsDefaultArgs<ExtArgs>
     shopping_list?: boolean | shopping_listDefaultArgs<ExtArgs>
   }
@@ -12665,36 +11983,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends shopping_list_itemUpdateManyArgs>(args: SelectSubset<T, shopping_list_itemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Shopping_list_items and returns the data updated in the database.
-     * @param {shopping_list_itemUpdateManyAndReturnArgs} args - Arguments to update many Shopping_list_items.
-     * @example
-     * // Update many Shopping_list_items
-     * const shopping_list_item = await prisma.shopping_list_item.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Shopping_list_items and only return the `id`
-     * const shopping_list_itemWithIdOnly = await prisma.shopping_list_item.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends shopping_list_itemUpdateManyAndReturnArgs>(args: SelectSubset<T, shopping_list_itemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$shopping_list_itemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Shopping_list_item.
@@ -13185,40 +12473,6 @@ export namespace Prisma {
      * Filter which shopping_list_items to update
      */
     where?: shopping_list_itemWhereInput
-    /**
-     * Limit how many shopping_list_items to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * shopping_list_item updateManyAndReturn
-   */
-  export type shopping_list_itemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the shopping_list_item
-     */
-    select?: shopping_list_itemSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the shopping_list_item
-     */
-    omit?: shopping_list_itemOmit<ExtArgs> | null
-    /**
-     * The data used to update shopping_list_items.
-     */
-    data: XOR<shopping_list_itemUpdateManyMutationInput, shopping_list_itemUncheckedUpdateManyInput>
-    /**
-     * Filter which shopping_list_items to update
-     */
-    where?: shopping_list_itemWhereInput
-    /**
-     * Limit how many shopping_list_items to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: shopping_list_itemIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13281,10 +12535,6 @@ export namespace Prisma {
      * Filter which shopping_list_items to delete
      */
     where?: shopping_list_itemWhereInput
-    /**
-     * Limit how many shopping_list_items to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -13508,15 +12758,6 @@ export namespace Prisma {
     has_completed_onboarding?: boolean
   }, ExtArgs["result"]["users"]>
 
-  export type usersSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    firebase_uid?: boolean
-    email?: boolean
-    created_at?: boolean
-    name?: boolean
-    avatar_url?: boolean
-    has_completed_onboarding?: boolean
-  }, ExtArgs["result"]["users"]>
 
   export type usersSelectScalar = {
     id?: boolean
@@ -13542,7 +12783,6 @@ export namespace Prisma {
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type usersIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type usersIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $usersPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "users"
@@ -13769,36 +13009,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends usersUpdateManyArgs>(args: SelectSubset<T, usersUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Users and returns the data updated in the database.
-     * @param {usersUpdateManyAndReturnArgs} args - Arguments to update many Users.
-     * @example
-     * // Update many Users
-     * const users = await prisma.users.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Users and only return the `id`
-     * const usersWithIdOnly = await prisma.users.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends usersUpdateManyAndReturnArgs>(args: SelectSubset<T, usersUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Users.
@@ -14293,36 +13503,6 @@ export namespace Prisma {
      * Filter which users to update
      */
     where?: usersWhereInput
-    /**
-     * Limit how many users to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * users updateManyAndReturn
-   */
-  export type usersUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the users
-     */
-    select?: usersSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the users
-     */
-    omit?: usersOmit<ExtArgs> | null
-    /**
-     * The data used to update users.
-     */
-    data: XOR<usersUpdateManyMutationInput, usersUncheckedUpdateManyInput>
-    /**
-     * Filter which users to update
-     */
-    where?: usersWhereInput
-    /**
-     * Limit how many users to update.
-     */
-    limit?: number
   }
 
   /**
@@ -14385,10 +13565,6 @@ export namespace Prisma {
      * Filter which users to delete
      */
     where?: usersWhereInput
-    /**
-     * Limit how many users to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -14805,14 +13981,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["weekly_plan"]>
 
-  export type weekly_planSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    user_id?: boolean
-    name?: boolean
-    start_date?: boolean
-    created_at?: boolean
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["weekly_plan"]>
 
   export type weekly_planSelectScalar = {
     id?: boolean
@@ -14830,9 +13998,6 @@ export namespace Prisma {
     _count?: boolean | Weekly_planCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type weekly_planIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type weekly_planIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
 
@@ -15053,36 +14218,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends weekly_planUpdateManyArgs>(args: SelectSubset<T, weekly_planUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Weekly_plans and returns the data updated in the database.
-     * @param {weekly_planUpdateManyAndReturnArgs} args - Arguments to update many Weekly_plans.
-     * @example
-     * // Update many Weekly_plans
-     * const weekly_plan = await prisma.weekly_plan.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Weekly_plans and only return the `id`
-     * const weekly_planWithIdOnly = await prisma.weekly_plan.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends weekly_planUpdateManyAndReturnArgs>(args: SelectSubset<T, weekly_planUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$weekly_planPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Weekly_plan.
@@ -15573,40 +14708,6 @@ export namespace Prisma {
      * Filter which weekly_plans to update
      */
     where?: weekly_planWhereInput
-    /**
-     * Limit how many weekly_plans to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * weekly_plan updateManyAndReturn
-   */
-  export type weekly_planUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the weekly_plan
-     */
-    select?: weekly_planSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the weekly_plan
-     */
-    omit?: weekly_planOmit<ExtArgs> | null
-    /**
-     * The data used to update weekly_plans.
-     */
-    data: XOR<weekly_planUpdateManyMutationInput, weekly_planUncheckedUpdateManyInput>
-    /**
-     * Filter which weekly_plans to update
-     */
-    where?: weekly_planWhereInput
-    /**
-     * Limit how many weekly_plans to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: weekly_planIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -15669,10 +14770,6 @@ export namespace Prisma {
      * Filter which weekly_plans to delete
      */
     where?: weekly_planWhereInput
-    /**
-     * Limit how many weekly_plans to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -15920,15 +15017,6 @@ export namespace Prisma {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["weekly_plan_item"]>
 
-  export type weekly_plan_itemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    plan_id?: boolean
-    date?: boolean
-    meal_type?: boolean
-    recipe_id?: boolean
-    weekly_plan?: boolean | weekly_planDefaultArgs<ExtArgs>
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["weekly_plan_item"]>
 
   export type weekly_plan_itemSelectScalar = {
     id?: boolean
@@ -15944,10 +15032,6 @@ export namespace Prisma {
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }
   export type weekly_plan_itemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    weekly_plan?: boolean | weekly_planDefaultArgs<ExtArgs>
-    recipes?: boolean | recipesDefaultArgs<ExtArgs>
-  }
-  export type weekly_plan_itemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     weekly_plan?: boolean | weekly_planDefaultArgs<ExtArgs>
     recipes?: boolean | recipesDefaultArgs<ExtArgs>
   }
@@ -16168,36 +15252,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends weekly_plan_itemUpdateManyArgs>(args: SelectSubset<T, weekly_plan_itemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Weekly_plan_items and returns the data updated in the database.
-     * @param {weekly_plan_itemUpdateManyAndReturnArgs} args - Arguments to update many Weekly_plan_items.
-     * @example
-     * // Update many Weekly_plan_items
-     * const weekly_plan_item = await prisma.weekly_plan_item.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Weekly_plan_items and only return the `id`
-     * const weekly_plan_itemWithIdOnly = await prisma.weekly_plan_item.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends weekly_plan_itemUpdateManyAndReturnArgs>(args: SelectSubset<T, weekly_plan_itemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$weekly_plan_itemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Weekly_plan_item.
@@ -16687,40 +15741,6 @@ export namespace Prisma {
      * Filter which weekly_plan_items to update
      */
     where?: weekly_plan_itemWhereInput
-    /**
-     * Limit how many weekly_plan_items to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * weekly_plan_item updateManyAndReturn
-   */
-  export type weekly_plan_itemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the weekly_plan_item
-     */
-    select?: weekly_plan_itemSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the weekly_plan_item
-     */
-    omit?: weekly_plan_itemOmit<ExtArgs> | null
-    /**
-     * The data used to update weekly_plan_items.
-     */
-    data: XOR<weekly_plan_itemUpdateManyMutationInput, weekly_plan_itemUncheckedUpdateManyInput>
-    /**
-     * Filter which weekly_plan_items to update
-     */
-    where?: weekly_plan_itemWhereInput
-    /**
-     * Limit how many weekly_plan_items to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: weekly_plan_itemIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -16783,10 +15803,6 @@ export namespace Prisma {
      * Filter which weekly_plan_items to delete
      */
     where?: weekly_plan_itemWhereInput
-    /**
-     * Limit how many weekly_plan_items to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -16957,10 +15973,6 @@ export namespace Prisma {
     name?: boolean
   }, ExtArgs["result"]["tags"]>
 
-  export type tagsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-  }, ExtArgs["result"]["tags"]>
 
   export type tagsSelectScalar = {
     id?: boolean
@@ -16973,7 +15985,6 @@ export namespace Prisma {
     _count?: boolean | TagsCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type tagsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type tagsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $tagsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "tags"
@@ -17187,36 +16198,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends tagsUpdateManyArgs>(args: SelectSubset<T, tagsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Tags and returns the data updated in the database.
-     * @param {tagsUpdateManyAndReturnArgs} args - Arguments to update many Tags.
-     * @example
-     * // Update many Tags
-     * const tags = await prisma.tags.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Tags and only return the `id`
-     * const tagsWithIdOnly = await prisma.tags.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends tagsUpdateManyAndReturnArgs>(args: SelectSubset<T, tagsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$tagsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Tags.
@@ -17698,36 +16679,6 @@ export namespace Prisma {
      * Filter which tags to update
      */
     where?: tagsWhereInput
-    /**
-     * Limit how many tags to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * tags updateManyAndReturn
-   */
-  export type tagsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the tags
-     */
-    select?: tagsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the tags
-     */
-    omit?: tagsOmit<ExtArgs> | null
-    /**
-     * The data used to update tags.
-     */
-    data: XOR<tagsUpdateManyMutationInput, tagsUncheckedUpdateManyInput>
-    /**
-     * Filter which tags to update
-     */
-    where?: tagsWhereInput
-    /**
-     * Limit how many tags to update.
-     */
-    limit?: number
   }
 
   /**
@@ -17790,10 +16741,6 @@ export namespace Prisma {
      * Filter which tags to delete
      */
     where?: tagsWhereInput
-    /**
-     * Limit how many tags to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -17990,12 +16937,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user_tags"]>
 
-  export type user_tagsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    user_id?: boolean
-    tag_id?: boolean
-    tags?: boolean | tagsDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["user_tags"]>
 
   export type user_tagsSelectScalar = {
     user_id?: boolean
@@ -18008,10 +16949,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
   export type user_tagsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    tags?: boolean | tagsDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type user_tagsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tags?: boolean | tagsDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -18229,36 +17166,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends user_tagsUpdateManyArgs>(args: SelectSubset<T, user_tagsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more User_tags and returns the data updated in the database.
-     * @param {user_tagsUpdateManyAndReturnArgs} args - Arguments to update many User_tags.
-     * @example
-     * // Update many User_tags
-     * const user_tags = await prisma.user_tags.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more User_tags and only return the `user_id`
-     * const user_tagsWithUser_idOnly = await prisma.user_tags.updateManyAndReturn({
-     *   select: { user_id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends user_tagsUpdateManyAndReturnArgs>(args: SelectSubset<T, user_tagsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_tagsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one User_tags.
@@ -18745,40 +17652,6 @@ export namespace Prisma {
      * Filter which user_tags to update
      */
     where?: user_tagsWhereInput
-    /**
-     * Limit how many user_tags to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * user_tags updateManyAndReturn
-   */
-  export type user_tagsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the user_tags
-     */
-    select?: user_tagsSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the user_tags
-     */
-    omit?: user_tagsOmit<ExtArgs> | null
-    /**
-     * The data used to update user_tags.
-     */
-    data: XOR<user_tagsUpdateManyMutationInput, user_tagsUncheckedUpdateManyInput>
-    /**
-     * Filter which user_tags to update
-     */
-    where?: user_tagsWhereInput
-    /**
-     * Limit how many user_tags to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: user_tagsIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -18841,10 +17714,6 @@ export namespace Prisma {
      * Filter which user_tags to delete
      */
     where?: user_tagsWhereInput
-    /**
-     * Limit how many user_tags to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -19051,14 +17920,6 @@ export namespace Prisma {
     created_at?: boolean
   }, ExtArgs["result"]["achievement"]>
 
-  export type achievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    key?: boolean
-    title?: boolean
-    description?: boolean
-    icon?: boolean
-    created_at?: boolean
-  }, ExtArgs["result"]["achievement"]>
 
   export type achievementSelectScalar = {
     id?: boolean
@@ -19075,7 +17936,6 @@ export namespace Prisma {
     _count?: boolean | AchievementCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type achievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type achievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $achievementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "achievement"
@@ -19293,36 +18153,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends achievementUpdateManyArgs>(args: SelectSubset<T, achievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Achievements and returns the data updated in the database.
-     * @param {achievementUpdateManyAndReturnArgs} args - Arguments to update many Achievements.
-     * @example
-     * // Update many Achievements
-     * const achievement = await prisma.achievement.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Achievements and only return the `id`
-     * const achievementWithIdOnly = await prisma.achievement.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends achievementUpdateManyAndReturnArgs>(args: SelectSubset<T, achievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$achievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Achievement.
@@ -19808,36 +18638,6 @@ export namespace Prisma {
      * Filter which achievements to update
      */
     where?: achievementWhereInput
-    /**
-     * Limit how many achievements to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * achievement updateManyAndReturn
-   */
-  export type achievementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the achievement
-     */
-    select?: achievementSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the achievement
-     */
-    omit?: achievementOmit<ExtArgs> | null
-    /**
-     * The data used to update achievements.
-     */
-    data: XOR<achievementUpdateManyMutationInput, achievementUncheckedUpdateManyInput>
-    /**
-     * Filter which achievements to update
-     */
-    where?: achievementWhereInput
-    /**
-     * Limit how many achievements to update.
-     */
-    limit?: number
   }
 
   /**
@@ -19900,10 +18700,6 @@ export namespace Prisma {
      * Filter which achievements to delete
      */
     where?: achievementWhereInput
-    /**
-     * Limit how many achievements to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -20109,13 +18905,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user_achievement"]>
 
-  export type user_achievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    user_id?: boolean
-    achievement_id?: boolean
-    unlocked_at?: boolean
-    achievement?: boolean | achievementDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["user_achievement"]>
 
   export type user_achievementSelectScalar = {
     user_id?: boolean
@@ -20129,10 +18918,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
   export type user_achievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    achievement?: boolean | achievementDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type user_achievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     achievement?: boolean | achievementDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -20351,36 +19136,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends user_achievementUpdateManyArgs>(args: SelectSubset<T, user_achievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more User_achievements and returns the data updated in the database.
-     * @param {user_achievementUpdateManyAndReturnArgs} args - Arguments to update many User_achievements.
-     * @example
-     * // Update many User_achievements
-     * const user_achievement = await prisma.user_achievement.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more User_achievements and only return the `user_id`
-     * const user_achievementWithUser_idOnly = await prisma.user_achievement.updateManyAndReturn({
-     *   select: { user_id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends user_achievementUpdateManyAndReturnArgs>(args: SelectSubset<T, user_achievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_achievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one User_achievement.
@@ -20868,40 +19623,6 @@ export namespace Prisma {
      * Filter which user_achievements to update
      */
     where?: user_achievementWhereInput
-    /**
-     * Limit how many user_achievements to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * user_achievement updateManyAndReturn
-   */
-  export type user_achievementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the user_achievement
-     */
-    select?: user_achievementSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the user_achievement
-     */
-    omit?: user_achievementOmit<ExtArgs> | null
-    /**
-     * The data used to update user_achievements.
-     */
-    data: XOR<user_achievementUpdateManyMutationInput, user_achievementUncheckedUpdateManyInput>
-    /**
-     * Filter which user_achievements to update
-     */
-    where?: user_achievementWhereInput
-    /**
-     * Limit how many user_achievements to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: user_achievementIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -20964,10 +19685,6 @@ export namespace Prisma {
      * Filter which user_achievements to delete
      */
     where?: user_achievementWhereInput
-    /**
-     * Limit how many user_achievements to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -21167,14 +19884,6 @@ export namespace Prisma {
     preference_question?: boolean | preference_questionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["preference_option"]>
 
-  export type preference_optionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    key?: boolean
-    label?: boolean
-    icon?: boolean
-    question_id?: boolean
-    preference_question?: boolean | preference_questionDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["preference_option"]>
 
   export type preference_optionSelectScalar = {
     id?: boolean
@@ -21191,9 +19900,6 @@ export namespace Prisma {
     _count?: boolean | Preference_optionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type preference_optionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    preference_question?: boolean | preference_questionDefaultArgs<ExtArgs>
-  }
-  export type preference_optionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     preference_question?: boolean | preference_questionDefaultArgs<ExtArgs>
   }
 
@@ -21413,36 +20119,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends preference_optionUpdateManyArgs>(args: SelectSubset<T, preference_optionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Preference_options and returns the data updated in the database.
-     * @param {preference_optionUpdateManyAndReturnArgs} args - Arguments to update many Preference_options.
-     * @example
-     * // Update many Preference_options
-     * const preference_option = await prisma.preference_option.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Preference_options and only return the `id`
-     * const preference_optionWithIdOnly = await prisma.preference_option.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends preference_optionUpdateManyAndReturnArgs>(args: SelectSubset<T, preference_optionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$preference_optionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Preference_option.
@@ -21932,40 +20608,6 @@ export namespace Prisma {
      * Filter which preference_options to update
      */
     where?: preference_optionWhereInput
-    /**
-     * Limit how many preference_options to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * preference_option updateManyAndReturn
-   */
-  export type preference_optionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the preference_option
-     */
-    select?: preference_optionSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the preference_option
-     */
-    omit?: preference_optionOmit<ExtArgs> | null
-    /**
-     * The data used to update preference_options.
-     */
-    data: XOR<preference_optionUpdateManyMutationInput, preference_optionUncheckedUpdateManyInput>
-    /**
-     * Filter which preference_options to update
-     */
-    where?: preference_optionWhereInput
-    /**
-     * Limit how many preference_options to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: preference_optionIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -22028,10 +20670,6 @@ export namespace Prisma {
      * Filter which preference_options to delete
      */
     where?: preference_optionWhereInput
-    /**
-     * Limit how many preference_options to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -22235,11 +20873,6 @@ export namespace Prisma {
     label?: boolean
   }, ExtArgs["result"]["preference_question"]>
 
-  export type preference_questionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    key?: boolean
-    label?: boolean
-  }, ExtArgs["result"]["preference_question"]>
 
   export type preference_questionSelectScalar = {
     id?: boolean
@@ -22253,7 +20886,6 @@ export namespace Prisma {
     _count?: boolean | Preference_questionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type preference_questionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type preference_questionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $preference_questionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "preference_question"
@@ -22468,36 +21100,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends preference_questionUpdateManyArgs>(args: SelectSubset<T, preference_questionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Preference_questions and returns the data updated in the database.
-     * @param {preference_questionUpdateManyAndReturnArgs} args - Arguments to update many Preference_questions.
-     * @example
-     * // Update many Preference_questions
-     * const preference_question = await prisma.preference_question.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Preference_questions and only return the `id`
-     * const preference_questionWithIdOnly = await prisma.preference_question.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends preference_questionUpdateManyAndReturnArgs>(args: SelectSubset<T, preference_questionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$preference_questionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Preference_question.
@@ -22980,36 +21582,6 @@ export namespace Prisma {
      * Filter which preference_questions to update
      */
     where?: preference_questionWhereInput
-    /**
-     * Limit how many preference_questions to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * preference_question updateManyAndReturn
-   */
-  export type preference_questionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the preference_question
-     */
-    select?: preference_questionSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the preference_question
-     */
-    omit?: preference_questionOmit<ExtArgs> | null
-    /**
-     * The data used to update preference_questions.
-     */
-    data: XOR<preference_questionUpdateManyMutationInput, preference_questionUncheckedUpdateManyInput>
-    /**
-     * Filter which preference_questions to update
-     */
-    where?: preference_questionWhereInput
-    /**
-     * Limit how many preference_questions to update.
-     */
-    limit?: number
   }
 
   /**
@@ -23072,10 +21644,6 @@ export namespace Prisma {
      * Filter which preference_questions to delete
      */
     where?: preference_questionWhereInput
-    /**
-     * Limit how many preference_questions to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -23272,12 +21840,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user_preference"]>
 
-  export type user_preferenceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    user_id?: boolean
-    option_id?: boolean
-    preference_option?: boolean | preference_optionDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["user_preference"]>
 
   export type user_preferenceSelectScalar = {
     user_id?: boolean
@@ -23290,10 +21852,6 @@ export namespace Prisma {
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
   export type user_preferenceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    preference_option?: boolean | preference_optionDefaultArgs<ExtArgs>
-    users?: boolean | usersDefaultArgs<ExtArgs>
-  }
-  export type user_preferenceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     preference_option?: boolean | preference_optionDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
   }
@@ -23511,36 +22069,6 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends user_preferenceUpdateManyArgs>(args: SelectSubset<T, user_preferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more User_preferences and returns the data updated in the database.
-     * @param {user_preferenceUpdateManyAndReturnArgs} args - Arguments to update many User_preferences.
-     * @example
-     * // Update many User_preferences
-     * const user_preference = await prisma.user_preference.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more User_preferences and only return the `user_id`
-     * const user_preferenceWithUser_idOnly = await prisma.user_preference.updateManyAndReturn({
-     *   select: { user_id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends user_preferenceUpdateManyAndReturnArgs>(args: SelectSubset<T, user_preferenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_preferencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one User_preference.
@@ -24027,40 +22555,6 @@ export namespace Prisma {
      * Filter which user_preferences to update
      */
     where?: user_preferenceWhereInput
-    /**
-     * Limit how many user_preferences to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * user_preference updateManyAndReturn
-   */
-  export type user_preferenceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the user_preference
-     */
-    select?: user_preferenceSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the user_preference
-     */
-    omit?: user_preferenceOmit<ExtArgs> | null
-    /**
-     * The data used to update user_preferences.
-     */
-    data: XOR<user_preferenceUpdateManyMutationInput, user_preferenceUncheckedUpdateManyInput>
-    /**
-     * Filter which user_preferences to update
-     */
-    where?: user_preferenceWhereInput
-    /**
-     * Limit how many user_preferences to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: user_preferenceIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -24123,10 +22617,6 @@ export namespace Prisma {
      * Filter which user_preferences to delete
      */
     where?: user_preferenceWhereInput
-    /**
-     * Limit how many user_preferences to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -24253,7 +22743,11 @@ export namespace Prisma {
     gluten_free: 'gluten_free',
     dairy_free: 'dairy_free',
     weight_watcher_points: 'weight_watcher_points',
-    created_at: 'created_at'
+    created_at: 'created_at',
+    calories: 'calories',
+    protein_gram: 'protein_gram',
+    fat_gram: 'fat_gram',
+    carbs_gram: 'carbs_gram'
   };
 
   export type RecipesScalarFieldEnum = (typeof RecipesScalarFieldEnum)[keyof typeof RecipesScalarFieldEnum]
@@ -24500,8 +22994,8 @@ export namespace Prisma {
     user_id?: UuidFilter<"favorites"> | string
     recipe_id?: UuidFilter<"favorites"> | string
     created_at?: DateTimeFilter<"favorites"> | Date | string
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }
 
   export type favoritesOrderByWithRelationInput = {
@@ -24522,8 +23016,8 @@ export namespace Prisma {
     user_id?: UuidFilter<"favorites"> | string
     recipe_id?: UuidFilter<"favorites"> | string
     created_at?: DateTimeFilter<"favorites"> | Date | string
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }, "id" | "user_id_recipe_id">
 
   export type favoritesOrderByWithAggregationInput = {
@@ -24633,8 +23127,8 @@ export namespace Prisma {
     ingredient_id?: UuidFilter<"inventory"> | string
     quantity?: StringFilter<"inventory"> | string
     expiration_date?: DateTimeFilter<"inventory"> | Date | string
-    ingredients?: XOR<IngredientsScalarRelationFilter, ingredientsWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    ingredients?: XOR<IngredientsRelationFilter, ingredientsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }
 
   export type inventoryOrderByWithRelationInput = {
@@ -24656,8 +23150,8 @@ export namespace Prisma {
     ingredient_id?: UuidFilter<"inventory"> | string
     quantity?: StringFilter<"inventory"> | string
     expiration_date?: DateTimeFilter<"inventory"> | Date | string
-    ingredients?: XOR<IngredientsScalarRelationFilter, ingredientsWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    ingredients?: XOR<IngredientsRelationFilter, ingredientsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }, "id">
 
   export type inventoryOrderByWithAggregationInput = {
@@ -24692,8 +23186,8 @@ export namespace Prisma {
     score?: IntFilter<"ratings"> | number
     comment?: StringNullableFilter<"ratings"> | string | null
     created_at?: DateTimeFilter<"ratings"> | Date | string
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }
 
   export type ratingsOrderByWithRelationInput = {
@@ -24718,8 +23212,8 @@ export namespace Prisma {
     score?: IntFilter<"ratings"> | number
     comment?: StringNullableFilter<"ratings"> | string | null
     created_at?: DateTimeFilter<"ratings"> | Date | string
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }, "id" | "user_id_recipe_id">
 
   export type ratingsOrderByWithAggregationInput = {
@@ -24758,8 +23252,8 @@ export namespace Prisma {
     amount?: DecimalFilter<"recipe_ingredients"> | Decimal | DecimalJsLike | number | string
     unit?: StringFilter<"recipe_ingredients"> | string
     original?: StringNullableFilter<"recipe_ingredients"> | string | null
-    ingredients?: XOR<IngredientsScalarRelationFilter, ingredientsWhereInput>
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
+    ingredients?: XOR<IngredientsRelationFilter, ingredientsWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
   }
 
   export type recipe_ingredientsOrderByWithRelationInput = {
@@ -24783,8 +23277,8 @@ export namespace Prisma {
     amount?: DecimalFilter<"recipe_ingredients"> | Decimal | DecimalJsLike | number | string
     unit?: StringFilter<"recipe_ingredients"> | string
     original?: StringNullableFilter<"recipe_ingredients"> | string | null
-    ingredients?: XOR<IngredientsScalarRelationFilter, ingredientsWhereInput>
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
+    ingredients?: XOR<IngredientsRelationFilter, ingredientsWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
   }, "id">
 
   export type recipe_ingredientsOrderByWithAggregationInput = {
@@ -24822,7 +23316,7 @@ export namespace Prisma {
     step_number?: IntFilter<"recipe_steps"> | number
     description?: StringFilter<"recipe_steps"> | string
     duration_minutes?: IntNullableFilter<"recipe_steps"> | number | null
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
   }
 
   export type recipe_stepsOrderByWithRelationInput = {
@@ -24843,7 +23337,7 @@ export namespace Prisma {
     step_number?: IntFilter<"recipe_steps"> | number
     description?: StringFilter<"recipe_steps"> | string
     duration_minutes?: IntNullableFilter<"recipe_steps"> | number | null
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
   }, "id">
 
   export type recipe_stepsOrderByWithAggregationInput = {
@@ -24895,11 +23389,15 @@ export namespace Prisma {
     dairy_free?: BoolFilter<"recipes"> | boolean
     weight_watcher_points?: IntNullableFilter<"recipes"> | number | null
     created_at?: DateTimeFilter<"recipes"> | Date | string
+    calories?: FloatNullableFilter<"recipes"> | number | null
+    protein_gram?: FloatNullableFilter<"recipes"> | number | null
+    fat_gram?: FloatNullableFilter<"recipes"> | number | null
+    carbs_gram?: FloatNullableFilter<"recipes"> | number | null
     favorites?: FavoritesListRelationFilter
     ratings?: RatingsListRelationFilter
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     recipe_steps?: Recipe_stepsListRelationFilter
-    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    users?: XOR<UsersNullableRelationFilter, usersWhereInput> | null
     weekly_plan_item?: Weekly_plan_itemListRelationFilter
   }
 
@@ -24925,6 +23423,10 @@ export namespace Prisma {
     dairy_free?: SortOrder
     weight_watcher_points?: SortOrderInput | SortOrder
     created_at?: SortOrder
+    calories?: SortOrderInput | SortOrder
+    protein_gram?: SortOrderInput | SortOrder
+    fat_gram?: SortOrderInput | SortOrder
+    carbs_gram?: SortOrderInput | SortOrder
     favorites?: favoritesOrderByRelationAggregateInput
     ratings?: ratingsOrderByRelationAggregateInput
     recipe_ingredients?: recipe_ingredientsOrderByRelationAggregateInput
@@ -24958,11 +23460,15 @@ export namespace Prisma {
     dairy_free?: BoolFilter<"recipes"> | boolean
     weight_watcher_points?: IntNullableFilter<"recipes"> | number | null
     created_at?: DateTimeFilter<"recipes"> | Date | string
+    calories?: FloatNullableFilter<"recipes"> | number | null
+    protein_gram?: FloatNullableFilter<"recipes"> | number | null
+    fat_gram?: FloatNullableFilter<"recipes"> | number | null
+    carbs_gram?: FloatNullableFilter<"recipes"> | number | null
     favorites?: FavoritesListRelationFilter
     ratings?: RatingsListRelationFilter
     recipe_ingredients?: Recipe_ingredientsListRelationFilter
     recipe_steps?: Recipe_stepsListRelationFilter
-    users?: XOR<UsersNullableScalarRelationFilter, usersWhereInput> | null
+    users?: XOR<UsersNullableRelationFilter, usersWhereInput> | null
     weekly_plan_item?: Weekly_plan_itemListRelationFilter
   }, "id" | "spoonacular_id">
 
@@ -24988,6 +23494,10 @@ export namespace Prisma {
     dairy_free?: SortOrder
     weight_watcher_points?: SortOrderInput | SortOrder
     created_at?: SortOrder
+    calories?: SortOrderInput | SortOrder
+    protein_gram?: SortOrderInput | SortOrder
+    fat_gram?: SortOrderInput | SortOrder
+    carbs_gram?: SortOrderInput | SortOrder
     _count?: recipesCountOrderByAggregateInput
     _avg?: recipesAvgOrderByAggregateInput
     _max?: recipesMaxOrderByAggregateInput
@@ -25020,6 +23530,10 @@ export namespace Prisma {
     dairy_free?: BoolWithAggregatesFilter<"recipes"> | boolean
     weight_watcher_points?: IntNullableWithAggregatesFilter<"recipes"> | number | null
     created_at?: DateTimeWithAggregatesFilter<"recipes"> | Date | string
+    calories?: FloatNullableWithAggregatesFilter<"recipes"> | number | null
+    protein_gram?: FloatNullableWithAggregatesFilter<"recipes"> | number | null
+    fat_gram?: FloatNullableWithAggregatesFilter<"recipes"> | number | null
+    carbs_gram?: FloatNullableWithAggregatesFilter<"recipes"> | number | null
   }
 
   export type shopping_listWhereInput = {
@@ -25032,8 +23546,8 @@ export namespace Prisma {
     name?: StringFilter<"shopping_list"> | string
     created_at?: DateTimeFilter<"shopping_list"> | Date | string
     finalized?: BoolFilter<"shopping_list"> | boolean
-    weekly_plan?: XOR<Weekly_planNullableScalarRelationFilter, weekly_planWhereInput> | null
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    weekly_plan?: XOR<Weekly_planNullableRelationFilter, weekly_planWhereInput> | null
+    users?: XOR<UsersRelationFilter, usersWhereInput>
     shopping_list_item?: Shopping_list_itemListRelationFilter
   }
 
@@ -25059,8 +23573,8 @@ export namespace Prisma {
     name?: StringFilter<"shopping_list"> | string
     created_at?: DateTimeFilter<"shopping_list"> | Date | string
     finalized?: BoolFilter<"shopping_list"> | boolean
-    weekly_plan?: XOR<Weekly_planNullableScalarRelationFilter, weekly_planWhereInput> | null
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    weekly_plan?: XOR<Weekly_planNullableRelationFilter, weekly_planWhereInput> | null
+    users?: XOR<UsersRelationFilter, usersWhereInput>
     shopping_list_item?: Shopping_list_itemListRelationFilter
   }, "id">
 
@@ -25098,8 +23612,8 @@ export namespace Prisma {
     amount?: DecimalFilter<"shopping_list_item"> | Decimal | DecimalJsLike | number | string
     unit?: StringFilter<"shopping_list_item"> | string
     purchased?: BoolFilter<"shopping_list_item"> | boolean
-    ingredients?: XOR<IngredientsScalarRelationFilter, ingredientsWhereInput>
-    shopping_list?: XOR<Shopping_listScalarRelationFilter, shopping_listWhereInput>
+    ingredients?: XOR<IngredientsRelationFilter, ingredientsWhereInput>
+    shopping_list?: XOR<Shopping_listRelationFilter, shopping_listWhereInput>
   }
 
   export type shopping_list_itemOrderByWithRelationInput = {
@@ -25123,8 +23637,8 @@ export namespace Prisma {
     amount?: DecimalFilter<"shopping_list_item"> | Decimal | DecimalJsLike | number | string
     unit?: StringFilter<"shopping_list_item"> | string
     purchased?: BoolFilter<"shopping_list_item"> | boolean
-    ingredients?: XOR<IngredientsScalarRelationFilter, ingredientsWhereInput>
-    shopping_list?: XOR<Shopping_listScalarRelationFilter, shopping_listWhereInput>
+    ingredients?: XOR<IngredientsRelationFilter, ingredientsWhereInput>
+    shopping_list?: XOR<Shopping_listRelationFilter, shopping_listWhereInput>
   }, "id">
 
   export type shopping_list_itemOrderByWithAggregationInput = {
@@ -25252,7 +23766,7 @@ export namespace Prisma {
     start_date?: DateTimeFilter<"weekly_plan"> | Date | string
     created_at?: DateTimeFilter<"weekly_plan"> | Date | string
     shopping_list?: Shopping_listListRelationFilter
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
     weekly_plan_item?: Weekly_plan_itemListRelationFilter
   }
 
@@ -25277,7 +23791,7 @@ export namespace Prisma {
     start_date?: DateTimeFilter<"weekly_plan"> | Date | string
     created_at?: DateTimeFilter<"weekly_plan"> | Date | string
     shopping_list?: Shopping_listListRelationFilter
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
     weekly_plan_item?: Weekly_plan_itemListRelationFilter
   }, "id">
 
@@ -25312,8 +23826,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"weekly_plan_item"> | Date | string
     meal_type?: StringFilter<"weekly_plan_item"> | string
     recipe_id?: UuidFilter<"weekly_plan_item"> | string
-    weekly_plan?: XOR<Weekly_planScalarRelationFilter, weekly_planWhereInput>
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
+    weekly_plan?: XOR<Weekly_planRelationFilter, weekly_planWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
   }
 
   export type weekly_plan_itemOrderByWithRelationInput = {
@@ -25336,8 +23850,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"weekly_plan_item"> | Date | string
     meal_type?: StringFilter<"weekly_plan_item"> | string
     recipe_id?: UuidFilter<"weekly_plan_item"> | string
-    weekly_plan?: XOR<Weekly_planScalarRelationFilter, weekly_planWhereInput>
-    recipes?: XOR<RecipesScalarRelationFilter, recipesWhereInput>
+    weekly_plan?: XOR<Weekly_planRelationFilter, weekly_planWhereInput>
+    recipes?: XOR<RecipesRelationFilter, recipesWhereInput>
   }, "id" | "plan_id_date_meal_type">
 
   export type weekly_plan_itemOrderByWithAggregationInput = {
@@ -25408,8 +23922,8 @@ export namespace Prisma {
     NOT?: user_tagsWhereInput | user_tagsWhereInput[]
     user_id?: UuidFilter<"user_tags"> | string
     tag_id?: UuidFilter<"user_tags"> | string
-    tags?: XOR<TagsScalarRelationFilter, tagsWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    tags?: XOR<TagsRelationFilter, tagsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }
 
   export type user_tagsOrderByWithRelationInput = {
@@ -25426,8 +23940,8 @@ export namespace Prisma {
     NOT?: user_tagsWhereInput | user_tagsWhereInput[]
     user_id?: UuidFilter<"user_tags"> | string
     tag_id?: UuidFilter<"user_tags"> | string
-    tags?: XOR<TagsScalarRelationFilter, tagsWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    tags?: XOR<TagsRelationFilter, tagsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }, "user_id_tag_id">
 
   export type user_tagsOrderByWithAggregationInput = {
@@ -25513,8 +24027,8 @@ export namespace Prisma {
     user_id?: UuidFilter<"user_achievement"> | string
     achievement_id?: UuidFilter<"user_achievement"> | string
     unlocked_at?: DateTimeFilter<"user_achievement"> | Date | string
-    achievement?: XOR<AchievementScalarRelationFilter, achievementWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    achievement?: XOR<AchievementRelationFilter, achievementWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }
 
   export type user_achievementOrderByWithRelationInput = {
@@ -25533,8 +24047,8 @@ export namespace Prisma {
     user_id?: UuidFilter<"user_achievement"> | string
     achievement_id?: UuidFilter<"user_achievement"> | string
     unlocked_at?: DateTimeFilter<"user_achievement"> | Date | string
-    achievement?: XOR<AchievementScalarRelationFilter, achievementWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    achievement?: XOR<AchievementRelationFilter, achievementWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }, "user_id_achievement_id">
 
   export type user_achievementOrderByWithAggregationInput = {
@@ -25564,7 +24078,7 @@ export namespace Prisma {
     label?: StringFilter<"preference_option"> | string
     icon?: StringNullableFilter<"preference_option"> | string | null
     question_id?: UuidFilter<"preference_option"> | string
-    preference_question?: XOR<Preference_questionScalarRelationFilter, preference_questionWhereInput>
+    preference_question?: XOR<Preference_questionRelationFilter, preference_questionWhereInput>
     user_preference?: User_preferenceListRelationFilter
   }
 
@@ -25588,7 +24102,7 @@ export namespace Prisma {
     label?: StringFilter<"preference_option"> | string
     icon?: StringNullableFilter<"preference_option"> | string | null
     question_id?: UuidFilter<"preference_option"> | string
-    preference_question?: XOR<Preference_questionScalarRelationFilter, preference_questionWhereInput>
+    preference_question?: XOR<Preference_questionRelationFilter, preference_questionWhereInput>
     user_preference?: User_preferenceListRelationFilter
   }, "id" | "key_question_id">
 
@@ -25665,8 +24179,8 @@ export namespace Prisma {
     NOT?: user_preferenceWhereInput | user_preferenceWhereInput[]
     user_id?: UuidFilter<"user_preference"> | string
     option_id?: UuidFilter<"user_preference"> | string
-    preference_option?: XOR<Preference_optionScalarRelationFilter, preference_optionWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    preference_option?: XOR<Preference_optionRelationFilter, preference_optionWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }
 
   export type user_preferenceOrderByWithRelationInput = {
@@ -25683,8 +24197,8 @@ export namespace Prisma {
     NOT?: user_preferenceWhereInput | user_preferenceWhereInput[]
     user_id?: UuidFilter<"user_preference"> | string
     option_id?: UuidFilter<"user_preference"> | string
-    preference_option?: XOR<Preference_optionScalarRelationFilter, preference_optionWhereInput>
-    users?: XOR<UsersScalarRelationFilter, usersWhereInput>
+    preference_option?: XOR<Preference_optionRelationFilter, preference_optionWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
   }, "user_id_option_id">
 
   export type user_preferenceOrderByWithAggregationInput = {
@@ -26091,6 +24605,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesCreateNestedManyWithoutRecipesInput
     ratings?: ratingsCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsCreateNestedManyWithoutRecipesInput
@@ -26121,6 +24639,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutRecipesInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
@@ -26149,6 +24671,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUpdateManyWithoutRecipesNestedInput
@@ -26179,6 +24705,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUncheckedUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -26208,6 +24738,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
   }
 
   export type recipesUpdateManyMutationInput = {
@@ -26231,6 +24765,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type recipesUncheckedUpdateManyInput = {
@@ -26255,6 +24793,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type shopping_listCreateInput = {
@@ -26948,12 +25490,12 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type RecipesScalarRelationFilter = {
+  export type RecipesRelationFilter = {
     is?: recipesWhereInput
     isNot?: recipesWhereInput
   }
 
-  export type UsersScalarRelationFilter = {
+  export type UsersRelationFilter = {
     is?: usersWhereInput
     isNot?: usersWhereInput
   }
@@ -27217,7 +25759,7 @@ export namespace Prisma {
     _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
-  export type IngredientsScalarRelationFilter = {
+  export type IngredientsRelationFilter = {
     is?: ingredientsWhereInput
     isNot?: ingredientsWhereInput
   }
@@ -27463,7 +26005,7 @@ export namespace Prisma {
     none?: recipe_stepsWhereInput
   }
 
-  export type UsersNullableScalarRelationFilter = {
+  export type UsersNullableRelationFilter = {
     is?: usersWhereInput | null
     isNot?: usersWhereInput | null
   }
@@ -27512,6 +26054,10 @@ export namespace Prisma {
     dairy_free?: SortOrder
     weight_watcher_points?: SortOrder
     created_at?: SortOrder
+    calories?: SortOrder
+    protein_gram?: SortOrder
+    fat_gram?: SortOrder
+    carbs_gram?: SortOrder
   }
 
   export type recipesAvgOrderByAggregateInput = {
@@ -27524,6 +26070,10 @@ export namespace Prisma {
     spoonacular_score?: SortOrder
     price_per_serving?: SortOrder
     weight_watcher_points?: SortOrder
+    calories?: SortOrder
+    protein_gram?: SortOrder
+    fat_gram?: SortOrder
+    carbs_gram?: SortOrder
   }
 
   export type recipesMaxOrderByAggregateInput = {
@@ -27547,6 +26097,10 @@ export namespace Prisma {
     dairy_free?: SortOrder
     weight_watcher_points?: SortOrder
     created_at?: SortOrder
+    calories?: SortOrder
+    protein_gram?: SortOrder
+    fat_gram?: SortOrder
+    carbs_gram?: SortOrder
   }
 
   export type recipesMinOrderByAggregateInput = {
@@ -27570,6 +26124,10 @@ export namespace Prisma {
     dairy_free?: SortOrder
     weight_watcher_points?: SortOrder
     created_at?: SortOrder
+    calories?: SortOrder
+    protein_gram?: SortOrder
+    fat_gram?: SortOrder
+    carbs_gram?: SortOrder
   }
 
   export type recipesSumOrderByAggregateInput = {
@@ -27582,6 +26140,10 @@ export namespace Prisma {
     spoonacular_score?: SortOrder
     price_per_serving?: SortOrder
     weight_watcher_points?: SortOrder
+    calories?: SortOrder
+    protein_gram?: SortOrder
+    fat_gram?: SortOrder
+    carbs_gram?: SortOrder
   }
 
   export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -27623,7 +26185,7 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type Weekly_planNullableScalarRelationFilter = {
+  export type Weekly_planNullableRelationFilter = {
     is?: weekly_planWhereInput | null
     isNot?: weekly_planWhereInput | null
   }
@@ -27655,7 +26217,7 @@ export namespace Prisma {
     finalized?: SortOrder
   }
 
-  export type Shopping_listScalarRelationFilter = {
+  export type Shopping_listRelationFilter = {
     is?: shopping_listWhereInput
     isNot?: shopping_listWhereInput
   }
@@ -27809,7 +26371,7 @@ export namespace Prisma {
     created_at?: SortOrder
   }
 
-  export type Weekly_planScalarRelationFilter = {
+  export type Weekly_planRelationFilter = {
     is?: weekly_planWhereInput
     isNot?: weekly_planWhereInput
   }
@@ -27859,7 +26421,7 @@ export namespace Prisma {
     name?: SortOrder
   }
 
-  export type TagsScalarRelationFilter = {
+  export type TagsRelationFilter = {
     is?: tagsWhereInput
     isNot?: tagsWhereInput
   }
@@ -27911,7 +26473,7 @@ export namespace Prisma {
     created_at?: SortOrder
   }
 
-  export type AchievementScalarRelationFilter = {
+  export type AchievementRelationFilter = {
     is?: achievementWhereInput
     isNot?: achievementWhereInput
   }
@@ -27939,7 +26501,7 @@ export namespace Prisma {
     unlocked_at?: SortOrder
   }
 
-  export type Preference_questionScalarRelationFilter = {
+  export type Preference_questionRelationFilter = {
     is?: preference_questionWhereInput
     isNot?: preference_questionWhereInput
   }
@@ -28001,7 +26563,7 @@ export namespace Prisma {
     label?: SortOrder
   }
 
-  export type Preference_optionScalarRelationFilter = {
+  export type Preference_optionRelationFilter = {
     is?: preference_optionWhereInput
     isNot?: preference_optionWhereInput
   }
@@ -29756,6 +28318,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     ratings?: ratingsCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsCreateNestedManyWithoutRecipesInput
     recipe_steps?: recipe_stepsCreateNestedManyWithoutRecipesInput
@@ -29785,6 +28351,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     ratings?: ratingsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_steps?: recipe_stepsUncheckedCreateNestedManyWithoutRecipesInput
@@ -29869,6 +28439,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     ratings?: ratingsUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUpdateManyWithoutRecipesNestedInput
@@ -29898,6 +28472,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -30287,6 +28865,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsCreateNestedManyWithoutRecipesInput
     recipe_steps?: recipe_stepsCreateNestedManyWithoutRecipesInput
@@ -30316,6 +28898,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_steps?: recipe_stepsUncheckedCreateNestedManyWithoutRecipesInput
@@ -30400,6 +28986,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUpdateManyWithoutRecipesNestedInput
@@ -30429,6 +29019,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -30534,6 +29128,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesCreateNestedManyWithoutRecipesInput
     ratings?: ratingsCreateNestedManyWithoutRecipesInput
     recipe_steps?: recipe_stepsCreateNestedManyWithoutRecipesInput
@@ -30563,6 +29161,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutRecipesInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_steps?: recipe_stepsUncheckedCreateNestedManyWithoutRecipesInput
@@ -30643,6 +29245,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUpdateManyWithoutRecipesNestedInput
@@ -30672,6 +29278,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUncheckedUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_steps?: recipe_stepsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -30699,6 +29309,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesCreateNestedManyWithoutRecipesInput
     ratings?: ratingsCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsCreateNestedManyWithoutRecipesInput
@@ -30728,6 +29342,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutRecipesInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
@@ -30771,6 +29389,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUpdateManyWithoutRecipesNestedInput
@@ -30800,6 +29422,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUncheckedUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -31535,6 +30161,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesCreateNestedManyWithoutRecipesInput
     ratings?: ratingsCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsCreateNestedManyWithoutRecipesInput
@@ -31563,6 +30193,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutRecipesInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
@@ -31781,6 +30415,10 @@ export namespace Prisma {
     dairy_free?: BoolFilter<"recipes"> | boolean
     weight_watcher_points?: IntNullableFilter<"recipes"> | number | null
     created_at?: DateTimeFilter<"recipes"> | Date | string
+    calories?: FloatNullableFilter<"recipes"> | number | null
+    protein_gram?: FloatNullableFilter<"recipes"> | number | null
+    fat_gram?: FloatNullableFilter<"recipes"> | number | null
+    carbs_gram?: FloatNullableFilter<"recipes"> | number | null
   }
 
   export type shopping_listUpsertWithWhereUniqueWithoutUsersInput = {
@@ -32127,6 +30765,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesCreateNestedManyWithoutRecipesInput
     ratings?: ratingsCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsCreateNestedManyWithoutRecipesInput
@@ -32156,6 +30798,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
     favorites?: favoritesUncheckedCreateNestedManyWithoutRecipesInput
     ratings?: ratingsUncheckedCreateNestedManyWithoutRecipesInput
     recipe_ingredients?: recipe_ingredientsUncheckedCreateNestedManyWithoutRecipesInput
@@ -32228,6 +30874,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUpdateManyWithoutRecipesNestedInput
@@ -32257,6 +30907,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUncheckedUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -33170,6 +31824,10 @@ export namespace Prisma {
     dairy_free?: boolean
     weight_watcher_points?: number | null
     created_at?: Date | string
+    calories?: number | null
+    protein_gram?: number | null
+    fat_gram?: number | null
+    carbs_gram?: number | null
   }
 
   export type shopping_listCreateManyUsersInput = {
@@ -33284,6 +31942,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUpdateManyWithoutRecipesNestedInput
@@ -33312,6 +31974,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
     favorites?: favoritesUncheckedUpdateManyWithoutRecipesNestedInput
     ratings?: ratingsUncheckedUpdateManyWithoutRecipesNestedInput
     recipe_ingredients?: recipe_ingredientsUncheckedUpdateManyWithoutRecipesNestedInput
@@ -33340,6 +32006,10 @@ export namespace Prisma {
     dairy_free?: BoolFieldUpdateOperationsInput | boolean
     weight_watcher_points?: NullableIntFieldUpdateOperationsInput | number | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    calories?: NullableFloatFieldUpdateOperationsInput | number | null
+    protein_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    fat_gram?: NullableFloatFieldUpdateOperationsInput | number | null
+    carbs_gram?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type shopping_listUpdateWithoutUsersInput = {

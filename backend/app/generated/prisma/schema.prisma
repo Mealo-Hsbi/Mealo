@@ -100,6 +100,10 @@ model recipes {
   dairy_free            Boolean              @default(false)
   weight_watcher_points Int?
   created_at            DateTime             @default(now()) @db.Timestamptz(6)
+  calories              Float?               @db.Real
+  protein_gram          Float?               @db.Real
+  fat_gram              Float?               @db.Real
+  carbs_gram            Float?               @db.Real
   favorites             favorites[]
   ratings               ratings[]
   recipe_ingredients    recipe_ingredients[]

@@ -346,6 +346,89 @@ const getOwnRecipesForUser = async (req, res) => {
     }
 };
 
+const createRecipe = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'Nicht authentifiziert.' });
+        }
+
+        let {
+            title,
+            imageUrl,
+            servings,
+            readyInMinutes,
+            cookingMinutes,
+            preparationMinutes,
+            dishTypes,
+            summary,
+            instructions,
+            healthScore,
+            pricePerServing,
+            vegan,
+            vegetarian,
+            glutenFree,
+            dairyFree,
+            weightWatcherPoints,
+            calories,
+            proteinGram,
+            fatGram,
+            carbsGram,
+            ingredients,
+            steps
+        } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ message: 'Rezepttitel ist erforderlich.' });
+        }
+
+        // Wenn das Bild eine URL ist, die kein http enthält, ist es ein ObjektKey -> wie bei avatar_url
+        let imageObjectKey = imageUrl;
+        if (imageUrl && imageUrl.startsWith('http')) {
+            // Optional: Extrahiere den ObjektKey aus der URL, falls nötig
+            // imageObjectKey = ...
+        }
+        // Speichere nur den ObjektKey in der DB
+        const recipe = await recipeManagementService.createRecipe({
+            userId,
+            title,
+            imageUrl: imageObjectKey,
+            servings,
+            readyInMinutes,
+            cookingMinutes,
+            preparationMinutes,
+            dishTypes: dishTypes || [],
+            summary,
+            instructions,
+            healthScore,
+            pricePerServing,
+            vegan: vegan || false,
+            vegetarian: vegetarian || false,
+            glutenFree: glutenFree || false,
+            dairyFree: dairyFree || false,
+            weightWatcherPoints,
+            calories,
+            proteinGram,
+            fatGram,
+            carbsGram,
+            ingredients: ingredients || [],
+            steps: steps || []
+        });
+
+        // Im Response: Wenn Bild vorhanden und kein http, dann signed Download-URL erzeugen
+        let responseRecipe = { ...recipe };
+        if (responseRecipe.image_url && !responseRecipe.image_url.startsWith('http')) {
+            responseRecipe.imageUrl = await mediaService.getSignedDownloadUrl(responseRecipe.image_url);
+        } else {
+            responseRecipe.imageUrl = responseRecipe.image_url;
+        }
+        return res.status(201).json(responseRecipe);
+    } catch (error) {
+        console.error('[BACKEND DEBUG - CONTROLLER] Fehler in createRecipe:', error);
+        return res.status(500).json({ message: 'Fehler beim Erstellen des Rezepts.' });
+    }
+};
+
 module.exports = {
     getRecipesByQuery,
     getRecipesByIngredients,
@@ -358,4 +441,5 @@ module.exports = {
     addOrUpdateRecipeRating,
     getUserRecipeRating,
     getOwnRecipesForUser,
+    createRecipe,
 };

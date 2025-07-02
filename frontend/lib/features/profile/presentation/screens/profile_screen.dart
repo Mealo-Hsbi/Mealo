@@ -19,6 +19,7 @@ import '../providers/achievement_provider.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_list_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/recipe_detail_screen.dart';
 import 'package:frontend/features/recipe/presentation/screens/user_recipe_list_screen.dart';
+import 'package:frontend/features/recipe/presentation/screens/create_recipe_screen.dart';
 
 const double kSectionSpacing = 6.0;
 const double kSectionPadding = 16.0;
@@ -166,7 +167,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           // Rezepte-Sektion mit Fallback
                           ProfileSection(
-                            title: 'My Recipes',
+                            title: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('My Recipes', style: Theme.of(context).textTheme.titleLarge),
+                                SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const CreateRecipeScreen(),
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 11,
+                                    backgroundColor: Colors.green,
+                                    child: Icon(Icons.add, color: Colors.white, size: 15),
+                                  ),
+                                ),
+                              ],
+                            ),
                             action: TextButton(
                               onPressed: () => Navigator.of(context).push(
                                 _createSlideRoute(const UserRecipeListScreen()),
@@ -221,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           // Achievements-Sektion mit Fallback
                           ProfileSection(
-                            title: 'Achievements',
+                            title: Text('Achievements', style: Theme.of(context).textTheme.titleLarge),
                             action: TextButton(
                               onPressed: () => Navigator.of(context).push(
                                 _createSlideRoute(const AchievementsOverviewScreen()),
@@ -268,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class ProfileSection extends StatelessWidget {
-  final String title;
+  final Widget title;
   final Widget? action;
   final Widget child;
 
@@ -285,7 +304,7 @@ class ProfileSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            title,
             const Spacer(),
             if (action != null) action!,
           ]),

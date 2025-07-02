@@ -46,7 +46,7 @@ class RecipePreviewItem extends StatelessWidget {
                 title,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

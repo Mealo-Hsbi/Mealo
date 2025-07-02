@@ -16,6 +16,7 @@ const {
     getUserRecipeRating,       // NEU: Controller für Bewertungen abrufen
     getInternalRecipeDetails,  // NEU: Controller für interne Rezeptdetails
     getOwnRecipesForUser,      // <--- NEU
+    createRecipe,              // NEU: Controller für Rezept erstellen
 } = require('../controllers/recipeController');
 
 
@@ -81,5 +82,11 @@ router.get('/internal/:id', auth, getInternalRecipeDetails);
 // URL: /api/recipes/mine
 // Benötigt: Authentifizierung (userId)
 router.get('/mine', auth, getOwnRecipesForUser);
+
+// Route zum Erstellen eines neuen Rezepts
+// Methode: POST
+// URL: /api/recipes
+// Benötigt: Authentifizierung (userId), im Body: Rezeptdaten
+router.post('/', auth, createRecipe);
 
 module.exports = router;
