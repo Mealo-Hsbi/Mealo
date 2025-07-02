@@ -19,4 +19,7 @@
 ## Target Audience
 - End-users seeking to improve their meal planning
 - Developers interested in fullstack app architecture
-- Contributors looking to enhance an open-source project 
+- Contributors looking to enhance an open-source project
+
+## Automated Testing
+Mealo uses automated tests for both the backend (Node.js) and frontend (Flutter) to ensure code quality and reliability. See [Testing & Quality Assurance](tests.md) for details on how tests are structured, run, and extended. 
