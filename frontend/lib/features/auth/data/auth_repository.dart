@@ -26,7 +26,16 @@ class AuthRepository {
   Stream<UserModel?> get user {
     return _firebaseAuth
         .authStateChanges()
-        .map((u) => u == null ? null : UserModel.fromFirebase(u));
+        .asyncMap((u) async {
+          if (u == null) return null;
+          try {
+            final response = await _api.get('/users/me');
+            return UserModel.fromJson(response.data);
+          } catch (e) {
+            // Fallback: Nur Firebase-Daten
+            return UserModel.fromFirebase(u);
+          }
+        });
   }
 
   /// Registrierung mit E-Mail und Passwort

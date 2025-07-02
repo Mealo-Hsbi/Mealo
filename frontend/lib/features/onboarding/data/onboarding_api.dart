@@ -17,4 +17,9 @@ class OnboardingApi {
         .map((e) => e is Map<String, dynamic> ? e : Map<String, dynamic>.from(e as Map))
         .toList();
   }
+
+  Future<bool> getOnboardingStatus() async {
+    final response = await _api.get('/users/me');
+    return response.data['has_completed_onboarding'] == true;
+  }
 }

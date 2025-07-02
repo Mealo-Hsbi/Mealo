@@ -50,18 +50,6 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.quiz),
-            title: const Text('Start Onboarding'),
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-                fullscreenDialog: true, // optional: Slide von unten
-                builder: (_) => const OnboardingScreen(),
-              ),
-            );
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.info),
             title: const Text('About Mealo'),
             onTap: () {
@@ -99,7 +87,7 @@ class SettingsScreen extends StatelessWidget {
                               return Text(
                                 isPremium
                                   ? 'Du bist Premium-Nutzer!'
-                                  : 'Premium kaufen',
+                                  : 'Buy Premium',
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                               );
                             },
@@ -118,8 +106,8 @@ class SettingsScreen extends StatelessWidget {
                         final premiumProvider = Provider.of<PremiumProvider>(context, listen: false);
                         return Text(
                           isPremium
-                            ? 'Keine Werbung & du unterstützt die Weiterentwicklung.'
-                            : 'Mit Premium genießt du Mealo werbefrei und unterstützt die Weiterentwicklung.',
+                            ? 'No ads & you support further development.'
+                            : 'With Premium, you enjoy Mealo ad-free and support further development.',
                           style: TextStyle(color: Colors.grey.shade800),
                         );
                       },
@@ -132,13 +120,13 @@ class SettingsScreen extends StatelessWidget {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Premium ist aktiv. Danke für deine Unterstützung!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                              const Text('Premium is active. Thank you for your support!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 8),
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton.icon(
                                   icon: const Icon(Icons.cancel, color: Colors.white),
-                                  label: const Text('Premium kündigen'),
+                                  label: const Text('Cancel Premium'),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.redAccent,
                                     foregroundColor: Colors.white,
@@ -149,11 +137,11 @@ class SettingsScreen extends StatelessWidget {
                                     if (cancelled && context.mounted) {
                                       await premiumProvider.loadPremiumStatus();
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Premium wurde gekündigt.')),
+                                        const SnackBar(content: Text('Premium has been cancelled.')),
                                       );
                                     } else if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Kündigung fehlgeschlagen.')),
+                                        const SnackBar(content: Text('Cancellation failed.')),
                                       );
                                     }
                                   },
@@ -166,7 +154,7 @@ class SettingsScreen extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.workspace_premium, color: Colors.white),
-                            label: const Text('Premium kaufen'),
+                            label: const Text('Buy Premium'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.amber.shade700,
                               foregroundColor: Colors.white,
@@ -177,11 +165,11 @@ class SettingsScreen extends StatelessWidget {
                               if (bought && context.mounted) {
                                 await premiumProvider.loadPremiumStatus();
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Danke für deinen Kauf! Du bist jetzt Premium-Nutzer.')),
+                                  const SnackBar(content: Text('Thank you for your purchase! You are now a Premium user.')),
                                 );
                               } else if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Kauf fehlgeschlagen. Bitte versuche es erneut.')),
+                                  const SnackBar(content: Text('Purchase failed. Please try again.')),
                                 );
                               }
                             },

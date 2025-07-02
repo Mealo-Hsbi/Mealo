@@ -7,7 +7,7 @@ app.use(express.json());
 
 // Mock middleware
 const mockAuthMiddleware = (req, res, next) => {
-  req.user = { id: 'test-user-id', email: 'test@example.com' };
+  req.user = { id: '00000000-0000-0000-0000-000000000000', email: 'test@example.com' };
   next();
 };
 
@@ -15,7 +15,7 @@ const mockAuthMiddleware = (req, res, next) => {
 const mockProfileController = {
   getUserProfile: (req, res) => {
     const user = {
-      id: 'test-user-id',
+      id: '00000000-0000-0000-0000-000000000000',
       email: 'test@example.com',
       name: 'Test User',
       avatar_url: 'https://example.com/avatar.jpg'
@@ -35,7 +35,7 @@ const mockProfileController = {
     }
     
     const updatedUser = {
-      id: 'test-user-id',
+      id: '00000000-0000-0000-0000-000000000000',
       email: 'test@example.com',
       name: name || 'Test User',
       avatar_url: avatar_url || 'https://example.com/avatar.jpg'
@@ -77,7 +77,7 @@ describe('Profile Routes', () => {
       expect(response.body).toHaveProperty('email');
       expect(response.body).toHaveProperty('name');
       expect(response.body).toHaveProperty('avatar_url');
-      expect(response.body.id).toBe('test-user-id');
+      expect(response.body.id).toBe('00000000-0000-0000-0000-000000000000');
       expect(response.body.email).toBe('test@example.com');
     });
   });
