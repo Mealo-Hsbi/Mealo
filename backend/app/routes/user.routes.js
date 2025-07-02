@@ -61,9 +61,9 @@ router.use(authMiddleware);
 // GET /api/me  → Profil des eingeloggten Nutzers
 router.get('/me', async (req, res, next) => {
   try {
-    const { uid } = req.user; // wird von authMiddleware gesetzt
+    const { id } = req.user; // wird von authMiddleware gesetzt (UUID)
     const user = await prisma.users.findUnique({
-      where: { firebase_uid: uid },
+      where: { id },
       include: { user_tags: { include: { tags: true } } },
     });
     if (!user) return res.sendStatus(404);

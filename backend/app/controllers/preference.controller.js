@@ -31,6 +31,12 @@ exports.saveUserPreferences = async (req, res, next) => {
     }
 
     await preferenceService.setUserPreferences(userId, optionKeys);
+    // Setze Onboarding-Status auf true
+    const prisma = require('../prisma');
+    await prisma.users.update({
+      where: { id: userId },
+      data: { has_completed_onboarding: true },
+    });
     res.status(204).send();
   } catch (err) {
     console.error('Error saving preferences:', err);

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../data/onboarding_questions.dart';
 import '../widget/preference_chips.dart';
 import '../../data/onboarding_api.dart';
+import 'package:frontend/core/routes/app_router.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -36,7 +37,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       return;
     }
 
-    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const AppNavigationShell()),
+      (route) => false,
+    );
   }
 
   @override

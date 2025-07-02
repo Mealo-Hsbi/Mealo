@@ -50,18 +50,6 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.quiz),
-            title: const Text('Start Onboarding'),
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-                fullscreenDialog: true, // optional: Slide von unten
-                builder: (_) => const OnboardingScreen(),
-              ),
-            );
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.info),
             title: const Text('About Mealo'),
             onTap: () {
