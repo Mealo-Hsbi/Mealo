@@ -2,6 +2,7 @@ const admin = require('../firebase');
 const prisma = require('../prisma');
 
 module.exports = async function authMiddleware(req, res, next) {
+
   if (process.env.NODE_ENV === 'test') {
     const header = req.headers.authorization || '';
     if (!header || !header.startsWith('Bearer ')) {

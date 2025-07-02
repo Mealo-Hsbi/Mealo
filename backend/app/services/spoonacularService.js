@@ -131,6 +131,7 @@ const searchRecipesByQuery = async ({
         ];
         return testRecipes;
     }
+    
     if (!spoonacularKeys || spoonacularKeys.length === 0) {
         throw new Error('Server configuration error: Spoonacular API keys are missing.');
     }

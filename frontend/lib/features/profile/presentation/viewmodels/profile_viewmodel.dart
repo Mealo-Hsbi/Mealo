@@ -15,26 +15,28 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileDto? profile;
   bool isLoading = false;
+  String? errorMessage;
 
   ProfileViewModel(this._getProfile, this._uploadAvatar, this._profileRepository);
 
   Future<void> loadProfile() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
-    final fresh = await _getProfile();
-
-    // Logging zur Analyse
-
-    if (profile == null || profile!.avatarUrl != fresh.avatarUrl) {
-      profile = fresh;
+    try {
+      final fresh = await _getProfile();
+      if (profile == null || profile!.avatarUrl != fresh.avatarUrl) {
+        profile = fresh;
+        notifyListeners();
+      }
+    } catch (e, st) {
+      errorMessage = 'Fehler beim Laden des Profils: '
+          '\n${e.toString()}';
+    } finally {
+      isLoading = false;
       notifyListeners();
-    } else {
-      // Logging zur Analyse
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 
   Future<void> pickAndUploadAvatar() async {

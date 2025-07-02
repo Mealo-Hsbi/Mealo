@@ -30,14 +30,15 @@ async function fetchProfile(firebaseUid) {
 
   // 4) recentRecipes zusammenstellen (Titel + Bild-URL)
   const recentRecipes = await Promise.all(
-    user.recipes.map(async (recipe) => ({
-      id: recipe.id,
-      spoonacularId: recipe.spoonacular_id,
-      title:    recipe.title,
-      imageUrl: recipe.image_url
-        ? await mediaService.getSignedDownloadUrl(recipe.image_url)
-        : null,
-    }))
+    user.recipes.map(async (recipe) => {
+      const signedUrl = recipe.image_url ? await mediaService.getSignedDownloadUrl(recipe.image_url) : null;
+      return {
+        id: recipe.id,
+        spoonacularId: recipe.spoonacular_id,
+        title:    recipe.title,
+        imageUrl: signedUrl,
+      };
+    })
   );
 
   // 5) Drei zufällige freigeschaltete Achievements laden
@@ -58,7 +59,7 @@ async function fetchProfile(firebaseUid) {
     }));
 
   // 6) DTO zusammenstellen und zurückgeben
-  return {
+  const dto = {
     id:               user.id,
     name:             user.name,
     email:            user.email,
@@ -71,6 +72,7 @@ async function fetchProfile(firebaseUid) {
     recentRecipes,
     achievements:     randomThree,
   };
+  return dto;
 }
 
 async function updateAvatar(firebaseUid, objectKey) {
@@ -78,7 +80,6 @@ async function updateAvatar(firebaseUid, objectKey) {
     where: { firebase_uid: firebaseUid },
     data:  { avatar_url: objectKey },
   });
-
   return { avatarUrl: objectKey };
 }
 
