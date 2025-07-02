@@ -111,6 +111,24 @@ class MockApiClient implements ApiClient {
       requestOptions: RequestOptions(path: '/api/mealplan/current'),
     );
   }
+
+  @override
+  Future<bool> buyPremium() async {
+    print('Mock buyPremium called');
+    return true;
+  }
+
+  @override
+  Future<bool> cancelPremium() async {
+    print('Mock cancelPremium called');
+    return true;
+  }
+
+  @override
+  Future<bool> getPremiumStatus() async {
+    print('Mock getPremiumStatus called');
+    return false;
+  }
 }
 void main() {
   // Flutter-Umgebung initialisieren
