@@ -10,6 +10,7 @@ import 'package:frontend/features/recipe/presentation/widgets/recipe_list/parall
 import 'package:frontend/providers/selected_ingredients_provider.dart';
 import 'package:frontend/features/search/presentation/provider/search_notifier.dart';
 import 'package:frontend/common/models/recipe.dart';
+import 'package:frontend/core/providers/app_providers.dart';
 
 class SearchScreen extends StatefulWidget {
   final void Function(Recipe recipe)? onRecipeTap;
@@ -103,161 +104,169 @@ class _SearchScreenState extends State<SearchScreen> {
         final bool isSortOptionDisabled = !searchNotifier.isAdvancedSortingAvailable;
 
         return Scaffold(
-          body: Column(
-            children: [
-              SearchHeader(
-                controller: _searchController,
-                focusNode: _focusNode,
-                onChanged: searchNotifier.onSearchChanged,
-                trailingAction: Tooltip(
-                  message: isSortOptionDisabled
-                    ? 'Advanced sorting (e.g., by nutritional values) is only available with text search.'
-                    : 'Sort the recipes.',
-                  // Tooltip-Text anpassen, wenn die Sortierung deaktiviert ist
-                  child: IconButton(
-                    icon: Icon(SortOptionsBottomSheet.getSortIcon(searchNotifier.currentSortOption)),
-                    // onPressed ist null, wenn die Sortierung deaktiviert ist
-                    onPressed: isSortOptionDisabled ? null : () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext bc) {
-                          return SortOptionsBottomSheet(
-                            currentSortOption: searchNotifier.currentSortOption,
-                            onOptionSelected: searchNotifier.onSortOptionSelected,
+          appBar: AppBar(
+            title: const Text('Suche'),
+          ),
+          body: Consumer<PremiumProvider>(
+            builder: (context, premiumProvider, _) {
+              return Column(
+                children: [
+                  SearchHeader(
+                    controller: _searchController,
+                    focusNode: _focusNode,
+                    onChanged: searchNotifier.onSearchChanged,
+                    trailingAction: Tooltip(
+                      message: isSortOptionDisabled
+                        ? 'Advanced sorting (e.g., by nutritional values) is only available with text search.'
+                        : 'Sort the recipes.',
+                      // Tooltip-Text anpassen, wenn die Sortierung deaktiviert ist
+                      child: IconButton(
+                        icon: Icon(SortOptionsBottomSheet.getSortIcon(searchNotifier.currentSortOption)),
+                        // onPressed ist null, wenn die Sortierung deaktiviert ist
+                        onPressed: isSortOptionDisabled ? null : () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext bc) {
+                              return SortOptionsBottomSheet(
+                                currentSortOption: searchNotifier.currentSortOption,
+                                onOptionSelected: searchNotifier.onSortOptionSelected,
+                              );
+                            },
                           );
                         },
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              if (searchNotifier.selectedIngredients.isNotEmpty)
-                IngredientChipScroller(
-                  ingredients: searchNotifier.selectedIngredients,
-                  selected: true,
-                  onTap: searchNotifier.toggleIngredient,
-                  theme: theme,
-                  imageAvailabilityCache: searchNotifier.imageAvailabilityCache,
-                  showBackground: true,
-                ),
+                  if (searchNotifier.selectedIngredients.isNotEmpty)
+                    IngredientChipScroller(
+                      ingredients: searchNotifier.selectedIngredients,
+                      selected: true,
+                      onTap: searchNotifier.toggleIngredient,
+                      theme: theme,
+                      imageAvailabilityCache: searchNotifier.imageAvailabilityCache,
+                      showBackground: true,
+                    ),
 
-              if (searchNotifier.filteredIngredientSuggestions.isNotEmpty && searchNotifier.query.isNotEmpty)
-                IngredientChipScroller(
-                  ingredients: searchNotifier.filteredIngredientSuggestions,
-                  selected: false,
-                  onTap: searchNotifier.toggleIngredient,
-                  theme: Theme.of(context),
-                  imageAvailabilityCache: searchNotifier.imageAvailabilityCache,
-                  showBackground: true,
-                ),
+                  if (searchNotifier.filteredIngredientSuggestions.isNotEmpty && searchNotifier.query.isNotEmpty)
+                    IngredientChipScroller(
+                      ingredients: searchNotifier.filteredIngredientSuggestions,
+                      selected: false,
+                      onTap: searchNotifier.toggleIngredient,
+                      theme: Theme.of(context),
+                      imageAvailabilityCache: searchNotifier.imageAvailabilityCache,
+                      showBackground: true,
+                    ),
 
-              Expanded(
-                child: Builder(
-                  builder: (context) {
-                    // Startzustand: Keine Suche, keine Zutaten
-                    if (!searchNotifier.isLoading && searchNotifier.searchResults.isEmpty && searchNotifier.query.isEmpty && searchNotifier.selectedIngredients.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'Start searching for recipes or select ingredients.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      );
-                    }
-                    // Ladezustand (erste Suche) - Zeigt jetzt Skeleton-Items
-                    if (searchNotifier.isLoading && searchNotifier.searchResults.isEmpty) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 0),
-                        itemCount: 4, // Zeige z.B. 4 Skeleton-Items
-                        itemExtent: _itemExtentForSkeleton, // Nutze den berechneten itemExtent für Skeleton
-                        itemBuilder: (context, index) {
-                          if (_itemExtentForSkeleton == null) {
-                            // Fallback, falls _itemExtentForSkeleton noch nicht berechnet wurde
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          return const RecipeSkeletonItem();
-                        },
-                      );
-                    }
-                    // Fehlermeldung
-                    if (searchNotifier.errorMessage != null) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                              const SizedBox(height: 16),
-                              Text(
-                                searchNotifier.errorMessage!,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 16, color: Colors.red),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Erneute Suche auslösen
-                                  searchNotifier.refreshSearch();
-                                },
-                                child: const Text('Erneut versuchen'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    // Keine Ergebnisse nach Suche
-                    if (searchNotifier.searchResults.isEmpty && !searchNotifier.isLoading && (searchNotifier.query.isNotEmpty || searchNotifier.selectedIngredients.isNotEmpty)) {
-                      return const Center(
-                        child: Text(
-                          'No recipes found. Try different terms or ingredients.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      );
-                    }
-                    // Ergebnisse anzeigen (ParallaxRecipes ist ein guter Wrapper für die ListView)
-                    return ParallaxRecipes(
-                      recipes: searchNotifier.searchResults,
-                      scrollController: _scrollController,
-                      isLoadingMore: searchNotifier.isFetchingMore,
-                      hasMore: searchNotifier.hasMore,
-                      currentSortOption: searchNotifier.currentSortOption,
-                      onRecipeRatingUpdated: (int recipeIndex, double newRating, int newRatingCount) {
-                        setState(() {
-                          final recipe = searchNotifier.searchResults[recipeIndex];
-                          searchNotifier.searchResults[recipeIndex] = Recipe(
-                            id: recipe.id,
-                            internalId: recipe.internalId,
-                            isInternal: recipe.isInternal,
-                            name: recipe.name,
-                            imageUrl: recipe.imageUrl,
-                            place: recipe.place,
-                            readyInMinutes: recipe.readyInMinutes,
-                            servings: recipe.servings,
-                            calories: recipe.calories,
-                            protein: recipe.protein,
-                            fat: recipe.fat,
-                            carbs: recipe.carbs,
-                            sugar: recipe.sugar,
-                            healthScore: recipe.healthScore,
-                            usedIngredientCount: recipe.usedIngredientCount,
-                            missedIngredientCount: recipe.missedIngredientCount,
-                            usedIngredients: recipe.usedIngredients,
-                            missedIngredients: recipe.missedIngredients,
-                            averageRating: newRating,
-                            ratingCount: newRatingCount,
+                  Expanded(
+                    child: Builder(
+                      builder: (context) {
+                        // Startzustand: Keine Suche, keine Zutaten
+                        if (!searchNotifier.isLoading && searchNotifier.searchResults.isEmpty && searchNotifier.query.isEmpty && searchNotifier.selectedIngredients.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'Start searching for recipes or select ingredients.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           );
-                        });
+                        }
+                        // Ladezustand (erste Suche) - Zeigt jetzt Skeleton-Items
+                        if (searchNotifier.isLoading && searchNotifier.searchResults.isEmpty) {
+                          return ListView.builder(
+                            padding: const EdgeInsets.symmetric(vertical: 0),
+                            itemCount: 4, // Zeige z.B. 4 Skeleton-Items
+                            itemExtent: _itemExtentForSkeleton, // Nutze den berechneten itemExtent für Skeleton
+                            itemBuilder: (context, index) {
+                              if (_itemExtentForSkeleton == null) {
+                                // Fallback, falls _itemExtentForSkeleton noch nicht berechnet wurde
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                              return const RecipeSkeletonItem();
+                            },
+                          );
+                        }
+                        // Fehlermeldung
+                        if (searchNotifier.errorMessage != null) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    searchNotifier.errorMessage!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 16, color: Colors.red),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Erneute Suche auslösen
+                                      searchNotifier.refreshSearch();
+                                    },
+                                    child: const Text('Erneut versuchen'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        // Keine Ergebnisse nach Suche
+                        if (searchNotifier.searchResults.isEmpty && !searchNotifier.isLoading && (searchNotifier.query.isNotEmpty || searchNotifier.selectedIngredients.isNotEmpty)) {
+                          return const Center(
+                            child: Text(
+                              'No recipes found. Try different terms or ingredients.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        }
+                        // Ergebnisse anzeigen (ParallaxRecipes ist ein guter Wrapper für die ListView)
+                        return ParallaxRecipes(
+                          recipes: searchNotifier.searchResults,
+                          scrollController: _scrollController,
+                          isLoadingMore: searchNotifier.isFetchingMore,
+                          hasMore: searchNotifier.hasMore,
+                          currentSortOption: searchNotifier.currentSortOption,
+                          showAds: !premiumProvider.isPremium,
+                          onRecipeRatingUpdated: (int recipeIndex, double newRating, int newRatingCount) {
+                            setState(() {
+                              final recipe = searchNotifier.searchResults[recipeIndex];
+                              searchNotifier.searchResults[recipeIndex] = Recipe(
+                                id: recipe.id,
+                                internalId: recipe.internalId,
+                                isInternal: recipe.isInternal,
+                                name: recipe.name,
+                                imageUrl: recipe.imageUrl,
+                                place: recipe.place,
+                                readyInMinutes: recipe.readyInMinutes,
+                                servings: recipe.servings,
+                                calories: recipe.calories,
+                                protein: recipe.protein,
+                                fat: recipe.fat,
+                                carbs: recipe.carbs,
+                                sugar: recipe.sugar,
+                                healthScore: recipe.healthScore,
+                                usedIngredientCount: recipe.usedIngredientCount,
+                                missedIngredientCount: recipe.missedIngredientCount,
+                                usedIngredients: recipe.usedIngredients,
+                                missedIngredients: recipe.missedIngredients,
+                                averageRating: newRating,
+                                ratingCount: newRatingCount,
+                              );
+                            });
+                          },
+                          onRecipeTap: widget.onRecipeTap,
+                        );
                       },
-                      onRecipeTap: widget.onRecipeTap,
-                    );
-                  },
-                ),
-              ),
-            ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         );
       },

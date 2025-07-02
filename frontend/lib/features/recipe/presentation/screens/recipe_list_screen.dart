@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/recipe/recipe_service.dart';
 import 'package:frontend/features/recipe/presentation/widgets/recipe_list/parallax_recipes.dart';
 import 'package:frontend/common/models/recipe.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/core/providers/app_providers.dart';
 
 class RecipeListScreen extends StatelessWidget {
   const RecipeListScreen({Key? key}) : super(key: key);
@@ -27,12 +29,18 @@ class RecipeListScreen extends StatelessWidget {
           if (recipes.isEmpty) {
             return const Center(child: Text('Keine Rezepte gefunden.'));
           }
+          final premiumProvider = Provider.of<PremiumProvider>(context);
           // ParallaxRecipes übernimmt hier das Scrollen
-          return ParallaxRecipes(
-            recipes: recipes,
-            scrollController: ScrollController(),
-            isLoadingMore: false,
-            hasMore: false,
+          return Consumer<PremiumProvider>(
+            builder: (context, premiumProvider, _) {
+              return ParallaxRecipes(
+                recipes: recipes,
+                scrollController: ScrollController(),
+                isLoadingMore: false,
+                hasMore: false,
+                showAds: !premiumProvider.isPremium,
+              );
+            },
           );
         },
       ),

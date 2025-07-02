@@ -11,6 +11,8 @@ import 'package:frontend/features/recipe/domain/entities/favorite.dart'; // Für
 // Importiere ParallaxRecipes, das deine Rezeptliste anzeigt
 import 'package:frontend/features/recipe/presentation/widgets/recipe_list/parallax_recipes.dart';
 // Du brauchst hier KEIN RecipeListItem mehr direkt, da ParallaxRecipes es intern nutzen sollte
+import 'package:frontend/core/providers/app_providers.dart';
+import 'package:provider/provider.dart' as provider;
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -217,17 +219,17 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         title: const Text('Favorites'),
         centerTitle: true,
       ),
-      body: ParallaxRecipes(
-        recipes: recipesToShow, // Übergib die umgewandelte Liste von Rezepten
-        scrollController: _scrollController,
-        // isFetchingMore und hasMore sind für FavoritesScreen möglicherweise nicht relevant,
-        // da fetchFavoriteRecipes normalerweise alle Favoriten auf einmal lädt.
-        // Du kannst diese auf false setzen oder entfernen, wenn sie nicht im ParallaxRecipes Constructor erwartet werden.
-        isLoadingMore: false,
-        hasMore: false,
-        // currentSortOption ist hier auch nicht relevant, da Favoriten nicht sortiert werden,
-        // es sei denn, du implementierst eine Sortierung für Favoriten.
-        currentSortOption: null, // Oder einen Standardwert, den ParallaxRecipes akzeptiert
+      body: provider.Consumer<PremiumProvider>(
+        builder: (context, premiumProvider, _) {
+          return ParallaxRecipes(
+            recipes: recipesToShow,
+            scrollController: _scrollController,
+            isLoadingMore: false,
+            hasMore: false,
+            currentSortOption: null,
+            showAds: !premiumProvider.isPremium,
+          );
+        },
       ),
     );
   }
