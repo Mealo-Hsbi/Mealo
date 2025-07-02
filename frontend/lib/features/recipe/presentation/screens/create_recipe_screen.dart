@@ -278,6 +278,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  key: const Key('submitRecipeButton'),
                   onPressed: _isLoading ? null : _saveRecipe,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -376,6 +377,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
             ),
             const SizedBox(height: 16),
             TextFormField(
+              key: const Key('recipeTitleField'),
               controller: _titleController,
               decoration: const InputDecoration(
                 labelText: 'Recipe Title *',
@@ -625,6 +627,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                 Expanded(
                   flex: 4,
                   child: TextFormField(
+                    key: const Key('ingredientsField'),
                     controller: _ingredientNameController,
                     decoration: const InputDecoration(
                       labelText: 'Ingredient',
@@ -761,6 +764,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                   child: SizedBox(
                     height: 48,
                     child: TextFormField(
+                      key: const Key('instructionsField'),
                       controller: _stepDescriptionController,
                       decoration: const InputDecoration(
                         labelText: 'Description',

@@ -167,29 +167,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           // Rezepte-Sektion mit Fallback
                           ProfileSection(
-                            title: 'My Recipes',
-                            action: Row(
+                            title: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.add, color: Colors.green, size: 20),
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  tooltip: 'Add Recipe',
-                                  onPressed: () => Navigator.of(context).push(
+                                Text('My Recipes', style: Theme.of(context).textTheme.titleLarge),
+                                SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => const CreateRecipeScreen(),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 4),
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).push(
-                                    _createSlideRoute(const UserRecipeListScreen()),
+                                  child: CircleAvatar(
+                                    radius: 11,
+                                    backgroundColor: Colors.green,
+                                    child: Icon(Icons.add, color: Colors.white, size: 15),
                                   ),
-                                  child: const Text('View All'),
                                 ),
                               ],
+                            ),
+                            action: TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                _createSlideRoute(const UserRecipeListScreen()),
+                              ),
+                              child: const Text('View All'),
                             ),
                             child: recent.isNotEmpty
                                 ? GridView.count(
@@ -239,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           // Achievements-Sektion mit Fallback
                           ProfileSection(
-                            title: 'Achievements',
+                            title: Text('Achievements', style: Theme.of(context).textTheme.titleLarge),
                             action: TextButton(
                               onPressed: () => Navigator.of(context).push(
                                 _createSlideRoute(const AchievementsOverviewScreen()),
@@ -286,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class ProfileSection extends StatelessWidget {
-  final String title;
+  final Widget title;
   final Widget? action;
   final Widget child;
 
@@ -303,7 +304,7 @@ class ProfileSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            title,
             const Spacer(),
             if (action != null) action!,
           ]),
