@@ -11,6 +11,9 @@ if (prisma && !prisma.ratings) {
 }
 
 async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, userId) {
+    // Lazy require, um Circular Dependency zu vermeiden
+    const { getSpoonacularRecipeDetails } = require('./spoonacularService');
+
     if (!prisma || !prisma.recipes || typeof prisma.recipes.upsert !== 'function') {
         console.error('[ERROR] Prisma client or prisma.recipes.upsert is not available. Check Prisma setup and "npx prisma generate".');
         throw new Error('Prisma client not properly initialized or "recipes" model is missing.');
@@ -45,14 +48,11 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
                     ...prismaRecipeData,
                 },
             });
-        } else if (internalRecipeIdFromFrontend) {
-            // Fall 2: Keine Spoonacular ID, aber interne ID vom Frontend vorhanden
-            // Dies ist der Fall für bereits existierende, selbst erstellte Rezepte,
-            // oder importierte Spoonacular-Rezepte, deren interne ID das Frontend kennt.
+        } else if (internalRecipeIdFromFrontend && typeof internalRecipeIdFromFrontend === 'string') {
+            // Fall 2: Nur wenn die interne ID ein String (UUID) ist
             recipe = await prisma.recipes.upsert({
                 where: { id: internalRecipeIdFromFrontend }, // Suche über interne ID
                 update: {
-                    // Keine spoonacular_id im Update setzen, wenn sie null ist
                     ...prismaRecipeData,
                 },
                 create: {
@@ -80,6 +80,51 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
             }
         }
 
+        // --- NEU: Zutaten prüfen und ggf. nachziehen ---
+        const recipeWithIngredients = await prisma.recipes.findUnique({
+            where: { id: recipe.id },
+            include: { recipe_ingredients: true }
+        });
+
+        if (!recipeWithIngredients.recipe_ingredients || recipeWithIngredients.recipe_ingredients.length === 0) {
+            // console.log(`[RECIPE-IMPORT] Recipe ${recipe.id} has no ingredients. Fetching from Spoonacular...`);
+            if (spoonacularId) {
+                const details = await getSpoonacularRecipeDetails(spoonacularId);
+                if (details.extendedIngredients && details.extendedIngredients.length > 0) {
+                    for (const ing of details.extendedIngredients) {
+                        // Ingredient anlegen (falls noch nicht vorhanden)
+                        let dbIngredient = await prisma.ingredients.findUnique({ where: { name: ing.name } });
+                        if (!dbIngredient) {
+                            dbIngredient = await prisma.ingredients.create({
+                                data: {
+                                    name: ing.name,
+                                    // Optional: weitere Felder wie image, category, etc.
+                                }
+                            });
+                            // console.log(`[RECIPE-IMPORT] Created new ingredient: ${ing.name}`);
+                        }
+                        // recipe_ingredients-Eintrag anlegen
+                        await prisma.recipe_ingredients.create({
+                            data: {
+                                recipe_id: recipe.id,
+                                ingredient_id: dbIngredient.id,
+                                amount: ing.amount || 1,
+                                unit: ing.unit || '',
+                                original: ing.original || '',
+                            }
+                        });
+                        // console.log(`[RECIPE-IMPORT] Linked ingredient ${ing.name} to recipe ${recipe.id}`);
+                    }
+                } else {
+                    console.warn(`[RECIPE-IMPORT] No ingredients found from Spoonacular for recipe ${spoonacularId}`);
+                }
+            } else {
+                console.warn(`[RECIPE-IMPORT] No Spoonacular ID for recipe ${recipe.id}, cannot fetch ingredients.`);
+            }
+        } else {
+            // console.log(`[RECIPE-IMPORT] Recipe ${recipe.id} already has ingredients.`);
+        }
+
         return recipe;
     } catch (error) {
         console.error('[ERROR - Prisma Recipe Operation] Fehler beim Erstellen oder Aktualisieren des Rezepts:', error);
@@ -103,7 +148,7 @@ async function addFavoriteRecipe(userId, spoonacularId, recipeDetailsFromSpoonac
         
         // Achievement: first_favorite, 5_favorites
         const favCount = await prisma.favorites.count({ where: { user_id: userId } });
-        console.log('favCount', favCount);
+        // console.log('favCount', favCount);
         if (favCount > 0) {
             await unlockAchievementIfNeeded(userId, 'first_favorite');
         }
@@ -367,13 +412,13 @@ async function addFavoriteRecipeByRecipeId(userId, recipeId) {
         });
         // Achievement: first_favorite, 5_favorites
         const favCount = await prisma.favorites.count({ where: { user_id: userId } });
-        console.log('[AchievementTrigger] favCount', favCount);
+        // console.log('[AchievementTrigger] favCount', favCount);
         if (favCount === 1) {
-            console.log('[AchievementTrigger] Unlock first_favorite');
+            // console.log('[AchievementTrigger] Unlock first_favorite');
             await unlockAchievementIfNeeded(userId, 'first_favorite');
         }
         if (favCount === 5) {
-            console.log('[AchievementTrigger] Unlock 5_favorites');
+            // console.log('[AchievementTrigger] Unlock 5_favorites');
             await unlockAchievementIfNeeded(userId, '5_favorites');
         }
         return newFavorite;

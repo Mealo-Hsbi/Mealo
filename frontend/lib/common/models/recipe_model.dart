@@ -149,4 +149,32 @@ class RecipeModel {
       matchedAllergens: matchedAllergens,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != null) 'spoonacularId': id,
+      if (internalId != null) 'id': internalId,
+      'isInternal': isInternal,
+      'name': name,
+      'title': name,
+      'imageUrl': imageUrl,
+      'place': place,
+      'readyInMinutes': readyInMinutes,
+      'servings': servings,
+      'calories': calories,
+      'protein': protein,
+      'fat': fat,
+      'carbs': carbs,
+      'sugar': sugar,
+      'healthScore': healthScore,
+      'usedIngredientCount': usedIngredientCount,
+      'missedIngredientCount': missedIngredientCount,
+      'usedIngredients': usedIngredients?.map((e) => e.toJson()).toList(),
+      'missedIngredients': missedIngredients?.map((e) => e.toJson()).toList(),
+      'averageRating': averageRating,
+      'ratingCount': ratingCount,
+      'containsUserAllergens': containsUserAllergens,
+      'matchedAllergens': matchedAllergens,
+    };
+  }
 }

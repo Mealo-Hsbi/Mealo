@@ -158,4 +158,12 @@ class ApiClient {
       onReceiveProgress: onReceiveProgress,
     );
   }
+
+  Future<Response> getMealplan() {
+    return get('/api/mealplan/current');
+  }
+
+  Future<Response> updateMealplan(Map<String, dynamic> mealplanJson) {
+    return put('/api/mealplan/current', data: mealplanJson);
+  }
 }

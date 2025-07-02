@@ -14,6 +14,7 @@ class ParallaxRecipes extends StatefulWidget {
     required this.hasMore, // NOW REQUIRED: Receive hasMore state
     this.showAds = true, // Add showAds flag, default true
     this.onRecipeRatingUpdated,
+    this.onRecipeTap, // NEU
   });
 
   final List<Recipe> recipes;
@@ -23,6 +24,7 @@ class ParallaxRecipes extends StatefulWidget {
   final bool hasMore;
   final bool showAds; // Add showAds flag
   final void Function(int recipeIndex, double newRating, int newRatingCount)? onRecipeRatingUpdated;
+  final void Function(Recipe recipe)? onRecipeTap; // NEU
 
   @override
   State<ParallaxRecipes> createState() => _ParallaxRecipesState();
@@ -85,6 +87,7 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           },
           containsUserAllergens: recipe.containsUserAllergens,
           matchedAllergens: recipe.matchedAllergens,
+          onRecipeTap: widget.onRecipeTap, // NEU
         );
       },
     );
@@ -96,6 +99,7 @@ class RecipeItem extends StatelessWidget {
   final void Function(double newRating, int newRatingCount)? onRatingUpdated;
   final bool? containsUserAllergens;
   final List<String>? matchedAllergens;
+  final void Function(Recipe recipe)? onRecipeTap; // NEU
   RecipeItem({
     super.key,
     this.id,
@@ -120,6 +124,7 @@ class RecipeItem extends StatelessWidget {
     this.onRatingUpdated,
     this.containsUserAllergens,
     this.matchedAllergens,
+    this.onRecipeTap, // NEU
   });
 
   final int? id;
@@ -148,26 +153,53 @@ class RecipeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => RecipeDetailScreen(
-              recipeId: id,
-              internalRecipeId: internalId, // Pass the internal ID if available
-              isInternal: isInternal, // Pass the internal flag
-              initialImageUrl: imageUrl,
-              initialName: name,
-              initialPlace: country,
-              initialReadyInMinutes: readyInMinutes,
-              containsUserAllergens: containsUserAllergens,
-              matchedAllergens: matchedAllergens,
+        if (onRecipeTap != null) {
+          onRecipeTap!(Recipe(
+            id: id,
+            internalId: internalId,
+            isInternal: isInternal,
+            name: name,
+            imageUrl: imageUrl,
+            place: country,
+            readyInMinutes: readyInMinutes,
+            servings: servings,
+            calories: calories,
+            protein: protein,
+            fat: fat,
+            carbs: carbs,
+            sugar: sugar,
+            healthScore: healthScore,
+            usedIngredientCount: matchingIngredientsCount,
+            missedIngredientCount: missingIngredientsCount,
+            usedIngredients: [],
+            missedIngredients: [],
+            averageRating: averageRating,
+            ratingCount: ratingCount,
+            containsUserAllergens: containsUserAllergens,
+            matchedAllergens: matchedAllergens,
+          ));
+        } else {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => RecipeDetailScreen(
+                recipeId: id,
+                internalRecipeId: internalId, // Pass the internal ID if available
+                isInternal: isInternal, // Pass the internal flag
+                initialImageUrl: imageUrl,
+                initialName: name,
+                initialPlace: country,
+                initialReadyInMinutes: readyInMinutes,
+                containsUserAllergens: containsUserAllergens,
+                matchedAllergens: matchedAllergens,
+              ),
             ),
-          ),
-        );
-        if (result is Map<String, dynamic> && onRatingUpdated != null) {
-          final double? newRating = result['averageRating'] as double?;
-          final int? newRatingCount = result['ratingCount'] as int?;
-          if (newRating != null && newRatingCount != null) {
-            onRatingUpdated!(newRating, newRatingCount);
+          );
+          if (result is Map<String, dynamic> && onRatingUpdated != null) {
+            final double? newRating = result['averageRating'] as double?;
+            final int? newRatingCount = result['ratingCount'] as int?;
+            if (newRating != null && newRatingCount != null) {
+              onRatingUpdated!(newRating, newRatingCount);
+            }
           }
         }
       },
