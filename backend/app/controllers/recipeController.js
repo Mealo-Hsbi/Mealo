@@ -370,6 +370,10 @@ const createRecipe = async (req, res) => {
             glutenFree,
             dairyFree,
             weightWatcherPoints,
+            calories,
+            proteinGram,
+            fatGram,
+            carbsGram,
             ingredients,
             steps
         } = req.body;
@@ -396,6 +400,10 @@ const createRecipe = async (req, res) => {
             glutenFree: glutenFree || false,
             dairyFree: dairyFree || false,
             weightWatcherPoints,
+            calories,
+            proteinGram,
+            fatGram,
+            carbsGram,
             ingredients: ingredients || [],
             steps: steps || []
         });

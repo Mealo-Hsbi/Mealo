@@ -281,21 +281,72 @@ async function getAverageRecipeRating(recipeId) {
 }
 
 async function getInternalRecipeDetails(id) {
-    // Hole das Rezept anhand der internen UUID
+    // Hole das Rezept samt Zutaten und Schritten anhand der internen UUID
     const recipe = await prisma.recipes.findUnique({
         where: { id },
-        // Hier ggf. weitere Relationen einbinden (z.B. Zutaten, Schritte)
+        include: {
+            recipe_ingredients: {
+                include: { ingredients: true }
+            },
+            recipe_steps: true
+        }
     });
     if (!recipe) return null;
-    // Passe das Mapping ggf. an die Felder im Frontend an
+
+    // Zutaten mappen (wie Spoonacular extendedIngredients)
+    const extendedIngredients = (recipe.recipe_ingredients || []).map((ri, idx) => ({
+        id: idx + 1, // Eindeutige int-ID pro Zutat
+        name: ri.ingredients?.name || '',
+        amount: ri.amount !== undefined && ri.amount !== null ? Number(ri.amount) : null,
+        unit: ri.unit,
+        original: ri.original,
+        // Weitere Felder nach Bedarf
+    }));
+
+    // Schritte mappen (wie Spoonacular analyzedInstructions)
+    const analyzedInstructions = [
+        {
+            name: '',
+            steps: (recipe.recipe_steps || []).map(step => ({
+                number: step.step_number,
+                step: step.description,
+                ingredients: [],
+                equipment: [],
+                length: step.duration_minutes != null && step.duration_minutes !== undefined
+                    ? { number: step.duration_minutes, unit: 'minutes' }
+                    : null,
+            }))
+        }
+    ];
+
     return {
         id: recipe.id,
         title: recipe.title,
+        image: recipe.image_url,
         imageUrl: recipe.image_url,
+        imageType: null,
         servings: recipe.servings,
         readyInMinutes: recipe.ready_in_minutes,
+        sourceUrl: null,
+        sourceName: null,
         summary: recipe.summary,
-        // ... weitere Felder nach Bedarf
+        aggregateLikes: null,
+        healthScore: recipe.health_score,
+        pricePerServing: recipe.price_per_serving,
+        dishTypes: recipe.dish_types,
+        diets: null,
+        intolerances: null,
+        extendedIngredients,
+        analyzedInstructions,
+        calories: recipe.calories,
+        protein: recipe.protein_gram,
+        fat: recipe.fat_gram,
+        carbs: recipe.carbs_gram,
+        sugar: null,
+        nutrition: null,
+        userRating: null,
+        averageRating: null,
+        ratingCount: null,
     };
 }
 
@@ -390,6 +441,10 @@ async function createRecipe(recipeData) {
                 gluten_free: glutenFree,
                 dairy_free: dairyFree,
                 weight_watcher_points: weightWatcherPoints,
+                calories: recipeData.calories,
+                protein_gram: recipeData.proteinGram,
+                fat_gram: recipeData.fatGram,
+                carbs_gram: recipeData.carbsGram,
             },
         });
 

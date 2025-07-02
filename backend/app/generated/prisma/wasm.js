@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.8.2
- * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+ * Prisma Client JS version: 6.9.0
+ * Query Engine version: bf0e5e8a04cada8225617067eaa03d041e2bba36
  */
 Prisma.prismaVersion = {
-  client: "6.8.2",
-  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
+  client: "6.9.0",
+  engine: "bf0e5e8a04cada8225617067eaa03d041e2bba36"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -193,7 +193,11 @@ exports.Prisma.RecipesScalarFieldEnum = {
   gluten_free: 'gluten_free',
   dairy_free: 'dairy_free',
   weight_watcher_points: 'weight_watcher_points',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  calories: 'calories',
+  protein_gram: 'protein_gram',
+  fat_gram: 'fat_gram',
+  carbs_gram: 'carbs_gram'
 };
 
 exports.Prisma.Shopping_listScalarFieldEnum = {

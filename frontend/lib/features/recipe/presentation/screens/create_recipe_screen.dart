@@ -19,7 +19,6 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _summaryController = TextEditingController();
-  final _instructionsController = TextEditingController();
   final _servingsController = TextEditingController();
   final _readyInMinutesController = TextEditingController();
   final _cookingMinutesController = TextEditingController();
@@ -27,6 +26,10 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
   final _healthScoreController = TextEditingController();
   final _pricePerServingController = TextEditingController();
   final _weightWatcherPointsController = TextEditingController();
+  final _caloriesController = TextEditingController();
+  final _proteinController = TextEditingController();
+  final _fatController = TextEditingController();
+  final _carbsController = TextEditingController();
 
   File? _selectedImage;
   bool _isVegan = false;
@@ -42,18 +45,34 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
     'breakfast', 'lunch', 'dinner', 'dessert', 'snack', 'appetizer', 'salad', 'soup', 'main course', 'side dish'
   ];
 
+  // Ingredient-Eingabezeile
+  final TextEditingController _ingredientNameController = TextEditingController();
+  final TextEditingController _ingredientAmountController = TextEditingController();
+  final TextEditingController _ingredientUnitController = TextEditingController();
+
+  // Instruction-Eingabezeile
+  final TextEditingController _stepDescriptionController = TextEditingController();
+  final TextEditingController _stepDurationController = TextEditingController();
+
   @override
   void dispose() {
     _titleController.dispose();
     _summaryController.dispose();
-    _instructionsController.dispose();
     _servingsController.dispose();
     _readyInMinutesController.dispose();
     _cookingMinutesController.dispose();
     _preparationMinutesController.dispose();
-    _healthScoreController.dispose();
     _pricePerServingController.dispose();
     _weightWatcherPointsController.dispose();
+    _caloriesController.dispose();
+    _proteinController.dispose();
+    _fatController.dispose();
+    _carbsController.dispose();
+    _ingredientNameController.dispose();
+    _ingredientAmountController.dispose();
+    _ingredientUnitController.dispose();
+    _stepDescriptionController.dispose();
+    _stepDurationController.dispose();
     super.dispose();
   }
 
@@ -67,8 +86,6 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
       });
     }
   }
-
-
 
   void _removeIngredient(int index) {
     setState(() {
@@ -129,9 +146,11 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
         'preparationMinutes': int.tryParse(_preparationMinutesController.text),
         'dishTypes': _selectedDishTypes,
         'summary': _summaryController.text.trim(),
-        'instructions': _instructionsController.text.trim(),
-        'healthScore': double.tryParse(_healthScoreController.text),
         'pricePerServing': double.tryParse(_pricePerServingController.text),
+        'calories': double.tryParse(_caloriesController.text),
+        'proteinGram': double.tryParse(_proteinController.text),
+        'fatGram': double.tryParse(_fatController.text),
+        'carbsGram': double.tryParse(_carbsController.text),
         'vegan': _isVegan,
         'vegetarian': _isVegetarian,
         'glutenFree': _isGlutenFree,
@@ -344,16 +363,6 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _instructionsController,
-              decoration: const InputDecoration(
-                labelText: 'Instructions (Text)',
-                hintText: 'General instructions (optional)',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 5,
-            ),
-            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -456,16 +465,60 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller: _healthScoreController,
+                    controller: _caloriesController,
                     decoration: const InputDecoration(
-                      labelText: 'Health Score',
-                      hintText: 'e.g. 80',
+                      labelText: 'Calories (kcal)',
+                      hintText: 'e.g. 350',
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
                 const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: _proteinController,
+                    decoration: const InputDecoration(
+                      labelText: 'Protein (g)',
+                      hintText: 'e.g. 20',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _fatController,
+                    decoration: const InputDecoration(
+                      labelText: 'Fat (g)',
+                      hintText: 'e.g. 10',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: _carbsController,
+                    decoration: const InputDecoration(
+                      labelText: 'Carbs (g)',
+                      hintText: 'e.g. 40',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
                 Expanded(
                   child: TextFormField(
                     controller: _pricePerServingController,
@@ -528,17 +581,69 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('Ingredients', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Ingredients',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Expanded(
+                  flex: 4,
+                  child: TextFormField(
+                    controller: _ingredientNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Ingredient',
+                      hintText: 'e.g. Tomato',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 90,
+                  child: TextFormField(
+                    controller: _ingredientAmountController,
+                    decoration: const InputDecoration(
+                      labelText: 'Amount',
+                      hintText: 'e.g. 2',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    controller: _ingredientUnitController,
+                    decoration: const InputDecoration(
+                      labelText: 'Unit',
+                      hintText: 'e.g. g, ml',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 IconButton(
-                  onPressed: _addIngredientRow,
                   icon: const Icon(Icons.add_circle, color: Colors.green),
                   tooltip: 'Add ingredient',
+                  onPressed: () {
+                    final name = _ingredientNameController.text.trim();
+                    final amount = double.tryParse(_ingredientAmountController.text);
+                    final unit = _ingredientUnitController.text.trim();
+                    if (name.isNotEmpty) {
+                      setState(() {
+                        _ingredients.add(Ingredient(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          name: name,
+                          amount: amount,
+                          unit: unit,
+                          original: '${amount ?? ''} $unit $name',
+                        ));
+                        _ingredientNameController.clear();
+                        _ingredientAmountController.clear();
+                        _ingredientUnitController.clear();
+                      });
+                    }
+                  },
                 ),
               ],
             ),
@@ -548,7 +653,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                 padding: EdgeInsets.all(16.0),
                 child: Center(
                   child: Text(
-                    'Click the plus icon to add ingredients',
+                    'Add your first ingredient above',
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -559,89 +664,26 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _ingredients.length,
                 itemBuilder: (context, index) {
-                  return _buildIngredientRow(index);
+                  final ingredient = _ingredients[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(flex: 4, child: Text(ingredient.name)),
+                        SizedBox(width: 90, child: Text(ingredient.amount?.toString() ?? '')),
+                        SizedBox(width: 80, child: Text(ingredient.unit ?? '')),
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle, color: Colors.red),
+                          onPressed: () => _removeIngredient(index),
+                          tooltip: 'Remove ingredient',
+                        ),
+                      ],
+                    ),
+                  );
                 },
               ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildIngredientRow(int index) {
-    final ingredient = _ingredients[index];
-    final nameController = TextEditingController(text: ingredient.name);
-    final amountController = TextEditingController(text: ingredient.amount?.toString() ?? '');
-    final unitController = TextEditingController(text: ingredient.unit ?? '');
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 4,
-            child: TextFormField(
-              controller: nameController,
-              style: const TextStyle(fontSize: 16),
-              decoration: const InputDecoration(
-                labelText: 'Ingredient',
-                hintText: 'e.g. Tomato',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
-              onChanged: (value) {
-                _ingredients[index] = ingredient.copyWith(name: value);
-              },
-            ),
-          ),
-          const SizedBox(width: 10),
-          SizedBox(
-            width: 90,
-            child: TextFormField(
-              controller: amountController,
-              style: const TextStyle(fontSize: 16),
-              decoration: const InputDecoration(
-                labelText: 'Amount',
-                hintText: 'e.g. 2',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                _ingredients[index] = ingredient.copyWith(
-                  amount: double.tryParse(value),
-                  original: '${value} ${ingredient.unit ?? ''} ${ingredient.name}',
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 10),
-          SizedBox(
-            width: 80,
-            child: TextFormField(
-              controller: unitController,
-              style: const TextStyle(fontSize: 16),
-              decoration: const InputDecoration(
-                labelText: 'Unit',
-                hintText: 'e.g. g, ml',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
-              onChanged: (value) {
-                _ingredients[index] = ingredient.copyWith(
-                  unit: value,
-                  original: '${ingredient.amount ?? ''} ${value} ${ingredient.name}',
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.remove_circle, color: Colors.red),
-            onPressed: () => _removeIngredient(index),
-            tooltip: 'Remove ingredient',
-          ),
-        ],
       ),
     );
   }
@@ -653,17 +695,84 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('Instructions', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  'Instructions',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Container(
+                  width: 40,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${_steps.length + 1}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ),
-                IconButton(
-                  onPressed: _addStepRow,
-                  icon: const Icon(Icons.add_circle, color: Colors.green),
-                  tooltip: 'Add step',
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 5,
+                  child: SizedBox(
+                    height: 48,
+                    child: TextFormField(
+                      controller: _stepDescriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        hintText: 'e.g. Chop the onions',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 130,
+                  height: 48,
+                  child: TextFormField(
+                    controller: _stepDurationController,
+                    decoration: const InputDecoration(
+                      labelText: 'Duration (min)',
+                      hintText: 'e.g. 5',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  height: 48,
+                  width: 48,
+                  child: IconButton(
+                    icon: const Icon(Icons.add_circle, color: Colors.green, size: 32),
+                    tooltip: 'Add step',
+                    onPressed: () {
+                      final desc = _stepDescriptionController.text.trim();
+                      final duration = int.tryParse(_stepDurationController.text);
+                      if (desc.isNotEmpty) {
+                        setState(() {
+                          _steps.add(InstructionStep(
+                            stepNumber: _steps.length + 1,
+                            description: desc,
+                            durationMinutes: duration,
+                          ));
+                          _stepDescriptionController.clear();
+                          _stepDurationController.clear();
+                        });
+                      }
+                    },
+                  ),
                 ),
               ],
             ),
@@ -673,7 +782,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                 padding: EdgeInsets.all(16.0),
                 child: Center(
                   child: Text(
-                    'Click the plus icon to add steps',
+                    'Add your first step above',
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -684,111 +793,46 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _steps.length,
                 itemBuilder: (context, index) {
-                  return _buildStepRow(index);
+                  final step = _steps[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${step.stepNumber}',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(flex: 5, child: Text(step.description)),
+                        SizedBox(width: 130, child: Text(step.durationMinutes?.toString() ?? '')),
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle, color: Colors.red),
+                          onPressed: () => _removeStep(index),
+                          tooltip: 'Remove step',
+                        ),
+                      ],
+                    ),
+                  );
                 },
               ),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildStepRow(int index) {
-    final step = _steps[index];
-    final descriptionController = TextEditingController(text: step.description);
-    final durationController = TextEditingController(text: step.durationMinutes?.toString() ?? '');
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 40,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: Text(
-                  '${step.stepNumber}',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 6,
-              child: TextFormField(
-                controller: descriptionController,
-                style: const TextStyle(fontSize: 16),
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                  hintText: 'e.g. Chop the onions',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                ),
-                maxLines: 1,
-                onChanged: (value) {
-                  _steps[index] = step.copyWith(description: value);
-                },
-              ),
-            ),
-            const SizedBox(width: 10),
-            SizedBox(
-              width: 120,
-              child: TextFormField(
-                controller: durationController,
-                style: const TextStyle(fontSize: 16),
-                decoration: const InputDecoration(
-                  labelText: 'Duration (min)',
-                  hintText: 'e.g. 5',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  _steps[index] = step.copyWith(durationMinutes: int.tryParse(value));
-                },
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.remove_circle, color: Colors.red),
-              onPressed: () => _removeStep(index),
-              tooltip: 'Remove step',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _addIngredientRow() {
-    setState(() {
-      _ingredients.add(Ingredient(
-        id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
-        name: '',
-        amount: null,
-        unit: '',
-        original: '',
-      ));
-    });
-  }
-
-  void _addStepRow() {
-    setState(() {
-      _steps.add(InstructionStep(
-        stepNumber: _steps.length + 1,
-        description: '',
-        durationMinutes: null,
-      ));
-    });
   }
 }
 
