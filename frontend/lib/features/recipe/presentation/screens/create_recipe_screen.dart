@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart' as legacy_provider;
 
 import '../../../../common/models/ingredient.dart';
 import '../../../../common/models/recipe/instruction_step.dart';
 import '../../../../services/api_client.dart';
 import '../../../../features/auth/presentation/providers/auth_state_provider.dart';
+import '../../../../features/profile/presentation/viewmodels/profile_viewmodel.dart';
 
 class CreateRecipeScreen extends ConsumerStatefulWidget {
   const CreateRecipeScreen({Key? key}) : super(key: key);
@@ -199,13 +201,12 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
       final apiClient = ApiClient();
       final response = await apiClient.post('/recipes', data: recipeData);
       
-      if (response.statusCode == 201) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Rezept erfolgreich erstellt!')),
-          );
-          Navigator.of(context).pop(true);
-        }
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        // ProfileViewModel holen und Profil neu laden
+        final profileViewModel = legacy_provider.Provider.of<ProfileViewModel>(context, listen: false);
+        await profileViewModel.loadProfile();
+        // Zurück zum Profilscreen
+        if (mounted) Navigator.of(context).pop();
       } else {
         throw Exception('Fehler beim Erstellen des Rezepts');
       }

@@ -367,13 +367,10 @@ async function addFavoriteRecipeByRecipeId(userId, recipeId) {
         });
         // Achievement: first_favorite, 5_favorites
         const favCount = await prisma.favorites.count({ where: { user_id: userId } });
-        console.log('[AchievementTrigger] favCount', favCount);
-        if (favCount === 1) {
-            console.log('[AchievementTrigger] Unlock first_favorite');
+        if (favCount > 0) {
             await unlockAchievementIfNeeded(userId, 'first_favorite');
         }
-        if (favCount === 5) {
-            console.log('[AchievementTrigger] Unlock 5_favorites');
+        if (favCount >= 5) {
             await unlockAchievementIfNeeded(userId, '5_favorites');
         }
         return newFavorite;
