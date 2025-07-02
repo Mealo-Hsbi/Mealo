@@ -33,10 +33,21 @@ const makeSpoonacularApiCall = async (url, params) => {
         Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
 
         try {
+
+            // console.log('--- Backend Spoonacular Service Debug (makeSpoonacularApiCall) ---');
+            // console.log('URL:', url);
+            // console.log('Params:', params);
+            // console.log('-----------------------------------------------------');
+
+            // console.log(`[Spoonacular API] Making request to: ${url}`);
+            // console.log(`[Spoonacular API] Params:`, params);
+            
             const response = await axios.get(url, {
                 params: params,
-                timeout: 10000 // Timeout for the Axios call
+                timeout: 60000 // 60 seconds timeout for mealplan generation
             });
+            
+            // console.log(`[Spoonacular API] Response received with status: ${response.status}`);
             return response;
         } catch (axiosError) {
             console.error(`[BACKEND DEBUG - SERVICE] Axios error during Spoonacular call to ${url}: ${axiosError.message}`);
@@ -404,4 +415,5 @@ module.exports = {
     searchRecipesByQuery,
     searchRecipesByIngredients,
     getSpoonacularRecipeDetails,
+    makeSpoonacularApiCall,
 };

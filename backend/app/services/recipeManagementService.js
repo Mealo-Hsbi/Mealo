@@ -87,7 +87,7 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
         });
 
         if (!recipeWithIngredients.recipe_ingredients || recipeWithIngredients.recipe_ingredients.length === 0) {
-            console.log(`[RECIPE-IMPORT] Recipe ${recipe.id} has no ingredients. Fetching from Spoonacular...`);
+            // console.log(`[RECIPE-IMPORT] Recipe ${recipe.id} has no ingredients. Fetching from Spoonacular...`);
             if (spoonacularId) {
                 const details = await getSpoonacularRecipeDetails(spoonacularId);
                 if (details.extendedIngredients && details.extendedIngredients.length > 0) {
@@ -101,7 +101,7 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
                                     // Optional: weitere Felder wie image, category, etc.
                                 }
                             });
-                            console.log(`[RECIPE-IMPORT] Created new ingredient: ${ing.name}`);
+                            // console.log(`[RECIPE-IMPORT] Created new ingredient: ${ing.name}`);
                         }
                         // recipe_ingredients-Eintrag anlegen
                         await prisma.recipe_ingredients.create({
@@ -113,7 +113,7 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
                                 original: ing.original || '',
                             }
                         });
-                        console.log(`[RECIPE-IMPORT] Linked ingredient ${ing.name} to recipe ${recipe.id}`);
+                        // console.log(`[RECIPE-IMPORT] Linked ingredient ${ing.name} to recipe ${recipe.id}`);
                     }
                 } else {
                     console.warn(`[RECIPE-IMPORT] No ingredients found from Spoonacular for recipe ${spoonacularId}`);
@@ -122,7 +122,7 @@ async function getOrCreateRecipeInDb(spoonacularId, recipeDataFromFrontend, user
                 console.warn(`[RECIPE-IMPORT] No Spoonacular ID for recipe ${recipe.id}, cannot fetch ingredients.`);
             }
         } else {
-            console.log(`[RECIPE-IMPORT] Recipe ${recipe.id} already has ingredients.`);
+            // console.log(`[RECIPE-IMPORT] Recipe ${recipe.id} already has ingredients.`);
         }
 
         return recipe;
@@ -148,7 +148,7 @@ async function addFavoriteRecipe(userId, spoonacularId, recipeDetailsFromSpoonac
         
         // Achievement: first_favorite, 5_favorites
         const favCount = await prisma.favorites.count({ where: { user_id: userId } });
-        console.log('favCount', favCount);
+        // console.log('favCount', favCount);
         if (favCount > 0) {
             await unlockAchievementIfNeeded(userId, 'first_favorite');
         }
@@ -357,13 +357,13 @@ async function addFavoriteRecipeByRecipeId(userId, recipeId) {
         });
         // Achievement: first_favorite, 5_favorites
         const favCount = await prisma.favorites.count({ where: { user_id: userId } });
-        console.log('[AchievementTrigger] favCount', favCount);
+        // console.log('[AchievementTrigger] favCount', favCount);
         if (favCount === 1) {
-            console.log('[AchievementTrigger] Unlock first_favorite');
+            // console.log('[AchievementTrigger] Unlock first_favorite');
             await unlockAchievementIfNeeded(userId, 'first_favorite');
         }
         if (favCount === 5) {
-            console.log('[AchievementTrigger] Unlock 5_favorites');
+            // console.log('[AchievementTrigger] Unlock 5_favorites');
             await unlockAchievementIfNeeded(userId, '5_favorites');
         }
         return newFavorite;

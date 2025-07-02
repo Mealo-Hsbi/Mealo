@@ -28,10 +28,6 @@ exports.generateMealplan = async (req, res) => {
     const userId = req.user.id;
     const { diet, timeFrame = 'week', targetCalories = 2000 } = req.body;
     
-    if (!diet) {
-      return res.status(400).json({ error: 'Diet parameter is required' });
-    }
-    
     const generatedPlan = await mealplanService.generateMealplan(userId, {
       diet,
       timeFrame,

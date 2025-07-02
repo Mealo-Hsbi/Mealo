@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/features/recipe/data/mock_recipes.dart';
 import 'package:frontend/features/search/presentation/screens/search_screen.dart';
@@ -34,7 +35,8 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
   }
 
   final List<String> dietOptions = [
-    'Vegetarian', 'Vegan', 'Gluten Free', 'Ketogenic', 'Pescetarian'
+    'Standard', 'Gluten Free', 'Ketogenic', 'Vegetarian', 'Lacto-Vegetarian', 
+    'Ovo-Vegetarian', 'Vegan', 'Pescetarian', 'Paleo', 'Primal', 'Whole30', 'Low FODMAP'
   ];
 
   final List<String> weekDays = const [
@@ -125,12 +127,15 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
           title: const Text('Shopping List'),
           content: SizedBox(
             width: double.maxFinite,
+            height: 400, // Fixed height to enable scrolling
             child: ingredients.isEmpty
                 ? const Text('No ingredients in your meal plan.')
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: ingredients.length,
-                    itemBuilder: (context, index) {
+                : Scrollbar(
+                    thumbVisibility: true, // Always show the scrollbar
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: ingredients.length,
+                      itemBuilder: (context, index) {
                       final ingredient = ingredients[index];
                       final ingredientKey = '${ingredient.name}_${ingredient.amount}_${ingredient.unit}';
                       final isChecked = _checkedIngredients.contains(ingredientKey);
@@ -169,6 +174,7 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
                       );
                     },
                   ),
+                ),
           ),
           actions: [
             TextButton(
@@ -202,9 +208,18 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
     final mealplan = mealplanAsync.value!;
     print('[MealPlanSection] mealplan.days: \n${mealplan.days}');
     print('Date-Keys in mealplan.days: \n${mealplan.days.keys.toList()}');
+    
+    // Debug: Zeige die aktuellen Wochendaten
+    final currentWeekKeys = getCurrentWeekDateKeys();
+    print('Current week keys: $currentWeekKeys');
 
-    final dateKeys = getCurrentWeekDateKeys();
+    // Verwende alle verfügbaren Tage aus dem Backend, sortiert
     final sortedDateKeys = mealplan.days.keys.toList()..sort();
+    print('Backend date keys: $sortedDateKeys');
+    
+    // Verwende IMMER 7 Tage für die UI, auch wenn leer
+    final displayDateKeys = getCurrentWeekDateKeys();
+    print('Display date keys: $displayDateKeys');
 
     void _showRecipePicker(String dateKey, String meal) async {
       final selected = await showModalBottomSheet<Map<String, dynamic>>(
@@ -236,89 +251,163 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
 
 
     void _generateMealplan(String diet) async {
-      try {
-        // Show loading indicator
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const AlertDialog(
+      // Store the dialog context to ensure we can close it
+      BuildContext? dialogContext;
+      
+      // Show loading indicator with transparent background
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black.withOpacity(0.3), // Semi-transparent background
+        builder: (context) {
+          dialogContext = context;
+          return const AlertDialog(
+            backgroundColor: Colors.white,
             content: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 CircularProgressIndicator(),
                 SizedBox(width: 16),
-                Text('Generating your meal plan...'),
+                Flexible(
+                  child: Text(
+                    'Generating your meal plan...',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
               ],
             ),
-          ),
-        );
+          );
+        },
+      );
 
-        // Call backend to generate mealplan
-        await mealplanNotifier.generateMealplan(diet);
+      try {
+        // Convert "Standard" to null for the backend
+        final dietForBackend = diet == 'Standard' ? null : diet;
+        print('[MealPlanSection] Starting mealplan generation for diet: $diet (backend: $dietForBackend)');
         
-        // Close loading dialog
-        Navigator.of(context).pop();
+        // Call backend to generate mealplan with timeout
+        await mealplanNotifier.generateMealplan(dietForBackend).timeout(
+          const Duration(minutes: 2),
+          onTimeout: () {
+            throw TimeoutException('Mealplan generation timed out after 2 minutes');
+          },
+        );
+        
+        print('[MealPlanSection] Mealplan generation completed successfully');
+        
+        // Close loading dialog using stored context
+        if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+          Navigator.of(dialogContext!).pop();
+        } else if (context.mounted && Navigator.canPop(context)) {
+          // Fallback: try to close using the widget context
+          Navigator.of(context).pop();
+        }
         
         // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Meal plan generated with $diet diet!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (context.mounted) {
+          final message = diet == 'Standard' 
+            ? 'Meal plan generated successfully!' 
+            : 'Meal plan generated with $diet diet!';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
       } catch (e) {
-        // Close loading dialog
-        Navigator.of(context).pop();
+        print('[MealPlanSection] Error generating mealplan: $e');
+        print('[MealPlanSection] Error stack trace: ${e.toString()}');
+        
+        // Always close loading dialog, even on error
+        if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+          Navigator.of(dialogContext!).pop();
+        } else if (context.mounted && Navigator.canPop(context)) {
+          // Fallback: try to close using the widget context
+          Navigator.of(context).pop();
+        }
         
         // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error generating meal plan: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error generating meal plan: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
       }
     }
 
     void _showPreferencesAndGenerate() async {
-      String? selectedDiet;
+      String selectedDiet = 'Standard'; // Default selection
       
       await showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Select Diet Preferences'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Choose your dietary preferences:'),
-              const SizedBox(height: 16),
-              ...dietOptions.map((diet) => RadioListTile<String>(
-                title: Text(diet),
-                value: diet,
-                groupValue: selectedDiet,
-                onChanged: (value) {
-                  setState(() {
-                    selectedDiet = value;
-                  });
+        builder: (context) => StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            title: const Text('Select Diet Preferences'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Choose your dietary preferences:'),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: dietOptions.map((diet) => GestureDetector(
+                    onTap: () {
+                      setDialogState(() {
+                        selectedDiet = diet;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: selectedDiet == diet 
+                          ? Theme.of(context).colorScheme.primary 
+                          : Theme.of(context).colorScheme.surfaceVariant,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: selectedDiet == diet 
+                            ? Theme.of(context).colorScheme.primary 
+                            : Theme.of(context).colorScheme.outline,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        diet,
+                        style: TextStyle(
+                          color: selectedDiet == diet 
+                            ? Theme.of(context).colorScheme.onPrimary 
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: selectedDiet == diet ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  )).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _generateMealplan(selectedDiet);
                 },
-              )).toList(),
+                child: const Text('Generate'),
+              ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: selectedDiet == null ? null : () {
-                Navigator.of(context).pop();
-                _generateMealplan(selectedDiet!);
-              },
-              child: const Text('Generate'),
-            ),
-          ],
         ),
       );
-
+    }
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),
@@ -395,7 +484,7 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
             const Divider(),
             // Wochenansicht
             ...List.generate(7, (i) {
-              final dateKey = dateKeys[i];
+              final dateKey = displayDateKeys[i];
               final date = DateTime.parse(dateKey);
               final weekday = weekDays[date.weekday - 1];
               final dayMeals = mealplan.days[dateKey] ?? {};
@@ -427,7 +516,8 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
                         ),
                       ),
                       ...meals.map((mealType) {
-                        final recipe = dayMeals[mealType];
+                        // Versuche beide Formate: Backend (UPPERCASE) und Frontend (TitleCase)
+                        final recipe = dayMeals[mealType.toUpperCase()] ?? dayMeals[mealType];
                         if (recipe == null) {
                           return Expanded(
                             child: Center(
@@ -472,7 +562,9 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
-                                        mealplanNotifier.updateMeal(dateKey, mealType, null);
+                                        // Versuche beide Meal-Type-Formate beim Löschen
+                                        final backendMealType = mealType.toUpperCase();
+                                        mealplanNotifier.updateMeal(dateKey, backendMealType, null);
                                       },
                                       child: const Text('Remove'),
                                     ),
@@ -490,7 +582,7 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
                               ),
                               child: Column(
                                 children: [
-                                  if (recipe.imageUrl != null)
+                                  if (recipe.imageUrl != null && recipe.imageUrl!.isNotEmpty)
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
@@ -498,7 +590,28 @@ class _MealPlanSectionState extends ConsumerState<MealPlanSection> {
                                         height: 50,
                                         width: 80,
                                         fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            height: 50,
+                                            width: 80,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[300],
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Icon(Icons.restaurant, color: Colors.grey[600]),
+                                          );
+                                        },
                                       ),
+                                    )
+                                  else
+                                    Container(
+                                      height: 50,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(Icons.restaurant, color: Colors.grey[600]),
                                     ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -654,9 +767,12 @@ class SearchScreenWrapper extends StatelessWidget {
 }
 
 // Hilfsfunktion: Liefert die 7 Datums-Strings (yyyy-MM-dd) der aktuellen Woche (Mo-So)
+// Verwendet die gleiche Logik wie das Backend (getMonday Funktion)
 List<String> getCurrentWeekDateKeys() {
-  final now = DateTime.now();
-  final monday = now.subtract(Duration(days: now.weekday - 1));
+  final now = DateTime.now().toUtc(); // Verwende UTC wie das Backend
+  final day = now.weekday; // 1 = Monday, 7 = Sunday
+  final diff = now.day - day + (day == 7 ? -6 : 1); // adjust when day is sunday
+  final monday = DateTime.utc(now.year, now.month, diff);
   return List.generate(7, (i) {
     final date = monday.add(Duration(days: i));
     return DateFormat('yyyy-MM-dd').format(date);

@@ -142,18 +142,26 @@ class MealplanNotifier extends StateNotifier<AsyncValue<Mealplan>> {
     _saveMealplanInBackground(empty);
   }
 
-  Future<void> generateMealplan(String diet) async {
+  Future<void> generateMealplan(String? diet) async {
     try {
+      print('[MealplanProvider] Starting mealplan generation for diet: $diet');
+      
       // Call backend to generate mealplan
-      final response = await ApiClient().post('/api/mealplan/generate', data: {
-        'diet': diet,
+      final response = await ApiClient().post('/mealplan/generate', data: {
+        if (diet != null) 'diet': diet,
         'timeFrame': 'week',
         'targetCalories': 2000,
       });
       
+      print('[MealplanProvider] Backend response received: ${response.statusCode}');
+      
       // Reload mealplan after generation
       await loadMealplan();
+      
+      print('[MealplanProvider] Mealplan generation completed successfully');
     } catch (e, st) {
+      print('[MealplanProvider] Error in generateMealplan: $e');
+      print('[MealplanProvider] Stack trace: $st');
       state = AsyncError(e, st);
       rethrow;
     }
