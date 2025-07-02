@@ -31,11 +31,17 @@ class ParallaxRecipes extends StatefulWidget {
 }
 
 class _ParallaxRecipesState extends State<ParallaxRecipes> {
+  // Map für stabile Keys pro Rezept
+  final Map<String, GlobalKey> _backgroundImageKeys = {};
+
+  GlobalKey _getKeyForRecipe(String id) {
+    return _backgroundImageKeys.putIfAbsent(id, () => GlobalKey());
+  }
+
   @override
   Widget build(BuildContext context) {
     final showAds = widget.showAds;
     final recipes = widget.recipes;
-    // Calculate how many ads will be inserted
     int adCount = showAds ? (recipes.length ~/ 4) : 0;
     int totalCount = recipes.length + adCount + (widget.hasMore ? 1 : 0);
 
@@ -43,7 +49,6 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
       controller: widget.scrollController,
       itemCount: totalCount,
       itemBuilder: (context, index) {
-        // Loading indicator at the end
         if (index == totalCount - 1 && widget.hasMore) {
           return widget.isLoadingMore
               ? const Padding(
@@ -54,15 +59,16 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
         }
 
         if (showAds && (index + 1) % 5 == 0) {
-          // Every 5th item (after 4 recipes) is an ad
           return const RecipeAdItem();
         }
 
-        // Calculate the actual recipe index, skipping ads
         int numAdsBefore = showAds ? (index ~/ 5) : 0;
         int recipeIndex = index - numAdsBefore;
         final recipe = recipes[recipeIndex];
+        final String keyId = (recipe.id?.toString() ?? recipe.internalId?.toString() ?? recipe.name);
+        final backgroundImageKey = _getKeyForRecipe(keyId);
         return RecipeItem(
+          key: ValueKey(keyId),
           id: recipe.id,
           internalId: recipe.internalId,
           isInternal: recipe.isInternal ?? false,
@@ -88,6 +94,7 @@ class _ParallaxRecipesState extends State<ParallaxRecipes> {
           containsUserAllergens: recipe.containsUserAllergens,
           matchedAllergens: recipe.matchedAllergens,
           onRecipeTap: widget.onRecipeTap, // NEU
+          backgroundImageKey: backgroundImageKey,
         );
       },
     );
@@ -100,8 +107,9 @@ class RecipeItem extends StatelessWidget {
   final bool? containsUserAllergens;
   final List<String>? matchedAllergens;
   final void Function(Recipe recipe)? onRecipeTap; // NEU
+  final GlobalKey backgroundImageKey;
   RecipeItem({
-    super.key,
+    Key? key,
     this.id,
     this.internalId, // Optional: Interne ID für eigene Rezepte
     this.isInternal = false, // Default: false, wenn nicht angegeben
@@ -125,7 +133,8 @@ class RecipeItem extends StatelessWidget {
     this.containsUserAllergens,
     this.matchedAllergens,
     this.onRecipeTap, // NEU
-  });
+    required this.backgroundImageKey,
+  }) : super(key: key);
 
   final int? id;
   final String? internalId; // Optional: Interne ID für eigene Rezepte
@@ -146,8 +155,6 @@ class RecipeItem extends StatelessWidget {
   final int? missingIngredientsCount;
   final double? averageRating;
   final int? ratingCount;
-
-  final GlobalKey _backgroundImageKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -271,18 +278,18 @@ class RecipeItem extends StatelessWidget {
       delegate: ParallaxFlowDelegate(
         scrollable: Scrollable.of(context),
         listItemContext: context,
-        backgroundImageKey: _backgroundImageKey,
+        backgroundImageKey: backgroundImageKey,
       ),
       children: [
         (imageUrl.isNotEmpty)
             ? Image.network(
                 imageUrl,
-                key: _backgroundImageKey,
+                key: backgroundImageKey,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
                     'assets/images/placeholder_image.png',
-                    key: _backgroundImageKey,
+                    key: backgroundImageKey,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Center(
                       child: Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
@@ -303,7 +310,7 @@ class RecipeItem extends StatelessWidget {
               )
             : Image.asset(
                 'assets/images/placeholder_image.png',
-                key: _backgroundImageKey,
+                key: backgroundImageKey,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Center(
                   child: Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
