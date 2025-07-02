@@ -9,7 +9,7 @@ A: Use the 'Forgot Password' option on the login screen to receive a reset link.
 A: Yes, just log in with the same account on any supported device.
 
 **Q: How do I add my own recipes?**
-A: Use the 'Add Recipe' feature in the app (if available in your version).
+A: Use the 'Add Recipe' feature in the app.
 
 ## For Developers
 
