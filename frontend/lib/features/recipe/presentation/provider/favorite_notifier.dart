@@ -63,6 +63,8 @@ class FavoriteNotifier extends ChangeNotifier {
     }
   }
 
+  //testcommit, um funktion der tests und des deployments zu zeigen
+
   Future<void> fetchFavoriteRecipes(String userId) async {
     if (_isLoadingGlobal || (_status == FavoriteStatus.loaded && _lastLoadedUserId == userId)) {
       return;
