@@ -105,7 +105,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Suche'),
+            title: const Text('Search'),
           ),
           body: Consumer<PremiumProvider>(
             builder: (context, premiumProvider, _) {

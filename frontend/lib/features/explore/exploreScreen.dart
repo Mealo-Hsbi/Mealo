@@ -80,7 +80,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       Icon(Icons.search, color: Colors.grey),
                       SizedBox(width: 8),
                       Text(
-                        'Suche nach Rezepten...',
+                        'Search for recipes...',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],
