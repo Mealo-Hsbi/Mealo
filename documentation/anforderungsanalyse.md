@@ -33,17 +33,18 @@ Bjarne Zaremba - 1320828
     - [3.3.1 Externe Schnittstellen](#331-externe-schnittstellen)
     - [3.3.2 Interne Schnittstellen](#332-interne-schnittstellen)
   - [3.4 Datenmodell](#34-datenmodell)
-  - [3.5 Fehlerbehandlung](#37-fehlerbehandlung)
-  - [3.6 Validierung](#38-validierung)
-    - [3.6.1 Integrations-Testfälle](#361-integrations-testfälle)
-    - [3.6.2 Datenmodell-Tests](#362-datenmodell-tests)
-    - [3.6.3 API-Tests](#363-api-tests)
-    - [3.6.4 User Interface-Tests](#364-user-interface-tests)
-    - [3.6.5 Testabdeckung der Use Cases](#365-testabdeckung-der-use-cases)
+  - [3.5 Abläufe (Workflows / Prozesse)](#35-abläufe-workflows-prozesse)
+  - [3.6 Entwurf (Design / Design-Entscheidungen)](#36-entwurf-design-design-entscheidungen)
+  - [3.7 Fehlerbehandlung](#37-fehlerbehandlung)
+  - [3.8 Validierung](#38-validierung)
 - [4 Projektorganisation](#4-projektorganisation)
   - [4.1 Annahmen](#41-annahmen)
   - [4.2 Verantwortlichkeiten](#42-verantwortlichkeiten)
   - [4.3 Grober Projektplan](#43-grober-projektplan)
+- [5 Anhänge](#5-anhänge)
+  - [5.1 Glossar](#51-glossar)
+  - [5.2 Referenzen](#52-referenzen)
+  - [5.3 Index](#53-index)
 
 
 # 1 Einführung [ ](#inhaltsverzeichnis)
@@ -57,12 +58,12 @@ Im Zentrum steht eine intelligente Zutatenerkennung: Du kannst vorhandene Lebens
 
 Die App bietet eine Vielzahl nützlicher Funktionen:  
 - **Individuelle Filteroptionen** nach Zeitaufwand, Ernährungsform (z. B. vegan, glutenfrei), Schwierigkeitsgrad oder vorhandenen Küchengeräten  
-- **Gericht-Erkennung**: Fotografiere ein fertiges Essen, um die wahrscheinlichen Zutaten zu identifizieren – ideal wenn ein leckeres Gericht nachgekocht werden soll!
+- **Zutaten-Erkennung**: Fotografiere deine Zutaten und erhalte passende Rezepte
 - **Kalorien- und Nährwertübersicht** für jedes Rezept – für alle, die bewusst kochen oder sportliche Ziele verfolgen  
 - **Einkaufslistenfunktion** für fehlende Zutaten, direkt aus dem Rezept heraus generierbar  
 - **Food-Waste-Vermeidung** durch clevere Resteverwertung und Fokus auf vorhandene Lebensmittel  
 - **Intelligente Wochenplanung**: Auf Basis deiner Ziele, Vorlieben und Vorräte erstellt Mealo automatisch einen wöchentlichen Essensplan – samt Rezepte, Einkaufsliste und Kalorienübersicht
-- **Geführtes Kochen**: Schritt-für-Schritt-Anleitungen, bei denen der Nutzer von der App durch den gesamten Kochprozess begleitet wird, inklusive Timer und Sprachsteuerung für eine freihändige Bedienung
+- **Geführtes Kochen**: Schritt-für-Schritt-Anleitungen, bei denen der Nutzer von der App durch den gesamten Kochprozess begleitet wird, inklusive integrierter Timer 
 - **Community & Inspiration**: Nutzer können eigene Rezepte posten, die anderer entdecken und bewerten - für noch mehr kulinarische Vielfalt.
 
 Und noch mehr.
@@ -141,6 +142,7 @@ Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *M
 - **FA-4.1**: Der Nutzer kann ein Benutzerkonto erstellen und sich einloggen.
 - **FA-4.2**: Die App speichert Nutzerdaten, Einstellungen und Historien benutzerbezogen.
 - **FA-4.3**: Die App bietet die Möglichkeit, das Konto zu löschen und alle Daten zu entfernen.
+- **FA-4.4**: Der Nutzer kann sein Profil verwalten, z. B. persönliche Daten und Präferenzen bearbeiten.
 
 ---
 
@@ -148,7 +150,7 @@ Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *M
 
 - **FA-5.1**: Die App führt den Nutzer Schritt für Schritt durch das Rezept, wobei jeder Schritt klar hervorgehoben und nach Bedarf detailliert angezeigt wird.
 - **FA-5.2**: Für Prozesse, die eine bestimmte Zeit erfordern (z. B. Kochen, Backen), kann der Nutzer direkt einen Timer starten, der im Hintergrund weiterläuft.
-- **FA-5.3**: Die App bietet Sprachsteuerung, sodass der Nutzer Befehle wie “Weiter”, “Zurück”, “Starte Timer” oder “Wie lange noch?” geben kann, ohne die Hände zu benutzen.
+- **FA-5.3**: Die App bietet Sprachsteuerung, sodass der Nutzer Befehle wie "Weiter", "Zurück", "Starte Timer" oder "Wie lange noch?" geben kann, ohne die Hände zu benutzen.
 - **FA-5.4**: Ein akustisches oder visuelles Feedback erfolgt, wenn ein Timer abgelaufen ist, um den Nutzer zu informieren.
 - **FA-5.5**: Der geführte Modus kann optional aktiviert werden, indem der Nutzer gefragt wird, ob er die Funktion für das jeweilige Rezept nutzen möchte.
 - **FA-5.6**: Die App erlaubt das gleichzeitige Starten und Verwalten von mehreren Timern für verschiedene Prozesse, wenn dies im Rezept erforderlich ist.
@@ -170,26 +172,32 @@ Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *M
 
 ---
 
+### 8. Achievements & Fortschritt
+- **FA-8.1**: Der Nutzer kann für bestimmte Aktionen (z. B. Anzahl gekochter Rezepte, Nutzung von Features) Achievements/Fortschritte erhalten.
+- **FA-8.2**: Die erreichten Achievements werden im Profil angezeigt.
+
+---
+
 ## 2.3 Nicht-funktionale Anforderungen [ ](#inhaltsverzeichnis)
 
 ### 2.3.1 Rahmenbedingungen [ ](#inhaltsverzeichnis)
 
 **Zielplattformen**:  
-Die Anwendung wird primär als mobile App (Android und eventuell IOS) entwickelt.
+Die Anwendung wird primär als mobile App (Android) entwickelt.
 
 **Programmiersprachen / Frameworks**:  
 Es werden moderne App-Technologien verwendet (z. B. JavaScript/TypeScript, Dart, Flutter).
 
 **Backend**:  
-RESTful API oder GraphQL mit Node.js als mögliche Backend-Technologien.
+RESTful API mit Node.js als Backend-Technologie.
 
 **Datenhaltung**:  
-Nutzung einer Cloud-Datenbank (z. B. Firebase, Supabase, Google Cloud) für Nutzerkonten, Zutaten und Rezepte.
+Nutzung einer Cloud-Datenbank (z. B. Firebase, Google Cloud, Spoonacular) für Nutzerkonten, Zutaten und Rezepte.
 
 **Schnittstellen / APIs**:  
 Externe APIs:
-  - Spoonacular, Edamam oder ähnliche für Rezeptdaten und Nährwertinformationen.
-  - Google Vision API oder OpenCV für die Bildverarbeitung und Zutatenerkennung.
+  - Spoonacular, Rezeptdaten und Nährwertinformationen.
+  - OpenAI, für die Bildverarbeitung und Zutatenerkennung.
 
 **Gerätevoraussetzungen**:  
 Mindestvoraussetzung ist ein Smartphone mit Kamera und Internetzugang.
@@ -202,8 +210,8 @@ Primär Englisch, mittelfristig mehrsprachige Erweiterung geplant.
 ### 2.3.2 Betriebsbedingungen [ ](#inhaltsverzeichnis)
 
 **Betriebsumgebung**:  
-- **Server**: Cloud-Hosting-Dienste (z. B. AWS, Google Cloud).
-- **Betriebssysteme**: Android 8.0+ für mobile Anwendungen (Eventuell IOS 12.0+). 
+- **Server**: Cloud-Hosting-Dienste (Google Cloud).
+- **Betriebssysteme**: Android 8.0+ für mobile Anwendungen. 
 
 **Zugänglichkeit**:  
 - **Internetverbindung**: Eine stabile Internetverbindung wird benötigt, insbesondere für API-Abfragen und Datenaktualisierungen.  
@@ -301,13 +309,10 @@ Die App *Mealo* wird im Rahmen eines **Freemium-Modells** betrieben. Ziel dieser
 ### 2.5.1 Monetarisierungsstrategie
 
 **Modell:**  
-- **Free-Version (0 €)**: Basisfunktionen (Zutaten-Scan, einfache Rezeptsuche)  
+- **Free-Version (0 €)**: Basisfunktionen (Zutaten-Scan (Begrenzt), Rezeptsuche)  
 - **Premium-Version (3,99 €/Monat)**:  
-  - Wochenplan & Einkaufsliste  
-  - Rezeptfilter nach Diät, Zeit, Aufwand  
-  - Makro-Tracking & Kalorienübersicht  
-  - Community-Features (Upload, Bewertung)  
   - Werbefreiheit
+  - Unbegrenzte Zutaten-Scan
 
 **Zahlungsbereitschaft basiert auf Personas (siehe Kapitel 2.4):**
 - Lisa (Free)
@@ -320,43 +325,59 @@ Die App *Mealo* wird im Rahmen eines **Freemium-Modells** betrieben. Ziel dieser
 
 | Kategorie                        | Dienst                       | Preisstruktur                         | Geschätzt/Monat |
 |----------------------------------|-------------------------------|----------------------------------------|-----------------|
-| **Server/Backend**               | c4-standard-2 (Google Cloud) | 0,114 $/h → ~82,30 $/Monat             | ~77 €           |
-| **Bilderkennung**                | Vision API (Label Detection) | 1.000 kostenlos, dann 1,50 $/1.000     | **10.000 Bilder** = 13,50 € |
-| **Datenbank (PostgreSQL)**       | Cloud SQL (Shared Instance)  | ca. 10–15 GB + 2 vCPUs                 | ~35 €/Monat     |
+| **Server/Backend**               | Google Cloud (VM/Serverless)  | z. B. e2-medium, 0,034$/h → ~25$/Monat | ~23 €           |
+| **Bilderkennung**                | OpenAI Vision API             | z. B. 0,0075 $/Bild (1.000 Bilder = 7,50 $) | **10.000 Bilder** = 75 € |
+| **Rezeptdaten & Nährwerte**      | Spoonacular API               | z. B. 29 $/Monat (Standardplan, bis 150 Anfragen/Tag) | ~27 €           |
+| **Datenbank (PostgreSQL/Firebase)** | Cloud SQL / Firestore      | ca. 10–15 GB + 2 vCPUs                 | ~35 €/Monat     |
 | **Storage & Netzwerk**           | Cloud Storage + Traffic      | geschätzt                              | ~5–10 €         |
-| **Gesamtkosten geschätzt**       |                               |                                        | **~140 € / Monat** |
+| **Gesamtkosten geschätzt**       |                               |                                        | **~170 € / Monat** |
 
 ---
 
 ### 2.5.3 Break-even-Berechnung
 
+> **Hinweis:** Neben den Premium-Einnahmen werden auch Werbeeinnahmen aus der Free-Version berücksichtigt. Es wird angenommen, dass pro Free-Nutzer und Monat im Schnitt ca. 0,30 € durch Werbeeinblendungen (z. B. alle paar Rezepte) erzielt werden.
+
 | Parameter                      | Wert                          |
 |--------------------------------|-------------------------------|
 | **Monatlicher Premiumpreis**  | 3,99 €                        |
-| **Fixkosten (gesamt)**        | ~140 €                        |
+| **Fixkosten (gesamt)**        | ~170 €                        |
 | **Erwartete Premium-Quote**   | 5 %                           |
-| **Benötigte zahlende Nutzer** | 140 € / 3,99 € ≈ **36 Nutzer** |
-| **Aktive Nutzer gesamt**      | 36 / 0,05 = **720 MAU**       |
+| **Werbeerlös pro Free-Nutzer**| 0,30 €                        |
+| **Benötigte zahlende Nutzer** | 170 € / 3,99 € ≈ **43 Nutzer** |
+| **Aktive Nutzer gesamt**      | 43 / 0,05 = **860 MAU**       |
+| **Werbeerlös bei 860 MAU**    | 817 Free-Nutzer × 0,30 € ≈ 245 € |
+| **Gesamterlös bei 860 MAU**   | (43 × 3,99 €) + 245 € ≈ 417 € |
+
+> **Fazit:** Durch die zusätzlichen Werbeeinnahmen kann der Break-even bereits mit weniger Premium-Nutzern oder einer geringeren Gesamt-Nutzerzahl erreicht werden. Die tatsächliche Schwelle hängt von der realen Werbeauslastung und den erzielten CPM-Werten ab.
 
 ---
 
 ### 2.5.4 Monetarisierungspotenzial (Skalierung)
 
-- **In-App-Käufe:** Themenpakete (z. B. „Low Carb“, „Meal Prep für 2 Personen“)
+- **Werbeeinblendungen:** Einnahmen durch Banner, Interstitials oder Native Ads in der Free-Version. Die Werbeintensität kann je nach Nutzerverhalten oder App-Bereich variiert werden.
+- **In-App-Käufe:** Themenpakete (z. B. "Low Carb", "Meal Prep für 2 Personen")
 - **Product Placement:** Platzierte Markenprodukte bei Zutatenvorschlägen
-- **Partnerangebote:** Integration von Supermarkt- oder Lieferdiensten
+- **Partnerangebote & Affiliate-Programme:** Integration von Supermarkt- oder Lieferdiensten, Affiliate-Links für Zutatenbestellungen, exklusive Coupons
+- **Community-Boosts:** Z. B. "Rezept des Tages"-Platzierung gegen Gebühr, Premium-Kommentare, eigene Challenges erstellen
 - **Premium+ Pakete:** Offline-Modus, Exportfunktionen, mehr Community-Rechte
+- **Familien- und Business-Accounts:** Gemeinsame Planung, geteilte Einkaufsliste, spezielle Lizenzen für Ernährungsberater, Fitnessstudios oder Kochschulen
+- **Datenbasierte Monetarisierung (optional, DSGVO-konform):** Anonymisierte Auswertung von Food-Trends und Nutzungsverhalten
+
+> **Hinweis:** Die Monetarisierungsstrategie kann im laufenden Betrieb flexibel angepasst werden, um auf Nutzerfeedback, Markttrends und neue technische Möglichkeiten zu reagieren.
 
 ---
 
 ### Fazit
 
-Mealo lässt sich mit einer aktiven Nutzerbasis von etwa **720 monatlich aktiven Nutzern** wirtschaftlich betreiben. Die technische Infrastruktur (inkl. PostgreSQL-Datenbank und Google Vision API) verursacht zwar reale Kosten, bleibt aber im Rahmen eines schlanken MVP. Mit gezielten Premium-Features, klarem Mehrwert und Community-Einbindung ist eine schrittweise Monetarisierung realistisch.
+Mealo lässt sich mit einer aktiven Nutzerbasis von etwa **860 monatlich aktiven Nutzern** wirtschaftlich betreiben. Die technische Infrastruktur (inkl. PostgreSQL-Datenbank und Google Vision API) verursacht zwar reale Kosten, bleibt aber im Rahmen eines schlanken MVP. Mit gezielten Premium-Features, klarem Mehrwert und Community-Einbindung ist eine schrittweise Monetarisierung realistisch.
 
 
 ## 2.6 Graphische Benutzerschnittstelle [ ](#inhaltsverzeichnis)
 
 Die grafische Benutzeroberfläche (GUI) von Mealo wird intuitiv und benutzerfreundlich gestaltet. Sie soll den Nutzer durch klare Strukturen und ansprechendes Design unterstützen. Die App wird in einem modernen, minimalistischen Stil gehalten, um Ablenkungen zu vermeiden und den Fokus auf die Inhalte zu legen.
+
+
 
 ## 🧾 **2.7 Anforderungen im Detail** [ ](#inhaltsverzeichnis)
 
@@ -440,6 +461,15 @@ Die grafische Benutzeroberfläche (GUI) von Mealo wird intuitiv und benutzerfreu
 
 ---
 
+### 🏆 Achievements & Fortschritt [ ](#inhaltsverzeichnis)
+
+| **Name**         | **In meiner Rolle als** | **möchte ich**                                                      | **so dass**                                         | **Erfüllt, wenn**                                                      | **Priorität** |
+|------------------|------------------------|---------------------------------------------------------------------|-----------------------------------------------------|------------------------------------------------------------------------|---------------|
+| Achievements     | Nutzer                 | für bestimmte Aktionen Auszeichnungen/Fortschritte erhalten         | ich motiviert werde, die App regelmäßig zu nutzen   | nach Aktionen wie "X Rezepte gekocht" ein Achievement angezeigt wird   | Could         |
+| Achievement-Übersicht | Nutzer             | meine erreichten Achievements im Profil einsehen können             | ich meinen Fortschritt nachvollziehen kann           | eine Übersicht aller erreichten Achievements im Profil sichtbar ist     | Could         |
+
+---
+
 # 3 Technische Beschreibung [ ](#inhaltsverzeichnis)
 ## 3.1 Systemübersicht [ ](#inhaltsverzeichnis)
 
@@ -448,107 +478,260 @@ Die grafische Benutzeroberfläche (GUI) von Mealo wird intuitiv und benutzerfreu
 
 ## 3.2 Softwarearchitektur [ ](#inhaltsverzeichnis)
 
-Die Softwarearchitektur von MealMate folgt dem klassischen **Client-Server-Modell**. Die Anwendung besteht aus zwei Hauptkomponenten: einer **mobilen App** (Client), entwickelt mit Flutter, und einem **Backend-Server**, der über eine REST-API mit der App kommuniziert. Zusätzlich werden externe Dienste wie Spoonacular, Google ML Kit oder Google Cloud Vision API angebunden.
+Die Softwarearchitektur von Mealo folgt dem klassischen **Client-Server-Modell**. Die Anwendung besteht aus zwei Hauptkomponenten: einer **mobilen App** (Client), entwickelt mit Flutter, und einem **Backend-Server** auf Basis von Node.js, der über eine REST-API mit der App kommuniziert. Zusätzlich werden externe Dienste wie OpenAI (für Bilderkennung) und Spoonacular (für Rezepte und Nährwertdaten) angebunden.
 
-### Client
+### Client (Frontend)
 
-Die mobile App ist in **Flutter (Dart)** entwickelt und in die folgenden Schichten unterteilt:
+Die mobile App ist in **Flutter (Dart)** entwickelt und in folgende Schichten unterteilt:
 
-- **View-Schicht**: Präsentiert die Benutzeroberfläche. Hier befinden sich Widgets und Layouts zur Anzeige und Interaktion mit Zutaten, Rezepten und weiteren Funktionen.
+- **View-Schicht**: Präsentiert die Benutzeroberfläche. Hier befinden sich Widgets und Layouts zur Anzeige und Interaktion mit Zutaten, Rezepten, Profilen und weiteren Funktionen.
 - **Logik-Schicht**: Beinhaltet Geschäftslogik wie das Verarbeiten von Nutzeraktionen, das Vorverarbeiten von Daten für die Anzeige, das Erkennen von Zutaten durch Bilderkennung und das Auslösen von API-Anfragen.
-- **Kommunikations-Schicht**: Verwaltet die REST-Kommunikation mit dem Backend (z. B. über `http`-Bibliothek) und ggf. direkte Anbindung von Bilderkennungs-APIs.
+- **Kommunikations-Schicht**: Verwaltet die REST-Kommunikation mit dem Backend (z. B. über die `http`-Bibliothek) und ggf. direkte Anbindung von externen APIs.
 
-Für die Bilderkennung von Zutaten evaluieren wir aktuell die Nutzung von **Google ML Kit** (on-device) und **Google Cloud Vision API** (cloud-basiert). In der ersten Projektphase sollen beide Technologien ausprobiert und auf ihre Eignung hinsichtlich Genauigkeit, Performance und Aufwand geprüft werden.
+Die App ist modular nach Features aufgebaut (z. B. Authentifizierung, Rezeptsuche, Kamera/Bilderkennung, Mealplan, Favoriten, Profilverwaltung) und folgt Clean Architecture-Prinzipien.
 
-### Server
+### Server (Backend)
 
-Das Backend ist als Webserver mit einer REST-Schnittstelle aufgebaut (z. B. mit Node.js oder Python/Flask – Technologie noch offen). Es gliedert sich in:
+Das Backend ist als Webserver mit einer REST-Schnittstelle auf Basis von **Node.js** und **Express.js** aufgebaut. Es gliedert sich in:
 
 - **Web-Schicht**: Nimmt HTTP-Anfragen entgegen, verarbeitet sie und gibt HTTP-Antworten zurück. Sie stellt die Schnittstelle zur mobilen App dar.
-- **Logik-Schicht**: Enthält die zentrale Anwendungslogik des Servers. Dazu gehören z. B. die Verarbeitung von Rezeptanfragen, Filtern von Supermarktangeboten oder KI-basierte Rezeptvorschläge.
-- **Persistenz-Schicht**: Verwaltet die Datenbankzugriffe (z. B. MongoDB oder PostgreSQL). Hier werden Nutzerprofile, Zutatenlisten, Rezeptdaten und Bewertungen gespeichert.
+- **Logik-Schicht**: Enthält die zentrale Anwendungslogik des Servers. Dazu gehören z. B. die Verarbeitung von Rezeptanfragen, Verwaltung von Nutzerprofilen, Achievements, Favoriten und die Integration externer APIs.
+- **Persistenz-Schicht**: Verwaltet die Datenbankzugriffe (z. B. PostgreSQL via Prisma ORM oder Firestore). Hier werden Nutzerprofile, Zutatenlisten, Rezepte, Mealplans und Achievements gespeichert.
 
 ### Externe Dienste
 
-Zusätzlich werden folgende externe APIs verwendet:
-
-- **Google ML Kit oder Google Cloud Vision API**: zur Bilderkennung von Zutaten (je nach Evaluierung entweder direkt vom Client oder über das Backend angesprochen). 
-- **Spoonacular API** (über das Backend): zur Abfrage und Anreicherung von Rezeptdaten.
-- **Supermarkt-API** (optional, über Backend): zum Abgleichen von verfügbaren Zutaten in der Nähe.
+- **OpenAI Vision API**: Für die cloudbasierte Bilderkennung von Zutatenfotos.
+- **Spoonacular API**: Für die Abfrage und Anreicherung von Rezeptdaten und Nährwertinformationen.
+- **Firebase**: Für Authentifizierung und ggf. Cloud-Datenhaltung.
 
 Die Kommunikation zwischen den Komponenten erfolgt standardisiert über **HTTP mit JSON** als Datenformat. Die Abhängigkeiten der Schichten verlaufen einheitlich von oben nach unten, wodurch eine klare Trennung von Darstellung, Logik und Persistenz sichergestellt wird.
 
+---
 
 ### 3.2.1 Technologieauswahl [ ](#inhaltsverzeichnis)
 
-In der folgenden Tabelle sind die Technologien und Frameworks aufgeführt, die für die Entwicklung der App verwendet werden. Diese Auswahl basiert auf den Anforderungen der Anwendung, wie der plattformübergreifenden Entwicklung, der Nutzung von Cloud-Diensten für Hosting und Datenmanagement sowie der Integration von Technologien für die Bilderkennung. Jede Technologie wurde sorgfältig ausgewählt, um die gewünschten Funktionalitäten effizient umzusetzen. Es werden nur wichtige und "besondere" Technologien aufgelistet.
+In der folgenden Tabelle sind die aktuell verwendeten Technologien und Frameworks für die Entwicklung der App aufgeführt. Die Auswahl basiert auf den Anforderungen der Anwendung, wie der plattformübergreifenden Entwicklung, der Nutzung von Cloud-Diensten für Hosting und Datenmanagement sowie der Integration von KI-gestützter Bilderkennung und externer Rezeptdaten. Es werden nur wichtige und "besondere" Technologien aufgelistet.
 
 | **Technologie**               | **Beschreibung**                                                                                       |
 |-------------------------------|--------------------------------------------------------------------------------------------------------|
-| **Flutter**                    | Framework für plattformübergreifende App-Entwicklung (Android und iOS) mit einer einheitlichen Codebasis.|
-| **Dart**                       | Programmiersprache für die Entwicklung mit Flutter, bietet hohe Performance und Flexibilität.            |
-| **Google Cloud**               | Hosting- und Cloud-Plattform für das Backend und die Datenbank (Firebase als Teil von Google Cloud).     |
-| **Google ML Kit**              | On-device Bilderkennung für die Erkennung von Zutaten in Bildern.                                       |
-| **Google Cloud Vision API**    | Cloud-basierte Lösung für die Bilderkennung von Zutaten aus Fotos.                                      |
+| **Flutter**                    | Framework für plattformübergreifende App-Entwicklung (Android) mit einer einheitlichen Codebasis.      |
+| **Dart**                       | Programmiersprache für die Entwicklung mit Flutter, bietet hohe Performance und Flexibilität.           |
+| **Node.js**                    | JavaScript-Laufzeitumgebung für das Backend, RESTful API mit Express.js.                               |
+| **Prisma**                     | ORM für Node.js zur Verwaltung der PostgreSQL-Datenbank.                                               |
+| **Firebase**                   | Authentifizierung und ggf. Cloud-Datenhaltung.                                                         |
+| **OpenAI Vision API**          | Cloudbasierte KI-Bilderkennung für Zutatenfotos.                                                       |
+| **Spoonacular API**            | Externe API für Rezepte und Nährwertinformationen.                                                     |
 | **REST API**                   | Kommunikation zwischen Frontend und Backend über RESTful API-Endpunkte.                                |
 | **http (Dart)**                | Bibliothek zur Durchführung von HTTP-Anfragen im Frontend zur Kommunikation mit der API.               |
 | **JSON**                       | Datenformat für die Kommunikation zwischen Client und Server.                                          |
-| **Provider**                   | State-Management-Lösung für Flutter, um den Zustand der App zu verwalten.                               |
+| **Provider**                   | State-Management-Lösung für Flutter, um den Zustand der App zu verwalten.                              |
 | **Flutter Image Picker**       | Bibliothek zum Auswählen und Hochladen von Bildern aus der Galerie oder mit der Kamera.                |
-
-## 3.3 Schnittstellen [ ](#inhaltsverzeichnis)
-
-Im Folgenden werden die verschiedenen Schnittstellen des Softwaresystems beschrieben. Dies umfasst sowohl die externen Schnittstellen, die die Kommunikation zwischen Client und Server ermöglichen, als auch die internen Schnittstellen zwischen den einzelnen Komponenten des Systems.
-
-#### 3.3.1 Externe Schnittstellen
-
-Die wichtigsten externen Schnittstellen bestehen zwischen dem Client (App) und dem Server (Backend). Diese Kommunikation erfolgt in der Regel über eine REST-API, die es dem Client ermöglicht, Anfragen zu stellen und Antworten vom Server zu erhalten. Im Backend wird diese API von einem Web-Server wie Flask oder Node.js bedient, der die Anfragen verarbeitet und entsprechende Antworten liefert.
-
-**Client-Server-API:**
-
-- **Verbindung:** HTTPS (über REST)
-- **Datenformat:** JSON
-- **Authentifizierung:** OAuth 2.0 / JWT (JSON Web Tokens)
-- **Wichtige Endpunkte:**
-  - `POST /users/login`: Authentifizierung eines Nutzers
-  - `GET /ingredients`: Abruf der gespeicherten Zutaten des Nutzers
-  - `POST /ingredients`: Hinzufügen neuer Zutaten
-  - `GET /recipes`: Abruf von Rezepten basierend auf den Zutaten
-  - `POST /recipes`: Erstellen eines neuen Rezepts
-  - `POST /image-recognition`: Hochladen von Bildern zur Zutaten- oder Rezept-Erkennung (Verwendung von Google Vision API oder ML Kit)
-
-#### 3.3.2 Interne Schnittstellen
-
-Intern wird die Kommunikation zwischen den Backend-Komponenten über REST-APIs oder interne Funktionsaufrufe abgewickelt. Hier sind die wichtigsten internen Schnittstellen:
-
-- **Backend zu Google Vision API oder ML Kit:**
-  - Die Bilderkennung wird entweder über Google Cloud Vision API oder das Firebase ML Kit erfolgen, abhängig von der endgültigen Entscheidung bezüglich der besten Lösung. Hierbei handelt es sich um eine externe API, die vom Backend aufgerufen wird, um die Bilder zu analysieren und Zutaten zu erkennen.
-  
-- **Backend zu Datenbank:**
-  - Das Backend kommuniziert mit einer Datenbank zur Speicherung und Abfrage von Zutaten und Rezepten. Diese Schnittstelle ist über interne API-Endpunkte oder direkt über Datenbankaufrufe realisiert.
-
-Die genaue Beschreibung der API erfolgt mit Hilfe von Swagger. Das ist ein Tool, das es ermöglicht, die API-Dokumentation automatisch zu generieren und zu visualisieren. Es ist wichtig, dass die API-Dokumentation klar und verständlich ist, damit andere Entwickler die Schnittstellen leicht nutzen können.
 
 ---
 
+### 3.2.2 Projekt- und Ordnerstruktur
+
+Die App *Mealo* wird als **Monorepo** verwaltet, das sowohl die mobile Flutter-Anwendung (Frontend) als auch den Node.js-Server (Backend) in einem gemeinsamen Repository beherbergt. Diese Struktur fördert die Code-Wiederverwendung und vereinfacht die Verwaltung von Abhängigkeiten und Build-Prozessen. Im Folgenden wird die logische Ordnerstruktur des Projekts erläutert.
+
+**Top-Level-Struktur des Monorepos:**
+
+```
+mealo-project/
+├── backend/            # Enthält den Node.js-Server
+├── frontend/           # Enthält die Flutter-Anwendung
+├── docs/               # Dokumentationsdateien (wie dieses Pflichtenheft)
+├── .gitignore          # Git-Ignorier-Regeln
+├── README.md           # Haupt-Readme des Projekts
+└── ... (weitere gemeinsame Konfigurationsdateien)
+```
+
+#### Frontend-Struktur (`frontend/`)
+
+Das Frontend wird mit Flutter und Dart entwickelt und bietet eine plattformübergreifende mobile Erfahrung. Es interagiert mit dem Backend über REST APIs und bietet eine moderne, benutzerfreundliche Oberfläche. Die Frontend-Architektur ist in feature-basierte Module organisiert, die jeweils einen Kernbereich der App abdecken.
+
+**Hauptmodule und Verzeichnisstruktur:**
+
+```
+frontend/
+├── lib/
+│   ├── features/         # Haupt-App-Features
+│   │   ├── auth/         # Benutzerauthentifizierung (Login, Registrierung, Auth-Status)
+│   │   ├── mealplan/     # Essensplan-Erstellung, -Bearbeitung und -Anzeige
+│   │   ├── camera/       # Kamera-Integration und Bilderkennung für Zutaten
+│   │   ├── profile/      # Benutzerprofil, Präferenzen und Einstellungen
+│   │   ├── recipe/       # Rezept-Entdeckung, Suche und Details
+│   │   ├── favorites/    # Verwaltung und Anzeige von Favoritenrezepten
+│   │   ├── explore/      # Neue Rezepte und Essensideen entdecken
+│   │   ├── onboarding/   # Benutzer-Onboarding-Flow
+│   │   ├── search/       # Zutaten- und Rezeptsuchfunktion
+│   │   ├── home/         # Startbildschirm/Dashboard
+│   │   └── blub/         # (Benutzerdefiniertes Feature, z.B. Hotel-Listen-Demo)
+│   ├── common/           # Gemeinsam genutzte Komponenten (Models, Stile, Utilities, wiederverwendbare Widgets)
+│   │   ├── data/         # Statische Daten (z.B. ingredients.dart)
+│   │   ├── models/       # Datenmodelle (z.B. ingredient.dart, recipe.dart)
+│   │   ├── utils/        # Hilfsfunktionen (z.B. string_similarity_helper.dart)
+│   │   └── widgets/      # Wiederverwendbare UI-Komponenten (z.B. ingredient_chip_row.dart, search_header.dart)
+│   ├── core/             # App-weite Konfiguration, Konstanten, Fehlerbehandlung, Provider, Routing und Theming
+│   │   ├── providers/    # App-weite Provider
+│   ├── services/         # API-Clients und Netzwerkkonfiguration (z.B. api_client.dart)
+│   └── main.dart         # Haupteinstiegspunkt der Flutter-App
+├── assets/               # Statische Ressourcen (Bilder, Icons, Sounds)
+├── test/                 # Frontend-Tests (für Screens, Repositories, Core-Logik)
+├── pubspec.yaml          # Flutter-Projektmetadaten und Abhängigkeiten
+├── README.md             # Readme für das Frontend-Projekt
+└── ...
+```
+
+**Feature-Modul-Struktur: Clean Architecture**
+
+Jedes Feature im Verzeichnis `lib/features/` ist nach einem Clean Architecture-Ansatz organisiert, der die Verantwortlichkeiten in verschiedene Schichten unterteilt:
+
+```
+features/
+  [feature_name]/  # z.B. recipe/, search/
+    data/
+      repositories/   # Implementierungen der Repository-Interfaces
+      datasources/    # Datenquellen (z.B. API-Clients, lokale Datenbank)
+    domain/
+      models/         # Kern-Entitäten/Modelle für das Feature
+      usecases/       # Anwendungsfälle (Business-Logik)
+      repositories/   # Abstrakte Repository-Interfaces
+    presentation/
+      screens/        # Bildschirme/Seiten des Features
+      providers/      # Feature-spezifische State-Management-Provider/Controller
+      widgets/        # UI-Widgets, die spezifisch für das Feature sind
+```
+
+Diese Struktur gewährleistet:
+
+  * **Trennung der Verantwortlichkeiten**: UI, Geschäftslogik und Datenzugriff sind unabhängig voneinander.
+  * **Testbarkeit**: Jede Schicht kann isoliert getestet werden.
+  * **Skalierbarkeit**: Neue Features oder Änderungen können mit minimalen Auswirkungen auf andere Schichten hinzugefügt werden.
+  * **Wartbarkeit**: Code ist leichter zu verstehen, zu refaktorisieren und zu erweitern.
+
+#### Backend-Struktur (`backend/`)
+
+Das Backend ist mit Node.js und Express.js aufgebaut und nutzt Prisma als ORM für die Datenbankverwaltung. Es stellt RESTful APIs für das Frontend bereit und handhabt Authentifizierung, Essensplanungslogik, Bilderkennung und weitere serverseitige Prozesse.
+
+**Hauptkomponenten und Verzeichnisstruktur:**
+
+```
+backend/
+├── app/
+│   ├── config/         # Konfigurationsdateien (z.B. apiKeys.js)
+│   ├── controllers/    # Logik zur Verarbeitung von HTTP-Anfragen und Antworten
+│   ├── middleware/     # Express-Middleware (z.B. für Authentifizierung, Validierung)
+│   ├── models/         # Datenbank-Schema und ORM-Modelle
+│   ├── routes/         # Definition der API-Endpunkte
+│   ├── services/       # Geschäftslogik und Integration mit externen APIs (z.B. spoonacularService.js)
+│   ├── prisma/         # Prisma-Schema-Definitionen
+│   ├── firebase.js     # Firebase-Integration
+│   └── prisma.js       # Prisma-Client-Setup
+├── tests/              # Backend-Tests
+├── Dockerfile          # Konfiguration für die Containerisierung
+├── jest.config.js      # Jest-Testkonfiguration
+├── package.json        # Projektmetadaten und Abhängigkeiten
+├── server.js           # Hauptdatei zum Starten des Servers
+└── ...
+```
+
+---
+
+
+## 3.3 Schnittstellen [ ](#inhaltsverzeichnis)
+
+Im Folgenden werden die wichtigsten Schnittstellen des Softwaresystems beschrieben. Dies umfasst sowohl die externen Schnittstellen, die die Kommunikation zwischen Client (App) und Server (Backend) sowie zu Drittanbietern ermöglichen, als auch die internen Schnittstellen zwischen den einzelnen Komponenten des Systems.
+
+### 3.3.1 Externe Schnittstellen
+
+Die zentrale externe Schnittstelle ist die **REST-API** zwischen der mobilen App (Flutter) und dem Backend (Node.js). Die Kommunikation erfolgt über HTTPS und JSON. Die wichtigsten Endpunkte sind:
+
+- **Authentifizierung:**
+  - `POST /users/register` – Registrierung eines neuen Nutzers
+  - `POST /users/login` – Login und Token-Generierung
+  - `POST /users/logout` – Logout
+- **Zutatenverwaltung:**
+  - `GET /ingredients` – Abruf der gespeicherten Zutaten des Nutzers
+  - `POST /ingredients` – Hinzufügen neuer Zutaten (manuell oder per Bild)
+  - `DELETE /ingredients/:id` – Löschen einer Zutat
+  - `PUT /ingredients/:id` – Bearbeiten einer Zutat
+- **Bilderkennung:**
+  - `POST /image-recognition` – Hochladen eines Bildes zur Zutaten-Erkennung (Backend ruft OpenAI Vision API auf)
+- **Rezeptvorschläge & Suche:**
+  - `GET /recipes` – Rezepte basierend auf Zutaten abrufen (Backend ruft Spoonacular API auf)
+  - `GET /recipes/:id` – Details zu einem Rezept abrufen
+  - `POST /recipes/favorite` – Rezept als Favorit speichern
+  - `GET /recipes/favorites` – Favoriten abrufen
+- **Mealplan & Einkaufsliste:**
+  - `GET /mealplan` – Aktuellen Wochenplan abrufen
+  - `POST /mealplan` – Wochenplan erstellen/aktualisieren
+  - `GET /shopping-list` – Einkaufsliste generieren
+- **Achievements:**
+  - `GET /achievements` – Erreichte Achievements abrufen
+- **Profil:**
+  - `GET /profile` – Profildaten abrufen
+  - `PUT /profile` – Profildaten aktualisieren
+
+**Drittanbieter-Schnittstellen (vom Backend aus):**
+- **OpenAI Vision API:** Für die Analyse von hochgeladenen Bildern zur Zutaten-Erkennung.
+- **Spoonacular API:** Für die Suche und Detailabfrage von Rezepten sowie Nährwertinformationen.
+- **Firebase:** Für Authentifizierung und ggf. Cloud-Datenhaltung.
+
+### 3.3.2 Interne Schnittstellen
+
+Intern kommunizieren die Backend-Komponenten über Funktionsaufrufe und Service-Schichten. Wichtige interne Schnittstellen sind:
+- **Service-Layer:** Vermittelt zwischen den API-Routen und der Datenbank/externen APIs (z. B. `recipeService`, `ingredientService`, `achievementService`).
+- **ORM (Prisma):** Abstraktion für Datenbankzugriffe (CRUD auf Nutzer, Zutaten, Rezepte, Mealplans, Achievements etc.).
+- **Event-System (optional):** Für bestimmte Aktionen (z. B. neues Achievement erreicht) können interne Events ausgelöst werden, die z. B. Benachrichtigungen oder Logging triggern.
+
+---
+
+### 3.3.1 Ereignisse [ ](#inhaltsverzeichnis)
+
+Im System können verschiedene Ereignisse (Events) auftreten, die für interne Abläufe, Benachrichtigungen oder externe Integrationen genutzt werden. Beispiele für relevante Events:
+
+- **Neues Achievement erreicht:**
+  - Event wird ausgelöst, wenn ein Nutzer eine neue Auszeichnung erhält (z. B. "10 Rezepte gekocht").
+  - Kann genutzt werden, um eine Benachrichtigung in der App anzuzeigen oder das Profil zu aktualisieren.
+- **Zutat hinzugefügt/entfernt:**
+  - Event für Logging, Analytics oder zur Aktualisierung von Vorschlägen.
+- **Rezept als Favorit gespeichert:**
+  - Event für Analytics oder zur Synchronisation mit Cloud/Favoritenliste.
+- **Mealplan aktualisiert:**
+  - Event für Erinnerungen oder zur Generierung einer neuen Einkaufsliste.
+
+Events können im Backend als interne Nachrichten (z. B. via EventEmitter) oder als Push-Benachrichtigungen an den Client genutzt werden. Sie unterstützen die Erweiterbarkeit und ermöglichen zukünftige Integrationen (z. B. Webhooks, externe Benachrichtigungsdienste).
+
 ## 3.4 Datenmodell [ ](#inhaltsverzeichnis)
-Das Datenmodell von *Mealo* bildet die zentrale Datenstruktur des Systems ab. Es orientiert sich an den Hauptobjekten der Anwendung: Nutzer:innen, Zutaten, Rezepte und deren Verknüpfungen. Die Datenhaltung erfolgt relational in einer PostgreSQL-Datenbank.
+Das Datenmodell von *Mealo* bildet die zentrale Datenstruktur des Systems ab. Es orientiert sich an den Hauptobjekten der Anwendung: Nutzer:innen, Zutaten, Rezepte, Mealplans, Favoriten, Achievements und deren Verknüpfungen. Die Datenhaltung erfolgt relational in einer PostgreSQL-Datenbank (modelliert mit Prisma).
 
-### 📌 Beschreibung der Tabellen
+### 📌 Beschreibung der Tabellen (Prisma-Modelle)
 
-| Tabelle             | Beschreibung |
-|---------------------|--------------|
-| `user`              | Beinhaltet grundlegende Informationen zur Authentifizierung und Registrierung. |
-| `ingredient`        | Stammdaten zu Zutaten, inklusive Makronährwerten (Kalorien, Protein, Kohlenhydrate, Fett). |
-| `inventory`         | Beinhaltet die vom Nutzer aktuell verfügbaren Zutaten, inklusive Mengenangabe und Haltbarkeitsdatum. |
-| `recipe`            | Speichert veröffentlichte oder vorgeschlagene Rezepte inklusive Beschreibung, Zubereitung und Autor. |
-| `recipe_ingredient` | Verknüpfungstabelle zwischen Rezepten und Zutaten mit Mengenangabe. |
-| `favorite`          | Verwaltet vom Nutzer gespeicherte Lieblingsrezepte. |
+| Tabelle/Modell         | Beschreibung |
+|-----------------------|--------------|
+| `users`               | Enthält Nutzerprofile, Authentifizierungsdaten (Firebase UID), Name, E-Mail, Avatar, Onboarding-Status und Relationen zu Favoriten, Inventar, Mealplans, Achievements, Präferenzen, Tags usw. |
+| `ingredients`         | Stammdaten zu Zutaten, inkl. Name, Kategorie, Haltbarkeit, Makronährwerten (Kalorien, Protein, Kohlenhydrate, Fett). Verknüpft mit Inventar, Rezepten und Einkaufslisten. |
+| `inventory`           | Abbild der aktuell vom Nutzer verfügbaren Zutaten inkl. Menge und Haltbarkeitsdatum. Verknüpft Nutzer und Zutaten. |
+| `recipes`             | Speichert veröffentlichte oder vorgeschlagene Rezepte inkl. Titel, Bild, Beschreibung, Zubereitungszeit, Nährwerten, vegan/vegetarisch/Allergene, Favoriten, Bewertungen, Zutaten und Zubereitungsschritten. |
+| `recipe_ingredients`  | Verknüpfungstabelle zwischen Rezepten und Zutaten mit Mengenangabe, Einheit und Originaltext. |
+| `recipe_steps`        | Einzelne Zubereitungsschritte eines Rezepts inkl. Beschreibung, Schritt-Nummer und optionaler Dauer. |
+| `favorites`           | Verwaltet vom Nutzer gespeicherte Lieblingsrezepte (Relation zwischen Nutzer und Rezept). |
+| `ratings`             | Bewertungen und Kommentare von Nutzern zu Rezepten (1–5 Sterne, optional Kommentar). |
+| `weekly_plan`         | Enthält die Wochenpläne eines Nutzers (Name, Startdatum, Relationen zu Einträgen und Einkaufsliste). |
+| `weekly_plan_item`    | Einzelne Einträge im Wochenplan (Datum, Mahlzeitentyp, zugehöriges Rezept). |
+| `shopping_list`       | Einkaufslisten eines Nutzers, ggf. verknüpft mit einem Wochenplan. |
+| `shopping_list_item`  | Einzelne Einträge in einer Einkaufsliste (Zutat, Menge, Einheit, gekauft-Status). |
+| `achievement`         | Definition aller möglichen Achievements (Key, Titel, Beschreibung, Icon). |
+| `user_achievement`    | Verknüpft Nutzer mit erreichten Achievements inkl. Zeitpunkt des Erreichens. |
+| `tags`                | Schlagworte, die von Nutzern vergeben werden können. |
+| `user_tags`           | Verknüpfungstabelle zwischen Nutzern und Tags. |
+| `preference_question` | Fragen zu Nutzerpräferenzen (z. B. Ernährungsform, Allergien). |
+| `preference_option`   | Antwortoptionen zu Präferenzfragen (Label, Icon, Referenz zur Frage). |
+| `user_preference`     | Verknüpft Nutzer mit gewählten Präferenzoptionen. |
 
 ### 🧬 Erweiterung: Makronährwerte
 
-Um die Nährwert- und Fitness-Funktionen zu unterstützen, enthält jede `ingredient`-Einheit neben dem Kalorienwert auch Angaben zu:
-
+Um die Nährwert- und Fitness-Funktionen zu unterstützen, enthält jede `ingredients`-Einheit neben dem Kalorienwert auch Angaben zu:
 - `protein_gram` (Gramm Eiweiß)
 - `carbs_gram` (Gramm Kohlenhydrate)
 - `fat_gram` (Gramm Fett)
@@ -564,7 +747,99 @@ Das folgende ER-Diagramm visualisiert die Struktur und Beziehungen der wichtigst
 ![ER-Diagramm Mealo](er-diagramm.png)
 
 
-## 3.5 Fehlerbehandlung [ ](#inhaltsverzeichnis)
+## 3.5 Abläufe (Workflows / Prozesse) [ ](#inhaltsverzeichnis)
+
+In diesem Abschnitt werden zentrale dynamische Abläufe des Systems beschrieben. Im Fokus stehen die Interaktionen zwischen Client, Backend und externen APIs, die zur Erfüllung wichtiger funktionaler Anforderungen führen. Die Abläufe sind als Schritt-für-Schritt-Prozesse dargestellt und zeigen den Datenfluss im System.
+
+### Beispiel 1: Zutaten-Scan und Rezeptvorschläge (FA-1.2 & FA-2.1)
+1. Der Nutzer startet den Zutaten-Scan in der App.
+2. Die App öffnet die Kamera und erfasst ein Bild der Zutaten.
+3. Das Bild wird an das Backend gesendet (`POST /image-recognition`).
+4. Das Backend ruft die OpenAI Vision API mit dem Bild auf.
+5. Die OpenAI API gibt erkannte Zutaten (Liste von Texten) zurück.
+6. Das Backend verarbeitet die erkannten Zutaten (Normalisierung, Abgleich mit interner Datenbank).
+7. Das Backend ruft die Spoonacular API auf, um Rezepte basierend auf diesen Zutaten zu finden.
+8. Die Spoonacular API gibt eine Liste von Rezepten zurück.
+9. Das Backend transformiert die Spoonacular-Daten in das interne Rezeptmodell und fügt ggf. Metadaten (z.B. Anzahl passender/fehlender Zutaten) hinzu.
+10. Das Backend sendet die Rezeptvorschläge an die App zurück.
+11. Die App zeigt die Rezepte dem Nutzer an.
+
+### Beispiel 2: Rezeptsuche mit Sortierung und Paginierung
+1. Der Nutzer gibt einen Suchbegriff ein und/oder wählt Zutaten aus.
+2. Der Nutzer wählt eine Sortieroption (z.B. "Zubereitungszeit kürzeste zuerst").
+3. Die App sendet die Suchparameter (Query, Zutaten, Sortierkriterium, Sortierrichtung, Offset, Anzahl) an das Backend.
+4. Das Backend ruft die Spoonacular API mit den entsprechenden Parametern auf (z.B. sort: 'time', sortDirection: 'asc').
+5. Die Spoonacular API gibt die ersten X sortierten Rezepte zurück.
+6. Das Backend transformiert die Daten und leitet sie an die App weiter.
+7. Die App zeigt die sortierte Rezeptliste an.
+8. Scrollt der Nutzer ans Listenende, erhöht die App den Offset und sendet eine weitere Anfrage, um die nächste Seite zu laden.
+9. Das Backend wiederholt den Prozess und liefert weitere sortierte Rezepte.
+
+### Beispiel 3: Geführter Kochmodus mit Timer
+1. Der Nutzer wählt ein Rezept und startet den geführten Kochmodus.
+2. Die App zeigt den ersten Zubereitungsschritt an.
+3. Der Nutzer kann per Button (oder ggf. Spracheingabe) zum nächsten/vorherigen Schritt navigieren.
+4. Bei Schritten mit Zeitangabe kann der Nutzer einen Timer starten.
+5. Die App verwaltet die Timer und zeigt Fortschritt/Restzeit an.
+6. Nach Ablauf eines Timers erhält der Nutzer eine Benachrichtigung (visuell/akustisch).
+7. Nach Abschluss aller Schritte wird der Kochmodus beendet und ggf. ein Achievement ausgelöst.
+
+---
+
+## 3.6 Entwurf (Design / Design-Entscheidungen) [ ](#inhaltsverzeichnis)
+
+In diesem Abschnitt werden die zentralen Design-Entscheidungen, Muster und Begründungen für die Architektur und Implementierung von Mealo erläutert.
+
+### Architekturmuster
+
+**Frontend (Flutter):**
+- Die App folgt dem Clean Architecture-Prinzip mit klarer Trennung in Presentation, Domain und Data Layers.
+- **Presentation Layer:** Enthält UI, Provider/State-Management und Interaktionslogik.
+- **Domain Layer:** Definiert Use Cases (z.B. "Suche Rezepte", "Füge Zutat hinzu") und zentrale Entitäten/Modelle. Die Use Cases kapseln die Geschäftslogik und sind unabhängig von Datenquellen.
+- **Data Layer:** Implementiert Repositories, die Daten aus externen APIs (Spoonacular, OpenAI), lokalen Quellen oder dem Backend beziehen. Repositories abstrahieren die Datenquellen und ermöglichen einfache Testbarkeit.
+- **Begründung:** Clean Architecture wurde gewählt, um Testbarkeit, Wartbarkeit und Skalierbarkeit zu gewährleisten. Feature-Module können unabhängig entwickelt und getestet werden.
+
+**Backend (Node.js/Express):**
+- Das Backend folgt einem MVC-ähnlichen Muster mit klarer Trennung in Controller (API-Endpoints), Services (Geschäftslogik, externe API-Integration) und Models (Prisma-ORM).
+- **Begründung:** Diese Struktur ermöglicht eine saubere Trennung von Verantwortlichkeiten, erleichtert das Testen und die Erweiterung um neue Features.
+
+### API-Design-Prinzipien
+- Die REST-API ist zustandslos, ressourcenbasiert und verwendet standardisierte HTTP-Methoden (GET, POST, PUT, DELETE).
+- Fehler werden konsistent behandelt: HTTP-Statuscodes, strukturierte Fehlermeldungen (inkl. Fehlercode, Nachricht, ggf. Details).
+- Authentifizierung erfolgt über Firebase Auth (JWT-Token), die bei jedem Request geprüft werden.
+
+### Datenbank-Design-Entscheidungen
+- **PostgreSQL** wurde als Hauptdatenbank gewählt, da die meisten Daten (Rezepte, Zutaten, Nutzer, Beziehungen) relational und stark verknüpft sind.
+- **Prisma ORM** abstrahiert die Datenbankzugriffe und erleichtert Migrationen, Validierung und Typisierung.
+- N:M-Beziehungen (z.B. Rezepte ↔ Zutaten, Nutzer ↔ Favoriten, Nutzer ↔ Achievements) werden explizit über Verknüpfungstabellen modelliert.
+- **Firestore** kann optional für bestimmte Cloud-Datenhaltung genutzt werden (z.B. für schnelle Synchronisation oder Push-Features).
+
+### Integration externer APIs
+- API-Keys werden sicher in Umgebungsvariablen verwaltet und nicht im Code gespeichert.
+- Für externe APIs (Spoonacular, OpenAI) werden Ratenbegrenzung und Wiederholungsversuche implementiert, um Limits und Ausfälle abzufangen.
+- Die Antworten externer APIs werden im Backend transformiert und ins interne Datenmodell überführt, um Konsistenz und Unabhängigkeit zu gewährleisten.
+
+### State Management Strategie (Flutter)
+- **Provider** wird als State-Management-Lösung genutzt, da es einfach, performant und gut in Flutter integrierbar ist.
+- App-weiter Zustand (z.B. eingeloggter Nutzer, Theme) wird in globalen Providern gehalten, feature-spezifischer Zustand (z.B. Suchfilter, Timer) in lokalen Providern.
+- **Begründung:** Provider ist leichtgewichtig, testbar und unterstützt die Clean Architecture.
+
+### Bilderkennungs-Strategie
+- Nach Evaluation wurde OpenAI Vision API als cloudbasierte Lösung für die Bilderkennung gewählt (statt Google ML Kit oder Google Vision), da sie bessere Erkennungsraten und Flexibilität bietet.
+- Bilder werden vor dem Upload ggf. komprimiert und skaliert, um Bandbreite und Kosten zu sparen.
+- Datenschutz wird beachtet: Bilder werden nicht dauerhaft gespeichert, sondern nur für die Analyse verwendet.
+
+### Fehlerbehandlungs-Philosophie
+- Fehler werden im Backend zentralisiert behandelt (Middleware), mit konsistenten Codes und Nachrichten.
+- Im Frontend werden Fehler benutzerfreundlich angezeigt (Snackbars, Dialoge), mit klaren Hinweisen und ggf. Wiederholungsoptionen.
+- Siehe auch Abschnitt 3.7 für konkrete Fehlerarten und Codes.
+
+### Sicherheitsüberlegungen
+- Eingaben werden sowohl client- als auch serverseitig validiert und bereinigt (Sanitization), um Angriffe (z.B. SQL Injection, XSS) zu verhindern.
+- Sensible Daten (Tokens, Passwörter) werden sicher gespeichert (z.B. nur als Hash, nie im Klartext).
+- API-Keys und Secrets werden nie im Client ausgeliefert.
+
+## 3.7 Fehlerbehandlung [ ](#inhaltsverzeichnis)
 Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachliche Fehlerfälle. Ziel ist es, eine robuste und benutzerfreundliche App bereitzustellen, die bei Problemen verständliche Rückmeldungen gibt und kritische Systemzustände vermeidet.
 
 ### 🔧 Technische Fehler
@@ -573,7 +848,7 @@ Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachl
   Bei fehlender Internetverbindung oder Timeouts werden Benutzer:innen visuell informiert und zur Wiederholung der Aktion aufgefordert.
 
 - **API-Fehler / Backend nicht erreichbar:**  
-  HTTP-Statuscodes werden interpretiert und benutzerfreundlich dargestellt (z. B. 500 = „Serverfehler“, 401 = „Anmeldung erforderlich“).
+  HTTP-Statuscodes werden interpretiert und benutzerfreundlich dargestellt (z. B. 500 = "Serverfehler", 401 = "Anmeldung erforderlich").
 
 - **Datenbankfehler:**  
   Transaktionen werden serverseitig abgesichert, um Inkonsistenzen zu vermeiden.
@@ -584,7 +859,7 @@ Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachl
   Validierungen erfolgen sowohl client- als auch serverseitig (z. B. leere Felder, ungültige Formate).
 
 - **Nicht vorhandene Objekte:**  
-  Beim Zugriff auf nicht existierende Zutaten, Rezepte oder Nutzer:innen wird ein Fehler angezeigt (z. B. „Rezept nicht gefunden“, 404).
+  Beim Zugriff auf nicht existierende Zutaten, Rezepte oder Nutzer:innen wird ein Fehler angezeigt (z. B. "Rezept nicht gefunden", 404).
 
 - **Duplikate:**  
   Doppelte Favoriten oder Zutaten im Inventar werden serverseitig verhindert.
@@ -607,7 +882,7 @@ Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachl
 
 
 
-## 3.6 Validierung [ ](#inhaltsverzeichnis)
+## 3.8 Validierung [ ](#inhaltsverzeichnis)
 
 Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte Validierung sichergestellt. Dabei liegt der Fokus auf Integrationstests, die die Zusammenarbeit mehrerer Komponenten prüfen, um die wesentlichen Use Cases vollständig abzudecken. Die Testfälle orientieren sich an den zuvor spezifizierten User Stories und Use Cases und sind so definiert, dass sie die wichtigsten Abläufe im System verlässlich absichern.
 
@@ -618,7 +893,7 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
 | UC-01 | Nutzer meldet sich an | Der Nutzer sendet gültige Login-Daten über die App an die API | Ein gültiger JWT-Token wird vom Server zurückgegeben |
 | UC-02 | Zutaten manuell hinzufügen | Der Nutzer fügt eine Zutat über das Formular hinzu | Die Zutat erscheint in der Zutatenliste des Nutzers |
 | UC-03 | Zutaten über Bild erkennen | Der Nutzer lädt ein Foto hoch | Die erkannten Zutaten erscheinen in der Zutatenliste |
-| UC-04 | Rezeptvorschläge generieren | Der Nutzer klickt auf „Rezeptvorschläge anzeigen“ | Eine Liste passender Rezepte wird angezeigt |
+| UC-04 | Rezeptvorschläge generieren | Der Nutzer klickt auf "Rezeptvorschläge anzeigen" | Eine Liste passender Rezepte wird angezeigt |
 | UC-05 | Nutzer meldet sich ab | Der Nutzer führt eine Abmeldung durch | Die Session wird beendet, der Nutzer wird zur Login-Seite weitergeleitet |
 
 ### 3.6.2 Datenmodell-Tests
@@ -741,5 +1016,21 @@ Im Folgenden sind zentrale Meilensteine für das Projekt "Mealo" definiert. Die 
 | 19.06.2025  | Kochmodus & Timer                   | Umsetzung des schrittweisen Kochmodus inkl. Timer (ohne Sprachsteuerung)         |
 | 26.06.2025  | Tests & Qualitätssicherung          | Manuelle Tests, Debugging, Review                                                |
 | 03.07.2025  | Präsentation & Demo                 | Abschlusspräsentation, Live-Demo der App                                         |
+
+---
+
+# 5 Anhänge [ ](#inhaltsverzeichnis)
+
+## 5.1 Glossar [ ](#inhaltsverzeichnis)
+
+<!-- Platzhalter für Glossar -->
+
+## 5.2 Referenzen [ ](#inhaltsverzeichnis)
+
+<!-- Platzhalter für Referenzen -->
+
+## 5.3 Index [ ](#inhaltsverzeichnis)
+
+<!-- Platzhalter für Index -->
 
 ---
