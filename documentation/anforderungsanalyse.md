@@ -1172,18 +1172,4 @@ Diese speziellen Testfälle helfen, auch seltene oder kritische Situationen abzu
 | **Widget**                | Baustein der Benutzeroberfläche in Flutter (z. B. Button, Textfeld, Layoutkomponente). |
 | **Zutaten-Scan**          | Feature zur Erkennung von Lebensmitteln anhand von Fotos, umgesetzt über Kamera und Vision-API. |
 
-## 5.2 Referenzen [ ](#inhaltsverzeichnis)
-
-<!-- Platzhalter für Referenzen -->
-
-## 5.3 Index [ ](#inhaltsverzeichnis)
-
-<!-- Platzhalter für Index -->
-
 ---
-
-
-
-
-
-
