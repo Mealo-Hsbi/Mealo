@@ -1145,7 +1145,32 @@ Diese speziellen Testfälle helfen, auch seltene oder kritische Situationen abzu
 
 ## 5.1 Glossar [ ](#inhaltsverzeichnis)
 
-<!-- Platzhalter für Glossar -->
+| **Begriff**               | **Erklärung** |
+|---------------------------|----------------|
+| **Achievement**           | Auszeichnung, die ein Nutzer in der App für bestimmte Aktionen oder Erfolge erhalten kann (z. B. „10 Rezepte gekocht“). |
+| **API (Application Programming Interface)** | Schnittstelle, über die Softwarekomponenten miteinander kommunizieren können. In Mealo wird z. B. eine REST-API zwischen App und Backend verwendet. |
+| **Backend**               | Serverseitiger Teil der Anwendung. Verantwortlich für Datenverarbeitung, Authentifizierung und API-Bereitstellung. |
+| **Cloud Run**             | Google-Cloud-Dienst, über den das Backend containerisiert betrieben und automatisch skaliert wird. |
+| **CI/CD (Continuous Integration / Continuous Deployment)** | Automatisierter Entwicklungsprozess zum Testen und Veröffentlichen von Code (z. B. via GitHub Actions). |
+| **Clean Architecture**    | Architekturprinzip, bei dem die Software in klar getrennte Schichten wie UI, Geschäftslogik und Datenzugriff unterteilt wird. |
+| **Dart**                  | Programmiersprache von Google, auf der Flutter basiert. |
+| **Flutter**               | Framework zur Entwicklung plattformübergreifender mobiler Apps (z. B. Android, iOS) mit einer einzigen Codebasis. |
+| **Frontend**              | Clientseitiger Teil der App, der dem Nutzer angezeigt wird. Wird bei Mealo mit Flutter realisiert. |
+| **JWT (JSON Web Token)**  | Token-Format zur sicheren Übermittlung von Benutzerinformationen bei Authentifizierungen. |
+| **Mealplan**              | Wochenplan-Funktion in Mealo, in der Nutzer Rezepte für bestimmte Tage und Mahlzeiten festlegen können. |
+| **Mock (Testing)**        | Platzhalter für externe Abhängigkeiten (z. B. APIs), um Softwareteile isoliert testen zu können. |
+| **Monorepo**              | Ein gemeinsames Git-Repository, das sowohl Frontend- als auch Backend-Code enthält. |
+| **OpenAI Vision API**     | Externe Schnittstelle zur Bilderkennung, die in Mealo zur Analyse von hochgeladenen Lebensmittelfotos genutzt wird. |
+| **Persona**               | Fiktive Nutzerfigur, die typische Zielgruppenbedürfnisse und Nutzungsmuster repräsentiert. |
+| **PostgreSQL**            | Relationale Open-Source-Datenbank, auf der die Datenhaltung im Projekt basiert. |
+| **Prisma**                | ORM (Object Relational Mapper), der Datenbankabfragen typisiert und strukturiert mit TypeScript/JavaScript erlaubt. |
+| **Provider (Flutter)**    | Paket zur Verwaltung von App-Zustand und zur Anbindung von UI-Komponenten an Logik- oder Datenmodelle. |
+| **REST (Representational State Transfer)** | Architekturstil für APIs, bei dem Ressourcen über standardisierte HTTP-Verben (GET, POST, etc.) manipuliert werden. |
+| **Spoonacular API**       | Externe API für Rezepte, Zubereitungsdaten und Nährwertinformationen. |
+| **State Management**      | Verwaltung des internen Zustands (z. B. eingeloggter Nutzer, Auswahl von Zutaten) innerhalb der App. |
+| **Token**                 | Zeichenfolge zur Authentifizierung eines Nutzers (z. B. über Firebase). |
+| **Widget**                | Baustein der Benutzeroberfläche in Flutter (z. B. Button, Textfeld, Layoutkomponente). |
+| **Zutaten-Scan**          | Feature zur Erkennung von Lebensmitteln anhand von Fotos, umgesetzt über Kamera und Vision-API. |
 
 ## 5.2 Referenzen [ ](#inhaltsverzeichnis)
 
