@@ -1006,86 +1006,78 @@ Diese speziellen Testfälle helfen, auch seltene oder kritische Situationen abzu
 
 
 # 4 Projektorganisation [ ](#inhaltsverzeichnis)
+
 ## 4.1 Annahmen [ ](#inhaltsverzeichnis)
+
 #### Verwendete Technologien  
-- **Frontend Mobile:** Flutter (Dart) für Android und eventuell iOS  
-- **Backend:** Node.js oder Python mit RESTful API  
-- **Cloud-Datenhaltung & Authentifizierung:** Firebase (Firestore, Auth) / Google Cloud
+- **Frontend Mobile:** Flutter (Dart) für Android (optional iOS)  
+- **Backend:** Node.js mit Express und Prisma ORM  
+- **Cloud-Datenhaltung & Authentifizierung:** PostgreSQL-Datenbank (Google Cloud SQL), Firebase Authentication, Hosting über Google Cloud Run  
 - **Externe Schnittstellen:**  
-  - Spoonacular oder Edamam (Rezeptdaten und Nährwertinformationen)  
-  - Google Vision API oder Alternativen für Bilderkennung  
+  - Spoonacular (Rezeptdaten und Nährwertinformationen)  
+  - OpenAI Vision API (Bilderkennung)  
 
 #### Aufteilung in Repositories  
-- Es ist ein **Monorepo-Ansatz** geplant, in dem sowohl Mobile-App, als auch das Backend gemeinsam verwaltet werden.  
-- Gemeinsame Logik (z. B. Schnittstellen, Models) wird in geteilten Modulen organisiert.
+- Verwendet wird ein **Monorepo-Ansatz**: Die mobile App und das Backend befinden sich gemeinsam im selben Repository.  
+- Gemeinsame Logik, wie z. B. DTOs, Interfaces oder Schnittstellen, ist über Modulstruktur getrennt organisiert.
 
 #### Betriebssysteme & Entwicklungsumgebung  
-- **Entwicklungsumgebungen:** VS Code, Android Studio, ggf. Xcode  
+- **Entwicklungsumgebungen:** Visual Studio Code, Android Studio  
 - **Zielplattformen:**  
   - Android (ab Version 8.0)  
-  - iOS (ab Version 15.0) (optional) 
+  - iOS (ab Version 15.0) (nicht getestet, optional)  
 
 #### Einschränkungen und Einflussfaktoren  
-- Für einige Kernfunktionen (z. B. Bildverarbeitung, Rezeptsuche) ist eine Internetverbindung erforderlich  
-- Die Bildverarbeitung kann durch Faktoren wie Lichtverhältnisse oder Kameraqualität beeinflusst werden  
-- Kostenfreie APIs (z. B. Spoonacular) haben ggf. Nutzungsbeschränkungen oder Limitierungen im Funktionsumfang  
-- Offline-Betrieb ist eingeschränkt möglich – z. B. gespeicherte Rezepte, aber keine neuen Vorschläge basierend auf Fotos  
+- Für Features wie Rezeptsuche oder Bilderkennung ist eine aktive Internetverbindung erforderlich.  
+- Die Erkennungsqualität bei Bildern hängt stark von Lichtverhältnissen und Kamerahardware ab.  
+- Die verwendeten APIs (v. a. Spoonacular) haben Einschränkungen durch Request-Limits im Free-Tarif.  
+- Offline-Funktionalität ist auf lokale Daten (z. B. gespeicherte Rezepte) beschränkt.
 
 ---
 
 ## 4.2 Verantwortlichkeiten [ ](#inhaltsverzeichnis)
 
-### Zuordnung zu Softwarebausteinen  
-Da das Projekt im Rahmen einer studentischen Lehrveranstaltung von zwei Personen realisiert wird, erfolgt die Entwicklung arbeitsteilig, jedoch mit enger Abstimmung. Einzelne Softwarekomponenten werden primär einer Person zugewiesen, wobei beide Teammitglieder die Gesamtarchitektur verstehen und sich bei Bedarf gegenseitig unterstützen.
 
-| **Softwarebaustein**                 | **Verantwortlich(e)** |
-|-------------------------------------|------------------------|
-| Mobile App (Flutter)                | Gemeinsam              |
-| Backend (API & Datenhaltung)        | Person B               |
-| Bilderkennung & Zutatenscan         | Person A               |
-| Externe Schnittstellen & API-Anbindung | Gemeinsam           |
-| Authentifizierung & Datenmodell     | Person B               |
 
-**Zuordnung**
-- Person A: Danny Meihöfer
-- Person B: Bjarne Zaremba
+### Aufgabenverteilung im Detail
+
+| **Name**             | **GitHub** | **Rollen & Aufgaben**                                                                                                                                          |
+|----------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Danny Meihöfer**   | g0gi02     | - Entwicklung des Mealplanners, Start-/Home-Screen und Favoriten<br>- Bilderkennungs-Flow & Integration der Vision API<br>- Rezeptanzeige und Detailseiten  |
+| **Bjarne Zaremba**   | bzporta    | - Einrichtung der Cloud-Infrastruktur (Firebase, GCP)<br>- Aufbau und Pflege der Datenbank mit Prisma/PostgreSQL<br>- Implementierung von Profilscreen, Einstellungen, Achievements und Rezepteditor<br>- CI/CD (GitHub Actions) und Testing (manuell + automatisiert) |
 
 ---
 
-### Rollenverteilung
+### Rollenbeschreibung
 
-| **Name**     | **Rolle(n)**                                                                 |
-|--------------|------------------------------------------------------------------------------|
-| Person A     | Frontend-Entwickler (Mobile), Bilderkennung, Tester                          |
-| Person B     | Frontend-Entwickler (Mobile), Backend-Entwickler, DevOps, Datenmodel, Tester                |
-
----
-
-#### Rollenbeschreibung
-
-- **Frontend-Entwickler:** Entwickelt und gestaltet Benutzeroberflächen (Mobile).  
-- **Backend-Entwickler:** Implementiert die Serverlogik, Datenhaltung und Anbindung an externe APIs.  
-- **DevOps:** Verantwortlich für das Repository-Setup, Continuous Integration / Deployment und ggf. Hosting.  
-- **Tester:** Führt manuelle Tests durch, stellt die Qualität sicher und dokumentiert Auffälligkeiten.
+- **Frontend-Entwickler:** Umsetzung der App-Oberflächen und deren Logik mit Flutter.  
+- **Backend-Entwickler:** Aufbau der REST-API, Datenmodellierung mit Prisma, Authentifizierung, Deployment.  
+- **DevOps:** Einrichtung von Firebase, Cloud Run, Cloud SQL sowie automatisierte Deployments über GitHub Actions.  
+- **Tester:** Durchführung von manuellen Tests auf Android sowie Integration von Testlogik ins Repository.
 
 ---
 
-## 4.3 Grober Projektplan [ ](#inhaltsverzeichnis)
+## 4.3 Projektzeitachse und Meilensteine [ ](#inhaltsverzeichnis)
 
-Im Folgenden sind zentrale Meilensteine für das Projekt "Mealo" definiert. Die genauen Termine (KW/Datum) werden entsprechend des Semesterverlaufs angepasst.
 
-### Meilensteine
-
-| **Datum** | **Meilenstein**                     | **Inhalt / Ziel**                                                                 |
-|----------------|-------------------------------------|-----------------------------------------------------------------------------------|
-| 10.04.2025  | Projektstart & Themenfreigabe       | Thema geklärt, Team gebildet, Projektidee abgestimmt                            |
-| 01.05.2025  | Pflichtenheft finalisiert           | Vollständig ausgefülltes Pflichtenheft inkl. Systemübersicht und Anforderungen   |
-| 08.05.2025  | Projektstruktur aufgesetzt          | Repositories angelegt, Grundstruktur für Frontend, Backend und Dokumentation     |
-| 22.05.2025  | MVP: Zutaten erfassen & Rezepte anzeigen | Erste funktionale End-to-End-Demo (Scan, API-Anfrage, Rezeptausgabe)          |
-| 05.06.2025  | App-Navigation & Favoriten          | Navigation durch Rezepte + Favoritenfunktion                                     |
-| 19.06.2025  | Kochmodus & Timer                   | Umsetzung des schrittweisen Kochmodus inkl. Timer (ohne Sprachsteuerung)         |
-| 26.06.2025  | Tests & Qualitätssicherung          | Manuelle Tests, Debugging, Review                                                |
-| 03.07.2025  | Präsentation & Demo                 | Abschlusspräsentation, Live-Demo der App                                         |
+| **Zeitraum**        | **Meilenstein / Fortschritt**                                                                 |
+|---------------------|-----------------------------------------------------------------------------------------------|
+| ab 23. April 2025   | Projektstart, erste Ideen und Teamaufteilung, Einrichtung des Monorepos, Anforderungsanalyse |
+| Ende April          | Technisches Setup abgeschlossen: Flutter-Grundgerüst, Dockerfile, Prisma-Modelle, Firebase-Anbindung |
+| Anfang Mai          | Navigation & Tabstruktur, Kamera-UI und Routing implementiert, erste Frontend-Komponenten    |
+| 6.–10. Mai          | Authentifizierung über Firebase (E-Mail & Google), Registrierung, Login und sichere Routen   |
+| 11.–15. Mai         | Onboarding-Prozess mit Präferenzabfrage, Chip-Komponenten und Zustandsspeicherung             |
+| 16.–20. Mai         | Erste Endpunkte für Nutzer:innen und Rezepte erstellt, Anbindung an Flutter-App begonnen      |
+| 21. Mai             | MVP-Zwischenstand: Kameralogik, Vision-Struktur, Authentifizierung & Navigation vollständig  |
+| 22.–28. Mai         | Integration der OpenAI Vision API inkl. Mocks, Medienservice und visuelle Rückmeldung im UI   |
+| Ende Mai            | Implementierung von Favoriten, Bewertungen, Profil-UI inkl. Avatar-Upload und Rezeptanzeige   |
+| Anfang Juni         | UI-Optimierungen, Datenmodell-Erweiterung, neue Rezeptdetails, State Management überarbeitet |
+| 6.–10. Juni         | Stabilisierung: Tests, Onboarding-Verbesserung, Fehlerbehandlung und Lokalisierung            |
+| 11.–15. Juni        | CI/CD mit GitHub Actions und Firebase Hosting, Cloud Run Deployment eingerichtet              |
+| 16.–20. Juni        | Konzeption & erste Integration der Mealplan-Funktion, Backend-Logik & UI-Verknüpfung          |
+| 21.–25. Juni        | Achievements & Premium-Logik, optimistische Updates, strukturierte API-Tests                  |
+| 26.–30. Juni        | Übersetzungen, UI-Finalisierung, Testmocks, letzte Korrekturen, Dokumentation vorbereitet     |
+| 03. Juli 2025       | Präsentation, Projektabschluss, Live-Demo und finale Abgabe                    |
 
 ---
 
