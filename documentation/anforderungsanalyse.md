@@ -108,15 +108,13 @@ Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *M
 - **FA-1.2**: Über ein Foto-Upload können mehrere Lebensmittel gleichzeitig automatisch erkannt und übernommen werden.
 - **FA-1.3**: Der Nutzer kann Zutaten aus einer Liste löschen oder bearbeiten.
 - **FA-1.4**: Die App speichert eingegebene Zutaten lokal und/oder in der Cloud.
-- **FA-1.5**: Die App kann den Barcode von Lebensmitteln scannen und die entsprechenden Zutaten automatisch hinzufügen.
+- **FA-1.5**: Die App kann Lebensmitteln scannen und die entsprechenden Zutaten automatisch hinzufügen.
 - **FA-1.6**: Die App kann sich die Zutaten merken und speichert:
   - Name
   - Menge
-  - Haltbarkeitsdatum
   - Kategorie (z. B. Obst, Gemüse, Fleisch, etc.)
-  - Häufigkeit der Nutzung
 - **FA-1.7**: Die App kann für bestimmte Zutaten prüfen, ob diese in nahegelegenen Supermärkten verfügbar sind (z. B. über eine Drittanbieter-Schnittstelle, wenn verfügbar).
-- **FA-1.8**: Die App kann aktuelle Supermarktangebote durchsuchen und relevante Produkte basierend auf dem aktuellen Vorrat und dem Rezeptbedarf herausfiltern. Dabei werden nahliegende Supermärkte, Rabattaktionen und eventuell beworbene Produkte (Product Placements) berücksichtigt.
+- **FA-1.8**: Die App kann aktuelle Supermarktangebote durchsuchen und relevante Produkte basierend auf dem aktuellen Vorrat und dem Rezeptbedarf herausfiltern. Dabei werden nahliegende Supermärkte, Rabattaktionen und eventuell beworbene Produkte (Product Placements) berücksichtigt. Feature für die Zukunft.
 
 ---
 
@@ -124,8 +122,7 @@ Die folgende Liste beschreibt die funktionalen Anforderungen an die Anwendung *M
 - **FA-2.1**: Die App schlägt dem Nutzer Rezepte vor, basierend auf den vorhandenen Zutaten.
 - **FA-2.2**: Rezepte werden nach verschiedenen Kriterien filterbar sein (z. B. vegan, kalorienarm, schnell, Resteverwertung, Equipment).
 - **FA-2.3**: Die App zeigt eine Bewertung und geschätzte Zubereitungszeit an.
-- **FA-2.4**: Die App zeigt die fehlenden Zutaten bei einem Rezept an, das nicht vollständig passt und gibt einem die Möglichkeit, diese zur Einkaufsliste hinzuzufügen.
-- **FA-2.5**: Der Nutzer kann Rezepte als Favoriten speichern.
+- **FA-2.4**: Der Nutzer kann Rezepte als Favoriten speichern.
 
 ---
 
