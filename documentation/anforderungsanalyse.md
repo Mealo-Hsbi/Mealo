@@ -1,5 +1,4 @@
-# Anforderungs- und Entwurfsspezifikation ("Pflichtenheft")
-# 0 Titelseite
+# Softwarespezifikation Mealo
 
 <img src="logo+writingNoBg.png" width="300" alt="Mealo" />
 
