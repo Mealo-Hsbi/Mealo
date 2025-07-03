@@ -703,49 +703,55 @@ Im System können verschiedene Ereignisse (Events) auftreten, die für interne A
 Events können im Backend als interne Nachrichten (z. B. via EventEmitter) oder als Push-Benachrichtigungen an den Client genutzt werden. Sie unterstützen die Erweiterbarkeit und ermöglichen zukünftige Integrationen (z. B. Webhooks, externe Benachrichtigungsdienste).
 
 ## 3.4 Datenmodell [ ](#inhaltsverzeichnis)
-Das Datenmodell von *Mealo* bildet die zentrale Datenstruktur des Systems ab. Es orientiert sich an den Hauptobjekten der Anwendung: Nutzer:innen, Zutaten, Rezepte, Mealplans, Favoriten, Achievements und deren Verknüpfungen. Die Datenhaltung erfolgt relational in einer PostgreSQL-Datenbank (modelliert mit Prisma).
+
+Das Datenmodell von *Mealo* bildet die zentrale Datenstruktur des Systems ab. Es orientiert sich an den Hauptobjekten der Anwendung: Nutzer:innen, Zutaten, Rezepte, Wochenpläne, Favoriten, Achievements, Präferenzen und deren Relationen. Die Datenhaltung erfolgt in einer relationalen PostgreSQL-Datenbank, modelliert mit Prisma ORM.
 
 ### 📌 Beschreibung der Tabellen (Prisma-Modelle)
 
-| Tabelle/Modell         | Beschreibung |
-|-----------------------|--------------|
-| `users`               | Enthält Nutzerprofile, Authentifizierungsdaten (Firebase UID), Name, E-Mail, Avatar, Onboarding-Status und Relationen zu Favoriten, Inventar, Mealplans, Achievements, Präferenzen, Tags usw. |
-| `ingredients`         | Stammdaten zu Zutaten, inkl. Name, Kategorie, Haltbarkeit, Makronährwerten (Kalorien, Protein, Kohlenhydrate, Fett). Verknüpft mit Inventar, Rezepten und Einkaufslisten. |
-| `inventory`           | Abbild der aktuell vom Nutzer verfügbaren Zutaten inkl. Menge und Haltbarkeitsdatum. Verknüpft Nutzer und Zutaten. |
-| `recipes`             | Speichert veröffentlichte oder vorgeschlagene Rezepte inkl. Titel, Bild, Beschreibung, Zubereitungszeit, Nährwerten, vegan/vegetarisch/Allergene, Favoriten, Bewertungen, Zutaten und Zubereitungsschritten. |
-| `recipe_ingredients`  | Verknüpfungstabelle zwischen Rezepten und Zutaten mit Mengenangabe, Einheit und Originaltext. |
-| `recipe_steps`        | Einzelne Zubereitungsschritte eines Rezepts inkl. Beschreibung, Schritt-Nummer und optionaler Dauer. |
-| `favorites`           | Verwaltet vom Nutzer gespeicherte Lieblingsrezepte (Relation zwischen Nutzer und Rezept). |
-| `ratings`             | Bewertungen und Kommentare von Nutzern zu Rezepten (1–5 Sterne, optional Kommentar). |
-| `weekly_plan`         | Enthält die Wochenpläne eines Nutzers (Name, Startdatum, Relationen zu Einträgen und Einkaufsliste). |
-| `weekly_plan_item`    | Einzelne Einträge im Wochenplan (Datum, Mahlzeitentyp, zugehöriges Rezept). |
-| `shopping_list`       | Einkaufslisten eines Nutzers, ggf. verknüpft mit einem Wochenplan. |
-| `shopping_list_item`  | Einzelne Einträge in einer Einkaufsliste (Zutat, Menge, Einheit, gekauft-Status). |
-| `achievement`         | Definition aller möglichen Achievements (Key, Titel, Beschreibung, Icon). |
-| `user_achievement`    | Verknüpft Nutzer mit erreichten Achievements inkl. Zeitpunkt des Erreichens. |
-| `tags`                | Schlagworte, die von Nutzern vergeben werden können. |
-| `user_tags`           | Verknüpfungstabelle zwischen Nutzern und Tags. |
-| `preference_question` | Fragen zu Nutzerpräferenzen (z. B. Ernährungsform, Allergien). |
-| `preference_option`   | Antwortoptionen zu Präferenzfragen (Label, Icon, Referenz zur Frage). |
-| `user_preference`     | Verknüpft Nutzer mit gewählten Präferenzoptionen. |
+| Tabelle/Modell           | Beschreibung |
+|-------------------------|--------------|
+| `users`                 | Enthält Nutzerprofile mit Firebase UID, Name, E-Mail, Avatar-URL, Onboarding- und Premium-Status. Verknüpft mit Favoriten, Inventar, Bewertungen, Rezepten, Wochenplänen, Achievements, Präferenzen und Tags. |
+| `ingredients`           | Stammdaten zu Zutaten, einschließlich Name, Kategorie, Haltbarkeit (optional) und Nährwertangaben (Kalorien, Eiweiß, Kohlenhydrate, Fett). |
+| `inventory`             | Repräsentiert die individuellen Vorräte eines Nutzers mit Mengenangabe und Haltbarkeitsdatum. |
+| `recipes`               | Kernstück der App: Rezepttitel, Bilder, Beschreibung, Nährwerte, Allergene, Anleitungen, Ersteller-Relation sowie Bewertung, Favoriten und Zutatenverknüpfung. |
+| `recipe_ingredients`    | Verknüpft Rezepte mit Zutaten inkl. Mengenangabe, Einheit und Originalbeschreibung. |
+| `recipe_steps`          | Detaillierte Kochanleitungen mit Schritttext und optionaler Dauer in Minuten. |
+| `favorites`             | Verknüpft Nutzer:innen mit ihren favorisierten Rezepten. |
+| `ratings`               | Bewertungen (Score 1–5, optionaler Kommentar) zu Rezepten durch Nutzer. |
+| `weekly_plan`           | Wochenplan eines Nutzers mit Startdatum, Name und Relationen zu Planpunkten und Einkaufsliste. |
+| `weekly_plan_item`      | Einzelne Einträge eines Wochenplans mit Rezept, Datum und Mahlzeitentyp. |
+| `shopping_list`         | Einkaufsliste eines Nutzers, optional zugeordnet zu einem Wochenplan. |
+| `shopping_list_item`    | Einzelne Produkte in der Einkaufsliste, inkl. Zutat, Menge, Einheit, gekauft-Status. |
+| `achievement`           | Alle möglichen Erfolge mit Schlüssel, Titel, Beschreibung und Icon. |
+| `user_achievement`      | Erreichte Achievements eines Nutzers mit Zeitstempel. |
+| `tags`                  | Von Nutzern vergebene Tags zur Kategorisierung. |
+| `user_tags`             | Verknüpfungstabelle zwischen Nutzern und Tags. |
+| `preference_question`   | Fragen zu Präferenzen, etwa Ernährung oder Unverträglichkeiten. |
+| `preference_option`     | Mögliche Antwortoptionen zu einer Präferenzfrage. |
+| `user_preference`       | Verknüpfung von Nutzer:innen mit gewählten Präferenzoptionen. |
+
+---
 
 ### 🧬 Erweiterung: Makronährwerte
 
-Um die Nährwert- und Fitness-Funktionen zu unterstützen, enthält jede `ingredients`-Einheit neben dem Kalorienwert auch Angaben zu:
-- `protein_gram` (Gramm Eiweiß)
-- `carbs_gram` (Gramm Kohlenhydrate)
-- `fat_gram` (Gramm Fett)
+Zur Unterstützung gesundheitsorientierter Funktionen enthält das System präzise Nährwertangaben auf Zutaten- und Rezeptebene:
 
-Diese Werte ermöglichen es, die Gesamtwerte eines Rezepts zu berechnen und passende Gerichte basierend auf Nährwertzielen zu filtern.
+- `calories` – Kalorien in kcal
+- `protein_gram` – Eiweiß in Gramm
+- `carbs_gram` – Kohlenhydrate in Gramm
+- `fat_gram` – Fett in Gramm
+
+Diese Werte ermöglichen die gezielte Auswahl und Empfehlung von Rezepten basierend auf den individuellen Zielwerten.
 
 ---
 
 ### 📊 ER-Diagramm
 
-Das folgende ER-Diagramm visualisiert die Struktur und Beziehungen der wichtigsten Tabellen im System:
+Das folgende ER-Diagramm stellt die zentralen Entitäten und deren Relationen schematisch dar (basierend auf dem Prisma-Modell):
 
 ![ER-Diagramm Mealo](er-diagramm.png)
 
+---
 
 ## 3.5 Abläufe (Workflows / Prozesse) [ ](#inhaltsverzeichnis)
 
