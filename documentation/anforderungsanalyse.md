@@ -584,7 +584,8 @@ frontend/
 
 **Feature-Modul-Struktur: Clean Architecture**
 
-Jedes Feature im Verzeichnis `lib/features/` ist nach einem Clean Architecture-Ansatz organisiert, der die Verantwortlichkeiten in verschiedene Schichten unterteilt:
+**Feature-First-Ansatz:**
+Die Organisation des Frontends folgt dem sogenannten "Feature-First"-Prinzip. Das bedeutet, dass der Code nicht nach technischen Schichten (z. B. alle Models, alle Services, alle Widgets), sondern nach Features bzw. Anwendungsbereichen strukturiert ist. Jedes Feature (wie Authentifizierung, Rezeptsuche, Kamera, Profil) enthält alle zugehörigen Komponenten (Datenquellen, Modelle, Use Cases, UI) in einem eigenen Verzeichnis. Das erleichtert die Wartung, fördert die Übersichtlichkeit und ermöglicht parallele Entwicklung an verschiedenen Features, ohne dass es zu Konflikten kommt. Jedes Feature im Verzeichnis `lib/features/` ist nach einem Clean Architecture-Ansatz organisiert und die Aufteilung der Verantwortlichkeiten wird aus den Verzeichnissen deutlich:
 
 ```
 features/
@@ -840,53 +841,63 @@ In diesem Abschnitt werden die zentralen Design-Entscheidungen, Muster und Begr�
 - API-Keys und Secrets werden nie im Client ausgeliefert.
 
 ## 3.7 Fehlerbehandlung [ ](#inhaltsverzeichnis)
-Die Fehlerbehandlung in *Mealo* berücksichtigt sowohl technische als auch fachliche Fehlerfälle. Ziel ist es, eine robuste und benutzerfreundliche App bereitzustellen, die bei Problemen verständliche Rückmeldungen gibt und kritische Systemzustände vermeidet.
 
-### 🔧 Technische Fehler
+Nach der Beschreibung der grundlegenden Design- und Architekturentscheidungen folgt nun ein genauerer Blick auf die Fehlerbehandlung im System. Eine durchdachte Fehlerstrategie ist essenziell, um sowohl eine robuste Backend-Logik als auch eine benutzerfreundliche App zu gewährleisten.
 
-- **Netzwerkfehler:**  
-  Bei fehlender Internetverbindung oder Timeouts werden Benutzer:innen visuell informiert und zur Wiederholung der Aktion aufgefordert.
+### Zentrale Prinzipien
+- **Konsistenz:** Fehler werden systemweit nach einheitlichen Prinzipien behandelt und kommuniziert.
+- **Transparenz:** Nutzer erhalten verständliche Rückmeldungen, Entwickler erhalten strukturierte Fehlerdaten für Debugging und Monitoring.
+- **Wartbarkeit:** Fehlerarten und -codes sind klar dokumentiert und können leicht erweitert werden.
 
-- **API-Fehler / Backend nicht erreichbar:**  
-  HTTP-Statuscodes werden interpretiert und benutzerfreundlich dargestellt (z. B. 500 = "Serverfehler", 401 = "Anmeldung erforderlich").
+### Fehlerbehandlung im Backend (Node.js/Express)
+- **Zentrale Fehler-Middleware:** Alle Fehler, die in Controllern oder Services auftreten, werden an eine zentrale Fehler-Middleware weitergeleitet.
+- **Strukturierte Fehlerobjekte:** Fehler werden als Objekte mit Typ, Fehlercode, Nachricht und ggf. Details (z.B. Stacktrace, betroffener Endpunkt) modelliert.
+- **Eigene Fehlerklassen:** Für typische Fehlerarten (z.B. Authentifizierungsfehler, Validierungsfehler, Datenbankfehler, externe API-Fehler) gibt es eigene Fehlerklassen.
+- **Standardisierte Fehlercodes:** Jeder Fehler erhält einen spezifischen Code (z.B. `ERR-AUTH-401`, `ERR-INGR-404`), der sowohl im Backend-Log als auch in der API-Antwort erscheint.
+- **Logging:** Kritische Fehler werden serverseitig geloggt, um spätere Analyse und Monitoring zu ermöglichen.
+- **HTTP-Statuscodes:** Die API antwortet mit passenden HTTP-Statuscodes (z.B. 400, 401, 404, 409, 500).
 
-- **Datenbankfehler:**  
-  Transaktionen werden serverseitig abgesichert, um Inkonsistenzen zu vermeiden.
+### Fehlerbehandlung im Frontend (Flutter)
+- **Eigene Failure- und Exception-Klassen:** Im Frontend gibt es eine klare Trennung zwischen technischen Fehlern (Exceptions) und fachlichen Fehlern (Failures). Diese werden in eigenen Klassen modelliert (z.B. `NetworkFailure`, `AuthFailure`, `ApiFailure`).
+- **Fehler-Handling im State Management:** Fehler werden im State (z.B. Provider) abgefangen und an die UI weitergegeben.
+- **Benutzerfreundliche Fehleranzeigen:** Fehler werden dem Nutzer als Snackbars, Dialoge oder spezielle Fehler-Widgets angezeigt – immer mit verständlicher, situationsgerechter Nachricht.
+- **Unterscheidung nach Fehlerursache:** Die UI kann je nach Fehlerart unterschiedlich reagieren (z.B. erneuter Login bei Auth-Fehler, Retry-Button bei Netzwerkfehler, spezifische Hinweise bei Validierungsfehlern).
+- **Logging und Debugging:** Im Entwicklungsmodus werden Fehler detailliert geloggt, im Produktivmodus werden sensible Details ausgeblendet.
 
-### 📌 Fachliche Fehler
+### Typische Fehlerarten im System
+- **Authentifizierungsfehler:** Ungültiger Token, abgelaufene Session, fehlende Berechtigung.
+- **Validierungsfehler:** Ungültige Eingaben, fehlende Pflichtfelder, fehlerhafte Formate.
+- **Netzwerkfehler:** Keine Verbindung, Timeout, Server nicht erreichbar.
+- **Datenbankfehler:** Konflikte, Duplikate, nicht gefundene Objekte.
+- **Externe API-Fehler:** Fehlerhafte oder limitierte Antworten von Spoonacular/OpenAI.
+- **Upload-/Dateifehler:** Zu große oder fehlerhafte Bilder, nicht unterstützte Formate.
 
-- **Ungültige Eingaben:**  
-  Validierungen erfolgen sowohl client- als auch serverseitig (z. B. leere Felder, ungültige Formate).
+### Beispielhafter Fehlerfluss
+1. Ein Nutzer sendet eine Anfrage mit ungültigen Daten.
+2. Das Backend erkennt den Validierungsfehler, erzeugt ein Fehlerobjekt mit Code und Nachricht und gibt einen 400-Status zurück.
+3. Das Frontend erhält die strukturierte Fehlermeldung, wandelt sie in eine passende Failure-Klasse um und zeigt dem Nutzer eine verständliche Nachricht an.
+4. Im Fehlerfall kann die App dem Nutzer gezielte Optionen anbieten (z.B. Wiederholen, Support kontaktieren, zur Login-Seite zurückkehren).
 
-- **Nicht vorhandene Objekte:**  
-  Beim Zugriff auf nicht existierende Zutaten, Rezepte oder Nutzer:innen wird ein Fehler angezeigt (z. B. "Rezept nicht gefunden", 404).
-
-- **Duplikate:**  
-  Doppelte Favoriten oder Zutaten im Inventar werden serverseitig verhindert.
-
-### 🔁 Fehlercodes & Logging
-
-- Alle Fehler erhalten standardisierte Fehlercodes (z. B. `ERR-INGR-404`), um die Diagnose im Frontend und Logfiles zu erleichtern.
-- Im Backend erfolgt strukturiertes Logging aller Fehlerereignisse zur späteren Analyse.
-
-### 🧾 Beispielhafte Fehlercodes
-
-| Fehlercode       | Beschreibung                                | Kategorie        | HTTP-Code |
-|------------------|---------------------------------------------|------------------|-----------|
-| `ERR-AUTH-401`   | Ungültiger Login oder fehlender Token       | Authentifizierung | 401       |
-| `ERR-INGR-404`   | Angegebene Zutat nicht gefunden             | Fachlich          | 404       |
-| `ERR-RECIPE-400` | Ungültige Rezeptdaten (z. B. fehlender Titel) | Validierung       | 400       |
-| `ERR-SERVER-500` | Interner Serverfehler                       | Technisch         | 500       |
-| `ERR-UPLOAD-413` | Bild zu groß oder fehlerhaft                | Upload/Client     | 413       |
-| `ERR-DB-409`     | Konflikt beim Speichern (z. B. Duplikat)    | Datenbank         | 409       |
-
-
+Durch diese smarte, mehrschichtige Fehlerbehandlung bleibt das System robust, nachvollziehbar und benutzerfreundlich – sowohl für Endnutzer als auch für Entwickler und Support.
 
 ## 3.8 Validierung [ ](#inhaltsverzeichnis)
 
-Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte Validierung sichergestellt. Dabei liegt der Fokus auf Integrationstests, die die Zusammenarbeit mehrerer Komponenten prüfen, um die wesentlichen Use Cases vollständig abzudecken. Die Testfälle orientieren sich an den zuvor spezifizierten User Stories und Use Cases und sind so definiert, dass sie die wichtigsten Abläufe im System verlässlich absichern.
+Die Qualität und Zuverlässigkeit von Mealo werden durch ein umfassendes Test- und Validierungskonzept sichergestellt. Ziel ist es, Fehler frühzeitig zu erkennen, die wichtigsten Use Cases dauerhaft abzusichern und die Weiterentwicklung des Systems durch automatisierte Tests zu unterstützen. Die Teststrategie umfasst sowohl Backend als auch Frontend und deckt verschiedene Testarten ab.
+
+### Teststrategie und -philosophie
+
+- **Testgetriebene Entwicklung (TDD) für Kernlogik:** Viele zentrale Komponenten, insbesondere im Backend, werden testgetrieben entwickelt. Neue Features werden durch passende Testspezifikationen begleitet.
+- **Automatisierte Tests:** Sowohl im Backend (Jest) als auch im Frontend (Flutter Test, Widget- und Integrationstests) kommen automatisierte Tests zum Einsatz. Diese werden regelmäßig über CI/CD-Pipelines ausgeführt.
+- **Testabdeckung:** Es wird Wert auf eine hohe Testabdeckung der Kernlogik gelegt, insbesondere für kritische Abläufe wie Authentifizierung, Zutatenverwaltung, Rezeptvorschläge und die Bildverarbeitung.
+- **Schichtenübergreifende Tests:** Neben Unit-Tests werden auch Integrations- und End-to-End-Tests geschrieben, um die Zusammenarbeit mehrerer Komponenten und die wichtigsten Nutzerflüsse abzusichern.
+- **Dokumentation und Nachvollziehbarkeit:** Alle Tests sind nachvollziehbar dokumentiert und den jeweiligen Use Cases zugeordnet. Die Testdokumentation wird als lebendiges Dokument gepflegt.
+
+**Mocking externer APIs:**
+Um stabile, schnelle und reproduzierbare Tests zu ermöglichen, werden externe Schnittstellen wie Spoonacular oder OpenAI Vision API in den Tests gemockt. Das bedeutet, dass die echten API-Aufrufe durch simulierte Antworten ersetzt werden. So können auch Fehlerfälle, Zeitüberschreitungen oder spezielle Antwortformate gezielt getestet werden, ohne von der Verfügbarkeit oder den Kosten der externen Dienste abhängig zu sein.
 
 ### 3.8.1 Integrations-Testfälle
+
+Integrations- und End-to-End-Tests prüfen die Zusammenarbeit mehrerer Komponenten (z. B. API, Datenbank, externe Dienste) und simulieren reale Nutzerinteraktionen. Beispiele:
 
 | Use Case ID | Beschreibung | Testfall | Erwartetes Ergebnis |
 |-------------|--------------|----------|----------------------|
@@ -896,41 +907,97 @@ Die Qualität und Funktionalität des Softwaresystems werden durch eine gezielte
 | UC-04 | Rezeptvorschläge generieren | Der Nutzer klickt auf "Rezeptvorschläge anzeigen" | Eine Liste passender Rezepte wird angezeigt |
 | UC-05 | Nutzer meldet sich ab | Der Nutzer führt eine Abmeldung durch | Die Session wird beendet, der Nutzer wird zur Login-Seite weitergeleitet |
 
-### 3.6.2 Datenmodell-Tests
+Diese Tests werden automatisiert ausgeführt und decken die wichtigsten End-to-End-Flows ab.
 
-- **Testfall:** Persistenz einer neuen Zutat  
-  **Ablauf:** Eine neue Zutat wird gespeichert und anschließend abgerufen  
-  **Erwartung:** Die abgerufene Zutat entspricht den gespeicherten Daten
+### 3.8.2 Datenmodell-Tests
 
-- **Testfall:** Löschung eines Nutzers  
-  **Ablauf:** Ein Nutzer wird gelöscht, danach wird versucht, auf seine Daten zuzugreifen  
-  **Erwartung:** Der Zugriff ist nicht mehr möglich, es erfolgt eine Fehlermeldung
+Die Datenmodell-Tests stellen sicher, dass die Persistenzschicht korrekt funktioniert und keine Inkonsistenzen entstehen. Sie prüfen u. a.:
 
-### 3.6.3 API-Tests
+- **Persistenz einer neuen Zutat:**  
+  Ablauf: Eine neue Zutat wird gespeichert und anschließend abgerufen.  
+  Erwartung: Die abgerufene Zutat entspricht den gespeicherten Daten.
 
-- **Testfall:** Zugriff auf geschützte Endpunkte ohne Authentifizierung  
-  **Ablauf:** Ein nicht authentifizierter Request wird an `/ingredients` gesendet  
-  **Erwartung:** Der Server antwortet mit HTTP 401 (Unauthorized)
+- **Löschung eines Nutzers:**  
+  Ablauf: Ein Nutzer wird gelöscht, danach wird versucht, auf seine Daten zuzugreifen.  
+  Erwartung: Der Zugriff ist nicht mehr möglich, es erfolgt eine Fehlermeldung.
 
-- **Testfall:** Erfolgreiches Abrufen von Rezeptvorschlägen  
-  **Ablauf:** Ein gültiger GET-Request an `/recipes` mit gespeicherten Zutaten  
-  **Erwartung:** Der Server gibt eine Liste von Rezepten im JSON-Format zurück
+- **Referentielle Integrität:**  
+  Es wird getestet, dass beim Löschen von Nutzern oder Rezepten abhängige Einträge (z. B. Favoriten, Inventar) korrekt behandelt werden.
 
-### 3.6.4 User Interface Tests
+Diese Tests laufen automatisiert im Backend (Jest) und werden bei jeder Änderung am Datenmodell ausgeführt.
 
-- **Testfall:** Responsives Verhalten der Zutatenliste  
-  **Ablauf:** Die App wird auf verschiedenen Bildschirmgrößen geöffnet  
-  **Erwartung:** Die Darstellung bleibt benutzerfreundlich und übersichtlich
+### 3.8.3 API-Tests
 
-- **Testfall:** Bild-Upload-Flow  
-  **Ablauf:** Der Nutzer lädt ein Bild hoch und wartet auf die Verarbeitung  
-  **Erwartung:** Eine Ladeanzeige erscheint, gefolgt von erkannten Zutaten
+API-Tests prüfen die Korrektheit, Sicherheit und Robustheit der REST-Schnittstellen. Sie umfassen u. a.:
 
-### 3.6.5 Testabdeckung der Use Cases
+- **Authentifizierungs- und Autorisierungstests:**  
+  Zugriff auf geschützte Endpunkte ohne gültigen Token wird korrekt mit HTTP 401 abgelehnt.
 
-Alle hier aufgeführten Testfälle sind eindeutig den definierten Use Cases zugeordnet. Auf diese Weise wird sichergestellt, dass alle Kernfunktionen des Systems während der Entwicklung und im laufenden Betrieb kontinuierlich überprüft werden können.
+- **Fehlerfall-Tests:**  
+  Ungültige oder unvollständige Requests führen zu den erwarteten Fehlercodes (z. B. 400, 404, 409).
 
-Da sich das System im Verlauf des Projekts weiterentwickelt, ist auch die Testdokumentation als lebendiges Dokument zu verstehen. Weitere Testfälle, insbesondere für neue Features oder geänderte Anforderungen, werden kontinuierlich ergänzt. Eine automatisierte Teststrategie (z. B. über Postman, Flutter Integration Tests und CI/CD-Pipelines) wird angestrebt, um die langfristige Qualität des Systems sicherzustellen.
+- **Datenvalidierung:**  
+  Es wird geprüft, dass nur valide Daten akzeptiert und gespeichert werden.
+
+- **Externe API-Integration:**  
+  Die Anbindung an Spoonacular und OpenAI wird durch Mocking und Integrationstests abgesichert.
+
+Die API-Tests werden automatisiert ausgeführt (z. B. mit Jest, Supertest oder Postman/Newman).
+
+### 3.8.4 User Interface Tests
+
+Im Frontend werden verschiedene Testarten eingesetzt:
+
+- **Widget-Tests:**  
+  Einzelne UI-Komponenten (z. B. Zutatenliste, Rezeptkarte) werden isoliert getestet, um Layout, Interaktion und Zustand zu prüfen.
+
+- **Integrationstests:**  
+  Komplette Nutzerflüsse (z. B. Login, Zutaten hinzufügen, Rezept favorisieren) werden automatisiert durchgespielt. Dabei wird das Zusammenspiel mehrerer Widgets und Provider getestet.
+
+- **Responsivität:**  
+  Die Darstellung auf verschiedenen Bildschirmgrößen und -ausrichtungen wird getestet.
+
+- **Bild-Upload-Flow:**  
+  Es wird geprüft, dass der Nutzer nach dem Hochladen eines Bildes eine Ladeanzeige sieht und anschließend die erkannten Zutaten angezeigt werden.
+
+Die Tests werden mit dem Flutter Test Framework und ggf. mit Integrationstools wie `flutter_driver` oder `integration_test` ausgeführt.
+
+### 3.8.5 Testabdeckung der Use Cases
+
+Alle Tests sind den definierten Use Cases und User Stories zugeordnet. Die Testabdeckung wird regelmäßig überprüft und bei neuen Features oder Änderungen erweitert. Ziel ist es, alle Kernfunktionen des Systems dauerhaft abzusichern und Regressionen frühzeitig zu erkennen.
+
+- **Automatisierte Ausführung:**  
+  Die Tests werden bei jedem Commit/Push über CI/CD-Pipelines (z. B. GitHub Actions) ausgeführt.
+
+- **Lebendige Testdokumentation:**  
+  Die Testfälle werden kontinuierlich gepflegt und dokumentiert, sodass jederzeit nachvollziehbar ist, welche Anforderungen durch Tests abgedeckt sind.
+
+- **Erweiterbarkeit:**  
+  Neue Features werden stets mit passenden Tests ergänzt, um die langfristige Qualität und Wartbarkeit des Systems zu sichern.
+
+**Fazit:**  
+Durch die Kombination aus Unit-, Integrations-, API- und UI-Tests sowie die konsequente Automatisierung wird eine hohe Qualität, Zuverlässigkeit und Weiterentwicklungsfähigkeit von Mealo sichergestellt.
+
+### 3.8.6 Spezielle Testfälle und Beispiele
+
+Im Folgenden sind einige besondere und für das Projekt relevante Testfälle exemplarisch beschrieben:
+
+- **Mocking externer APIs:**
+  - *Beispiel:* Beim Testen der Bild-Erkennung wird die Antwort der OpenAI Vision API durch eine vordefinierte Zutatenliste ersetzt. So kann geprüft werden, ob die App die erkannten Zutaten korrekt übernimmt, auch wenn die externe API nicht erreichbar ist oder ungewöhnliche Daten liefert.
+  - *Fehlerfall:* Die Spoonacular-API liefert einen Fehlercode oder ein leeres Ergebnis. Der Test prüft, ob die App dies erkennt und dem Nutzer eine verständliche Fehlermeldung anzeigt.
+
+- **Fehlerfall-Tests:**
+  - *Beispiel:* Ein Nutzer versucht, eine Zutat mit ungültigen Daten (z. B. leeres Namensfeld) zu speichern. Der Test prüft, ob die Validierung greift und eine passende Fehlermeldung ausgegeben wird.
+  - *Beispiel:* Ein abgelaufener Authentifizierungs-Token wird verwendet. Der Test stellt sicher, dass der Server korrekt mit HTTP 401 antwortet und die App den Nutzer zur Anmeldung auffordert.
+
+- **Testdaten-Setup und Edge Cases:**
+  - *Beispiel:* Es wird getestet, wie die App reagiert, wenn ein Nutzer eine sehr große Anzahl an Zutaten oder Favoriten speichert (Stresstest).
+  - *Beispiel:* Die Datenbank enthält inkonsistente oder veraltete Einträge. Der Test prüft, ob die App damit robust umgeht und keine Abstürze auftreten.
+
+- **Ende-zu-Ende-Flow mit Mocking:**
+  - *Beispiel:* Ein kompletter Nutzerflow (z. B. Zutaten-Scan → Rezeptvorschlag → Favorisieren → Wochenplan) wird mit gemockten Backend- und API-Antworten durchgespielt, um die gesamte User Journey abzusichern.
+
+Diese speziellen Testfälle helfen, auch seltene oder kritische Situationen abzusichern und die Robustheit des Systems zu erhöhen.
 
 --- 
 
@@ -1034,3 +1101,5 @@ Im Folgenden sind zentrale Meilensteine für das Projekt "Mealo" definiert. Die 
 <!-- Platzhalter für Index -->
 
 ---
+
+
