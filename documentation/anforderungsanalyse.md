@@ -607,6 +607,30 @@ Diese Struktur gewährleistet:
   * **Skalierbarkeit**: Neue Features oder Änderungen können mit minimalen Auswirkungen auf andere Schichten hinzugefügt werden.
   * **Wartbarkeit**: Code ist leichter zu verstehen, zu refaktorisieren und zu erweitern.
 
+##### Beispielkomponenten- und Interaktionsdiagramme Frontend
+
+**1. Zutaten-Scan-Flow (Feature: Kamera/Bilderkennung)**
+
+<img src="diagramCamerascreen.png" alt="Zutaten-Scan-Flow Kamera/Bilderkennung" width="600" />
+
+- **Beschreibung:**  
+  Der Nutzer startet den Scan in der CameraScreen. Die Logik wird über den CameraProvider gesteuert, der das Repository aufruft. Das Repository nutzt den zentralen ApiClient, um das Bild an das Backend zu senden. Die Antwort (erkannte Zutaten) wird zurück in die UI propagiert.
+
+---
+
+**2. Favoriten-Management (Feature: Rezepte/Favoriten)**
+
+<img src="diagramFavoritesscreen.png" alt="Favoriten-Management Flow" width="600" />
+
+- **Beschreibung:**  
+  Die Favoriten-UI interagiert mit dem FavoritesProvider (State Management). Dieser nutzt das RecipeRepository, das wiederum den ApiClient verwendet, um Favoriten zu speichern oder zu laden. Die Daten werden synchronisiert und in der UI angezeigt.
+
+---
+
+**Hinweis:**  
+Die Diagramme zeigen die typische Schichten- und Komponentenstruktur im Flutter-Frontend (UI → Provider → Repository → ApiClient → Backend). Sie können bei Bedarf um weitere Details (z. B. Error Handling, lokale Speicherung) ergänzt werden.
+
+
 #### Backend-Struktur (`backend/`)
 
 Das Backend ist mit Node.js und Express.js aufgebaut und nutzt Prisma als ORM für die Datenbankverwaltung. Es stellt RESTful APIs für das Frontend bereit und handhabt Authentifizierung, Essensplanungslogik, Bilderkennung und weitere serverseitige Prozesse.
@@ -632,6 +656,43 @@ backend/
 ├── server.js           # Hauptdatei zum Starten des Servers
 └── ...
 ```
+
+##### Beispielkomponenten- und Interaktionsdiagramme Backend
+
+Im Folgenden sind exemplarisch einige wichtige Backend-Komponenten und deren Zusammenspiel als Diagramm dargestellt. Die Diagramme verdeutlichen, wie Controller, Services, Datenbank und externe APIs im System interagieren.
+
+---
+
+**1. Mealplan-Komponente (Vereinfachtes Komponenten-/Ablaufdiagramm)**
+
+<img src="diagramMealplan.png" alt="Mealplan-Komponente Flow" width="600" />
+
+- **Beschreibung:**  
+  Der Mealplan-Controller nimmt Requests entgegen und delegiert an den Mealplan-Service. Dieser nutzt weitere Services (z. B. für Rezepte oder externe APIs) und greift auf die Datenbank zu.
+
+---
+
+**2. Image Recognition Flow (Komponenten-/Ablaufdiagramm)**
+
+
+<img src="diagramImageRecognition.png" alt="Imagerecognition Flow" width="600" />
+
+- **Beschreibung:**  
+  Der Controller nimmt Bild-Uploads entgegen, der Service verarbeitet die Bilder und ruft die Vision-Service-Funktion auf, die wiederum mit der OpenAI Vision API kommuniziert.
+
+---
+
+**3. Achievements-Komponente (Komponenten-/Ablaufdiagramm)**
+
+<img src="diagramAchievement.png" alt="Achievement Flow" width="600" />
+
+- **Beschreibung:**  
+  Der Achievement-Controller fragt über den Service die erreichten und möglichen Achievements eines Nutzers ab. Die Daten werden direkt aus der Datenbank gelesen.
+
+---
+
+**Hinweis:**  
+Die Diagramme können bei Bedarf um weitere Details (z. B. Error Handling, Events) ergänzt werden. Sie dienen als Übersicht für die wichtigsten Interaktionen im Backend.
 
 ---
 
@@ -1096,5 +1157,9 @@ Diese speziellen Testfälle helfen, auch seltene oder kritische Situationen abzu
 <!-- Platzhalter für Index -->
 
 ---
+
+
+
+
 
 
